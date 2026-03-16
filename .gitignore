@@ -1,0 +1,6 @@
+# Binaries
+arcade
+*.o
+*.so
+
+lib/
