@@ -1,27 +1,47 @@
+BASE_DIR	:=	$(realpath .)
+LIB_PATH	:=	$(BASE_DIR)/lib
+
 CXX	:=	clang++
 CXXFLAGS	:=	-Wall -Wextra -std=c++20
-CPPFLAGS	:=	-I include
+CPPFLAGS	:=	-I $(BASE_DIR)/include/
 
 ifeq ($(ENV), dev)
 	CXXFLAGS	+=	-g3
 endif
 
-SRC	:=	src/main.cpp
+# Make all calls to other makefiles inherit those variables
+export BASE_DIR
+export LIB_PATH
+export CXX
+export CXXFLAGS
+export CPPFLAGS
 
-OBJ	:=	$(SRC:.cpp=.o)
+# Disable "Entering directory" for every -C option
+MAKEFLAGS += --no-print-directory
 
-BINARY	:=	arcade
+all:	core games graphicals
 
-all:	$(BINARY)
+.PHONY: core
+core:
+	$(MAKE) -C src/core
 
-$(BINARY):	$(OBJ)
-	$(CXX) -o $(BINARY) $(OBJ)
+.PHONY: games
+games:
+	$(MAKE) -C src/games
+
+.PHONY: graphicals
+graphicals:
+	$(MAKE) -C src/graphicals
 
 clean:
-	$(RM) $(OBJ)
+	$(MAKE) -C src/core clean
+	$(MAKE) -C src/games clean
+	$(MAKE) -C src/graphicals clean
 
 fclean:	clean
-	$(RM) $(BINARY)
+	$(MAKE) -C src/core fclean
+	$(MAKE) -C src/games fclean
+	$(MAKE) -C src/graphicals fclean
 
 re:	fclean all
 
