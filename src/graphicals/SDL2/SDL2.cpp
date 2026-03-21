@@ -1,5 +1,6 @@
 #include "graphicals/SDL2/SDL2.hpp"
 #include "common/Exception.hpp"
+#include "events/QuitEvent.hpp"
 
 arcade::SDL2Display::SDL2Display() : _window(nullptr), _renderer(nullptr),
     _screenWidth(1000), _screenHeight(500)
@@ -53,6 +54,16 @@ void arcade::SDL2Display::clear()
 
 std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SDL2Display::pollEvent()
 {
+    SDL_Event event;
+
+    if (SDL_PollEvent(&event) == 0)
+        return std::nullopt;
+
+    switch (event.type) {
+        case SDL_QUIT:
+            return std::make_unique<arcade::QuitEvent>();
+    }
+
     return std::nullopt;
 }
 
