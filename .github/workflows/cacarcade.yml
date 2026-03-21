@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: ${{ env.CHECK_REPO }}
-          path: /tmp/check-repo
+          path: check-repo
 
       - name: Checkout current repo
         uses: actions/checkout@v6
@@ -35,7 +35,7 @@ jobs:
       - name: Create branch and copy changes
         run: |
           git switch ${{ env.BRANCH_NAME }} || git switch -c ${{ env.BRANCH_NAME }}
-          cp -r /tmp/check-repo/cacarcade ./include/
+          cp -r check-repo/cacarcade ./include/
 
       - name: Create PR if changes
         run: |
