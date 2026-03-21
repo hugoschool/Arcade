@@ -23,5 +23,8 @@ namespace arcade {
 
             std::size_t _screenWidth;
             std::size_t _screenHeight;
+
+            // A tile is a square, so no need to precise its width and height
+            const size_t _tileSize;
     };
 }

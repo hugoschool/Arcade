@@ -3,7 +3,7 @@
 #include "events/QuitEvent.hpp"
 
 arcade::SDL2Display::SDL2Display() : _window(nullptr), _renderer(nullptr),
-    _screenWidth(1000), _screenHeight(500)
+    _screenWidth(1000), _screenHeight(500), _tileSize(50)
 {
 }
 
@@ -49,8 +49,8 @@ void arcade::SDL2Display::close()
 
 void arcade::SDL2Display::clear()
 {
+    SDL_SetRenderDrawColor(_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(_renderer);
-    SDL_SetRenderDrawColor(_renderer, rand() % 255, rand() % 255, rand() % 255, rand() % 255);
 }
 
 std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SDL2Display::pollEvent()
@@ -68,7 +68,19 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SDL2Display::pollEvent
     return std::nullopt;
 }
 
-void arcade::SDL2Display::displayTiles(cacarcade::TileContainer)
+void arcade::SDL2Display::displayTiles(cacarcade::TileContainer container)
 {
+    for (auto tile : container._tiles) {
+        SDL_Rect tileRect = {
+            .x = static_cast<int>(tile.x * _tileSize),
+            .y = static_cast<int>(tile.y * _tileSize),
+            .w = static_cast<int>(_tileSize),
+            .h = static_cast<int>(_tileSize)
+        };
+        SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, 0xFF);
+        SDL_RenderFillRect(_renderer, &tileRect);
+        SDL_SetRenderDrawColor(_renderer, 0xFF, 0x00, 0x00, 0xFF);
+        SDL_RenderDrawRect(_renderer, &tileRect);
+    }
     SDL_RenderPresent(_renderer);
 }
