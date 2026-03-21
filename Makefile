@@ -9,12 +9,15 @@ ifeq ($(ENV), dev)
 	CXXFLAGS	+=	-g3
 endif
 
+COMMON_SRC	:=	$(BASE_DIR)/src/common/Exception.cpp
+
 # Make all calls to other makefiles inherit those variables
 export BASE_DIR
 export LIB_PATH
 export CXX
 export CXXFLAGS
 export CPPFLAGS
+export COMMON_SRC
 
 # Disable "Entering directory" for every -C option
 MAKEFLAGS += --no-print-directory

@@ -1,7 +1,19 @@
 #include <iostream>
+#include "core/Arcade.hpp"
+#include "common/Exception.hpp"
 
-int main(void)
+int main(int argc, char **argv)
 {
-    std::cout << "Hello world" << std::endl;
-    return 1;
+    if (argc != 2) {
+        std::cerr << "Incorrect amount of arguments" << std::endl;
+        return 84;
+    }
+
+    try {
+        arcade::Arcade core(argv[1]);
+    } catch (const arcade::Exception &e) {
+        std::cerr << e.what() << std::endl;
+        return 84;
+    }
+    return 0;
 }
