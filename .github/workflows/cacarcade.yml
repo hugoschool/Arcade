@@ -35,6 +35,7 @@ jobs:
       - name: Create branch and copy changes
         run: |
           git switch ${{ env.BRANCH_NAME }} || git switch -c ${{ env.BRANCH_NAME }}
+          ls -lha check-repo/
           cp -r check-repo/cacarcade ./include/
 
       - name: Create PR if changes
