@@ -22,7 +22,7 @@ namespace arcade {
 
             void *openHandle()
             {
-                _handle = dlopen(_libraryName.c_str(), RTLD_LAZY);
+                _handle = dlopen(_libraryName.c_str(), RTLD_NOW);
                 if (_handle == nullptr)
                     throw arcade::Exception(dlerror());
                 return _handle;
