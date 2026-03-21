@@ -23,19 +23,19 @@ jobs:
     if: ${{ github.repository_owner == 'hugoschool' }}
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout current repo
+        uses: actions/checkout@v6
+
       - name: Checkout repo to check
         uses: actions/checkout@v6
         with:
           repository: ${{ env.CHECK_REPO }}
-          path: /tmp/check-repo
-
-      - name: Checkout current repo
-        uses: actions/checkout@v6
+          path: check-repo
 
       - name: Create branch and copy changes
         run: |
           git switch ${{ env.BRANCH_NAME }} || git switch -c ${{ env.BRANCH_NAME }}
-          cp -r /tmp/check-repo/cacarcade ./include/
+          cp -r check-repo/cacarcade ./include/
 
       - name: Create PR if changes
         run: |
