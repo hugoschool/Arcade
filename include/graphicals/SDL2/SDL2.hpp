@@ -19,7 +19,7 @@ namespace arcade {
 
         private:
             SDL_Window *_window;
-            SDL_Surface *_surface;
+            SDL_Renderer *_renderer;
 
             std::size_t _screenWidth;
             std::size_t _screenHeight;

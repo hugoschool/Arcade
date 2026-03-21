@@ -1,7 +1,7 @@
 #include "graphicals/SDL2/SDL2.hpp"
 #include "common/Exception.hpp"
 
-arcade::SDL2Display::SDL2Display() : _window(nullptr), _surface(nullptr),
+arcade::SDL2Display::SDL2Display() : _window(nullptr), _renderer(nullptr),
     _screenWidth(1000), _screenHeight(500)
 {
 }
@@ -28,19 +28,27 @@ void arcade::SDL2Display::open()
 
     if (_window == nullptr)
         throw arcade::Exception(std::string("Impossible to create window: ") + SDL_GetError());
+
+    _renderer = SDL_CreateRenderer(_window, -1, 0);
+
+    if (_renderer == nullptr)
+        throw arcade::Exception(std::string("Impossible to create renderer: ") + SDL_GetError());
 }
 
 void arcade::SDL2Display::close()
 {
-    if (_window == nullptr)
-        throw arcade::Exception("Window is not opened");
+    if (_window == nullptr || _renderer == nullptr)
+        throw arcade::Exception("Window or renderer is not opened");
 
+    SDL_DestroyRenderer(_renderer);
     SDL_DestroyWindow(_window);
     SDL_Quit();
 }
 
 void arcade::SDL2Display::clear()
 {
+    SDL_RenderClear(_renderer);
+    SDL_SetRenderDrawColor(_renderer, rand() % 255, rand() % 255, rand() % 255, rand() % 255);
 }
 
 std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SDL2Display::pollEvent()
@@ -48,6 +56,7 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SDL2Display::pollEvent
     return std::nullopt;
 }
 
-void arcade::SDL2Display::displayTiles(cacarcade::TileContainer tiles)
+void arcade::SDL2Display::displayTiles(cacarcade::TileContainer)
 {
+    SDL_RenderPresent(_renderer);
 }
