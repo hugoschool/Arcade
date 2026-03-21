@@ -1,6 +1,8 @@
 #include "graphicals/SDL2/SDL2.hpp"
+#include "common/Exception.hpp"
 
-arcade::SDL2Display::SDL2Display()
+arcade::SDL2Display::SDL2Display() : _window(nullptr), _surface(nullptr),
+    _screenWidth(1000), _screenHeight(500)
 {
 }
 
@@ -10,10 +12,27 @@ arcade::SDL2Display::~SDL2Display()
 
 void arcade::SDL2Display::open()
 {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0)
+        throw arcade::Exception(std::string("Impossible to initialize SDL: ") + SDL_GetError());
+
+    _window = SDL_CreateWindow(
+        "Arcade",
+        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+        _screenWidth, _screenHeight,
+        SDL_WINDOW_SHOWN
+    );
+
+    if (_window == nullptr)
+        throw arcade::Exception(std::string("Impossible to create window: ") + SDL_GetError());
 }
 
 void arcade::SDL2Display::close()
 {
+    if (_window == nullptr)
+        throw arcade::Exception("Window is not opened");
+
+    SDL_DestroyWindow(_window);
+    SDL_Quit();
 }
 
 void arcade::SDL2Display::clear()
