@@ -1,5 +1,4 @@
-SRC	:=	$(COMMON_SRC) \
-		main.cpp \
+SRC	:=	main.cpp \
 		Arcade.cpp
 
 OBJ	:=	$(SRC:.cpp=.o)

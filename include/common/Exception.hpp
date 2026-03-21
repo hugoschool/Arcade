@@ -6,10 +6,19 @@
 namespace arcade {
     class Exception : public std::exception {
         public:
-            Exception(const std::string);
-            ~Exception();
+            Exception(const std::string str) : _str(str)
+            {
+            }
 
-            const char *what() const noexcept override;
+            ~Exception()
+            {
+            }
+
+            const char *what() const noexcept override
+            {
+                return _str.c_str();
+            }
+
         private:
             const std::string _str;
     };
