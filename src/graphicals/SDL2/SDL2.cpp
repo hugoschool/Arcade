@@ -1,4 +1,5 @@
 #include "graphicals/SDL2/SDL2.hpp"
+#include "cacarcade/Color.hpp"
 #include "common/Exception.hpp"
 #include "events/QuitEvent.hpp"
 
@@ -49,7 +50,7 @@ void arcade::SDL2Display::close()
 
 void arcade::SDL2Display::clear()
 {
-    SDL_SetRenderDrawColor(_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+    setRendererColor(cacarcade::Color::White);
     SDL_RenderClear(_renderer);
 }
 
@@ -68,6 +69,14 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SDL2Display::pollEvent
     return std::nullopt;
 }
 
+void arcade::SDL2Display::setRendererColor(cacarcade::Color color)
+{
+    try {
+        const RendererColor c = _rendererColorMap.at(color);
+        SDL_SetRenderDrawColor(_renderer, c.r, c.g, c.b, c.a);
+    } catch (const std::out_of_range &) {};
+}
+
 void arcade::SDL2Display::displayTiles(cacarcade::TileContainer container)
 {
     for (auto tile : container._tiles) {
@@ -77,9 +86,9 @@ void arcade::SDL2Display::displayTiles(cacarcade::TileContainer container)
             .w = static_cast<int>(_tileSize),
             .h = static_cast<int>(_tileSize)
         };
-        SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, 0xFF);
+        setRendererColor(tile.backgroundColor);
         SDL_RenderFillRect(_renderer, &tileRect);
-        SDL_SetRenderDrawColor(_renderer, 0xFF, 0x00, 0x00, 0xFF);
+        setRendererColor(cacarcade::Color::Red);
         SDL_RenderDrawRect(_renderer, &tileRect);
     }
     SDL_RenderPresent(_renderer);
