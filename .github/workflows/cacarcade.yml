@@ -1,0 +1,51 @@
+name: cacarcade repo check
+
+# Some of this is taken from helium repo:
+# https://github.com/imputnet/helium/blob/84f7f68d2d223aa8935e242dec9ed43a7974a604/.github/actions/bump-platform/action.yml#L105
+
+on:
+  push:
+    branches:
+      - main
+
+  schedule:
+    - cron: "0 0/1 * * *"
+
+  workflow_dispatch:
+
+env:
+  CHECK_REPO: freaky-family/cacarcade
+  BRANCH_NAME: chore/cacarcade
+
+jobs:
+  repo_check:
+    name: Check for changes
+    if: ${{ github.repository_owner == 'hugoschool' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo to check
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ env.CHECK_REPO }}
+          path: /tmp/check-repo
+
+      - name: Checkout current repo
+        uses: actions/checkout@v6
+
+      - name: Create branch and copy changes
+        run: |
+          git switch ${{ env.BRANCH_NAME }} || git switch -c ${{ env.BRANCH_NAME }}
+          cp -r /tmp/check-repo/cacarcade ./include/
+
+      - name: Create PR if changes
+        run: |
+          git add -u include
+
+          if ! git status | tail -1 | grep -q 'nothing to commit'; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git commit -m "chore: update cacarcade"
+
+            git push origin ${{ env.BRANCH_NAME }}
+            gh pr create --title "Update cacarcade" --body ""
+          fi
