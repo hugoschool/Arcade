@@ -38,6 +38,10 @@ jobs:
           cp -r check-repo/cacarcade ./include/
 
       - name: Create PR if changes
+
+        env:
+          GH_TOKEN: ${{ github.token }}
+
         run: |
           git add -u include
 
