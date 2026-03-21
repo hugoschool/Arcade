@@ -1,16 +1,14 @@
 #include "core/Arcade.hpp"
 #include "cacarcade/EventType.hpp"
 #include "cacarcade/IEvent.hpp"
-#include "cacarcade/Tile.hpp"
-#include "cacarcade/TileContainer.hpp"
 #include "cacarcade/Utils.hpp"
 #include "common/Exception.hpp"
 #include <iostream>
-#include <vector>
 
-arcade::Arcade::Arcade(const std::string graphicsLibrary) : _graphicsLoader(graphicsLibrary)
+arcade::Arcade::Arcade(const std::string graphicsLibrary) : _graphicsLoader(graphicsLibrary), _gameLoader(std::string("./lib/arcade_minesweeper.so"))
 {
     _display = _graphicsLoader.getInstance(std::string(cacarcade::displayEntrypoint));
+    _game = _gameLoader.getInstance(std::string(cacarcade::gameEntrypoint));
 }
 
 arcade::Arcade::~Arcade()
@@ -26,10 +24,6 @@ void arcade::Arcade::loop()
         return;
     }
 
-    cacarcade::TileContainer container;
-    std::vector<cacarcade::Tile> tiles;
-    container._tiles = tiles;
-
     std::optional<std::unique_ptr<cacarcade::IEvent>> event;
 
     while (true) {
@@ -39,8 +33,10 @@ void arcade::Arcade::loop()
                 break;
         }
 
+        _game->update(event);
+
         _display->clear();
-        _display->displayTiles(container);
+        _display->displayTiles(_game->getTiles());
     }
 
     try {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cacarcade/IDisplayModule.hpp"
+#include "cacarcade/IGameModule.hpp"
 #include "core/DLLoader.hpp"
 #include <memory>
 #include <string>
@@ -15,6 +16,8 @@ namespace arcade {
 
         private:
             arcade::DLLoader<cacarcade::IDisplayModule> _graphicsLoader;
+            arcade::DLLoader<cacarcade::IGameModule> _gameLoader;
             std::unique_ptr<cacarcade::IDisplayModule> _display;
+            std::unique_ptr<cacarcade::IGameModule> _game;
     };
 }

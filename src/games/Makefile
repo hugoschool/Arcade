@@ -1,20 +1,23 @@
-# Uncomment when creating a game.
+COMMON_SRC	:=	AGameModule.cpp
 
-# MINESWEEPER_SRC	:=	minesweeper/temp.cpp
-# MINESWEEPER_OBJ	:=	$(MINESWEEPER_SRC:.cpp=.o)
-# MINESWEEPER_BIN	:=	$(LIB_PATH)/arcade_minesweeper.so
+MINESWEEPER_SRC	:=	$(COMMON_SRC) \
+					minesweeper/main.cpp \
+					minesweeper/Minesweeper.cpp
 
-# include $(BASE_DIR)/common.mk
+MINESWEEPER_OBJ	:=	$(MINESWEEPER_SRC:.cpp=.o)
+MINESWEEPER_BIN	:=	$(LIB_PATH)/arcade_minesweeper.so
 
-# all:	$(MINESWEEPER_BIN)
+include $(BASE_DIR)/common.mk
 
-# $(MINESWEEPER_BIN):	$(MINESWEEPER_OBJ)
+all:	$(MINESWEEPER_BIN)
 
-all:
+$(MINESWEEPER_BIN):	$(MINESWEEPER_OBJ)
 
 clean:
+	$(RM) $(MINESWEEPER_OBJ)
 
 fclean:	clean
+	$(RM) $(MINESWEEPER_BIN)
 
 re:	fclean all
 
