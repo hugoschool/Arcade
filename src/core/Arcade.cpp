@@ -1,9 +1,9 @@
 #include "core/Arcade.hpp"
-#include <iostream>
+#include "cacarcade/Utils.hpp"
 
-arcade::Arcade::Arcade(const std::string graphicsLibrary)
+arcade::Arcade::Arcade(const std::string graphicsLibrary) : _graphicsLoader(graphicsLibrary)
 {
-    std::cout << "Loading " << graphicsLibrary << std::endl;
+    _display = _graphicsLoader.getInstance(std::string(cacarcade::displayEntrypoint));
 }
 
 arcade::Arcade::~Arcade()
