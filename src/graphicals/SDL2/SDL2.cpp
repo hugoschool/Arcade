@@ -12,7 +12,11 @@ arcade::SDL2Display::~SDL2Display()
 
 void arcade::SDL2Display::open()
 {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0)
+    // Wayland causes the window to be blurry, setting it to X11 will force
+    // XWayland to be used as the video driver.
+    SDL_SetHint(SDL_HINT_VIDEODRIVER, "x11");
+
+    if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
         throw arcade::Exception(std::string("Impossible to initialize SDL: ") + SDL_GetError());
 
     _window = SDL_CreateWindow(
