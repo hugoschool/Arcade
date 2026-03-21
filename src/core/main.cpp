@@ -11,6 +11,7 @@ int main(int argc, char **argv)
 
     try {
         arcade::Arcade core(argv[1]);
+        core.loop();
     } catch (const arcade::Exception &e) {
         std::cerr << e.what() << std::endl;
         return 84;

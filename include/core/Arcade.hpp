@@ -11,6 +11,8 @@ namespace arcade {
             Arcade(const std::string graphicsLibrary);
             ~Arcade();
 
+            void loop();
+
         private:
             arcade::DLLoader<cacarcade::IDisplayModule> _graphicsLoader;
             std::unique_ptr<cacarcade::IDisplayModule> _display;
