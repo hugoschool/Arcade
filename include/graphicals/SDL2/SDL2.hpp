@@ -5,6 +5,7 @@
 #include <SDL2/SDL.h>
 #include <cstddef>
 #include <map>
+#include <vector>
 
 namespace arcade {
     class SDL2Display : public cacarcade::IDisplayModule {
@@ -29,6 +30,9 @@ namespace arcade {
             // A tile is a square, so no need to precise its width and height
             const size_t _tileSize;
 
+            std::pair<std::size_t, std::size_t> _tileDimensions;
+            std::vector<std::pair<std::size_t, std::size_t>> _tileCoordinates;
+
             struct RendererColor {
                 const Uint8 r;
                 const Uint8 g;
@@ -46,5 +50,7 @@ namespace arcade {
             };
 
             void setRendererColor(cacarcade::Color color);
+
+            std::pair<std::size_t, std::size_t> findClosestTile(int x, int y);
     };
 }
