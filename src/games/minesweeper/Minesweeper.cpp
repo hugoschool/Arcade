@@ -4,11 +4,14 @@
 #include "cacarcade/IEvent.hpp"
 #include "cacarcade/Tile.hpp"
 #include "games/AGameModule.hpp"
+#include <iostream>
 #include <memory>
 #include <random>
+#include <stdexcept>
 #include <utility>
 
-arcade::MinesweeperGame::MinesweeperGame() : AGameModule(), _bombAmount(10), _isTileBomb()
+arcade::MinesweeperGame::MinesweeperGame() : AGameModule(), _bombAmount(10),
+    _isTileBomb(), _neighborsMap()
 {
     size_t width = 9;
     size_t height = 9;
@@ -28,6 +31,7 @@ arcade::MinesweeperGame::MinesweeperGame() : AGameModule(), _bombAmount(10), _is
             };
 
             _container._tiles.emplace_back(tile);
+            _neighborsMap.insert({{x, y}, 0});
         }
     }
 
@@ -36,6 +40,41 @@ arcade::MinesweeperGame::MinesweeperGame() : AGameModule(), _bombAmount(10), _is
 
 arcade::MinesweeperGame::~MinesweeperGame()
 {
+}
+
+void arcade::MinesweeperGame::updateNeighborsTile(const std::pair<std::size_t, std::size_t> position)
+{
+    std::size_t xStart = position.first;
+    std::size_t xEnd = position.first;
+
+    std::size_t yStart = position.second;
+    std::size_t yEnd = position.second;
+
+    if (xStart > 0)
+        xStart = xStart - 1;
+    if (xEnd < _container._dimension.first - 1)
+        xEnd = xEnd + 1;
+
+    if (yStart > 0)
+        yStart = yStart - 1;
+    if (yEnd < _container._dimension.second - 1)
+        yEnd = yEnd + 1;
+
+    for (std::size_t y = yStart; y <= yEnd; y++) {
+        for (std::size_t x = xStart; x <= xEnd; x++) {
+            try {
+                std::size_t &amount = _neighborsMap.at({x, y});
+                amount++;
+            } catch (const std::out_of_range &e) {
+                std::cerr << "Unexpected error: impossible to update neighbors of tile " << x << ", " << y << std::endl;
+            }
+        }
+    }
+
+    // TODO: delete this later
+    for (cacarcade::Tile &tile : _container._tiles) {
+        tile.text = _neighborsMap[{tile.x, tile.y}] + '0';
+    }
 }
 
 void arcade::MinesweeperGame::createBombs()
@@ -62,6 +101,8 @@ void arcade::MinesweeperGame::createBombs()
         } catch (const std::out_of_range &e) {
             _isTileBomb.insert({{randomWidth, randomHeight}, true});
         };
+
+        updateNeighborsTile({randomWidth, randomHeight});
     }
 }
 

@@ -18,7 +18,10 @@ namespace arcade {
             std::size_t _bombAmount;
 
             std::map<std::pair<std::size_t, std::size_t>, bool> _isTileBomb;
+            std::map<std::pair<std::size_t, std::size_t>, std::size_t> _neighborsMap;
 
             void createBombs();
+
+            void updateNeighborsTile(const std::pair<std::size_t, std::size_t> position);
     };
 }
