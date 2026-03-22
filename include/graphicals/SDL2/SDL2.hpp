@@ -30,8 +30,13 @@ namespace arcade {
             // A tile is a square, so no need to precise its width and height
             const size_t _tileSize;
 
-            std::pair<std::size_t, std::size_t> _tileDimensions;
-            std::vector<std::pair<std::size_t, std::size_t>> _tileCoordinates;
+            struct CurrentTileDimensions {
+                std::pair<std::size_t, std::size_t> dimensions;
+                std::vector<std::pair<std::size_t, std::size_t>> coordinates;
+            };
+
+            CurrentTileDimensions _currentDimensions;
+            void setTileDimensions(std::pair<std::size_t, std::size_t> &);
 
             struct RendererColor {
                 const Uint8 r;

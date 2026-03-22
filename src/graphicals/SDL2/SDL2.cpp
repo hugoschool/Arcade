@@ -5,9 +5,10 @@
 #include "events/TileClickedEvent.hpp"
 #include <cstddef>
 #include <memory>
+#include <vector>
 
 arcade::SDL2Display::SDL2Display() : _window(nullptr), _renderer(nullptr),
-    _screenWidth(1000), _screenHeight(500), _tileSize(50), _tileDimensions(), _tileCoordinates()
+    _screenWidth(1000), _screenHeight(500), _tileSize(50), _currentDimensions()
 {
 }
 
@@ -53,7 +54,6 @@ void arcade::SDL2Display::close()
 
 void arcade::SDL2Display::clear()
 {
-    _tileCoordinates.clear();
     setRendererColor(cacarcade::Color::White);
     SDL_RenderClear(_renderer);
 }
@@ -63,7 +63,7 @@ std::pair<std::size_t, std::size_t> arcade::SDL2Display::findClosestTile(int x, 
     std::pair<std::size_t, std::size_t> closestCoordinates;
     bool firstPass = true;
 
-    for (auto coordinates : _tileCoordinates) {
+    for (auto coordinates : _currentDimensions.coordinates) {
         if (firstPass) {
             closestCoordinates = coordinates;
             firstPass = false;
@@ -111,9 +111,27 @@ void arcade::SDL2Display::setRendererColor(cacarcade::Color color)
     } catch (const std::out_of_range &) {};
 }
 
+void arcade::SDL2Display::setTileDimensions(std::pair<std::size_t, std::size_t> &pair)
+{
+    if (_currentDimensions.dimensions != pair) {
+        _currentDimensions.dimensions = pair;
+
+        const std::size_t dimensionsSize = _currentDimensions.dimensions.first * _currentDimensions.dimensions.second;
+
+        _currentDimensions.coordinates.clear();
+        _currentDimensions.coordinates.reserve(dimensionsSize);
+
+        for (std::size_t y = 0; y < _currentDimensions.dimensions.second; y++) {
+            for (std::size_t x = 0; x < _currentDimensions.dimensions.first; x++) {
+                _currentDimensions.coordinates.push_back({x * _tileSize, y * _tileSize});
+            }
+        }
+    }
+}
+
 void arcade::SDL2Display::displayTiles(cacarcade::TileContainer container)
 {
-    _tileDimensions = container._dimension;
+    setTileDimensions(container._dimension);
 
     for (auto tile : container._tiles) {
         int x = tile.x * _tileSize;
@@ -126,7 +144,6 @@ void arcade::SDL2Display::displayTiles(cacarcade::TileContainer container)
             .h = static_cast<int>(_tileSize)
         };
 
-        _tileCoordinates.push_back({x, y});
         setRendererColor(tile.backgroundColor);
         SDL_RenderFillRect(_renderer, &tileRect);
         setRendererColor(cacarcade::Color::Red);
