@@ -12,5 +12,7 @@ namespace arcade {
 
         protected:
             cacarcade::TileContainer _container;
+
+            virtual void handleEvent(std::unique_ptr<cacarcade::IEvent> &event);
     };
 }

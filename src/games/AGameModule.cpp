@@ -12,3 +12,7 @@ cacarcade::TileContainer arcade::AGameModule::getTiles() const
 {
     return _container;
 }
+
+void arcade::AGameModule::handleEvent(std::unique_ptr<cacarcade::IEvent> &)
+{
+}
