@@ -59,5 +59,11 @@ namespace arcade {
             std::pair<std::size_t, std::size_t> findClosestTile(int x, int y);
 
             void displayTextOnTile(const char c, SDL_Rect &tileRect);
+
+            std::map<std::string, SDL_Texture *> _textureMap;
+            SDL_Texture *createTexture(std::string &textureName);
+
+            void displayTileTexture(cacarcade::Tile &tile, SDL_Rect &tileRect);
+            void displayTileText(cacarcade::Tile &tile, SDL_Rect &tileRect);
     };
 }

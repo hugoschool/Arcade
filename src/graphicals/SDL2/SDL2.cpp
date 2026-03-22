@@ -1,15 +1,18 @@
 #include "graphicals/SDL2/SDL2.hpp"
 #include "cacarcade/Color.hpp"
+#include "cacarcade/Tile.hpp"
 #include "common/Exception.hpp"
 #include "events/QuitEvent.hpp"
 #include "events/TileClickedEvent.hpp"
 #include <cstddef>
 #include <memory>
+#include <iostream>
+#include <stdexcept>
 #include <vector>
 
 arcade::SDL2Display::SDL2Display() : _window(nullptr), _renderer(nullptr),
     _screenWidth(1000), _screenHeight(500), _fontSize(20),
-    _tileSize(50), _currentDimensions()
+    _tileSize(50), _currentDimensions(), _textureMap()
 {
 }
 
@@ -56,6 +59,10 @@ void arcade::SDL2Display::close()
 {
     if (_window == nullptr || _renderer == nullptr)
         throw arcade::Exception("Window or renderer is not opened");
+
+    for (auto &[_, texture] : _textureMap) {
+        SDL_DestroyTexture(texture);
+    }
 
     SDL_DestroyRenderer(_renderer);
     SDL_DestroyWindow(_window);
@@ -166,11 +173,52 @@ void arcade::SDL2Display::displayTextOnTile(const char c, SDL_Rect &tileRect)
     SDL_DestroyTexture(texture);
 }
 
+SDL_Texture *arcade::SDL2Display::createTexture(std::string &textureName)
+{
+    try {
+        return _textureMap.at(textureName);
+    } catch (const std::out_of_range &e) {
+        SDL_Surface *surface = SDL_LoadBMP(textureName.c_str());
+
+        if (surface == nullptr) {
+            std::cerr << "Impossible to load BMP: " << SDL_GetError() << std::endl;
+            _textureMap.insert({textureName, nullptr});
+        }
+
+        SDL_Texture *texture = SDL_CreateTextureFromSurface(_renderer, surface);
+
+        _textureMap.insert({textureName, texture});
+
+        SDL_FreeSurface(surface);
+        return texture;
+    }
+}
+
+void arcade::SDL2Display::displayTileText(cacarcade::Tile &tile, SDL_Rect &tileRect)
+{
+    setRendererDrawColor(tile.backgroundColor);
+    SDL_RenderFillRect(_renderer, &tileRect);
+    setRendererDrawColor(cacarcade::Color::Red);
+    SDL_RenderDrawRect(_renderer, &tileRect);
+
+    if (tile.text != '\0')
+        displayTextOnTile(tile.text, tileRect);
+}
+
+void arcade::SDL2Display::displayTileTexture(cacarcade::Tile &tile, SDL_Rect &tileRect)
+{
+    SDL_Texture *texture = createTexture(tile.textureName);
+
+    if (texture == nullptr)
+        displayTileText(tile, tileRect);
+    SDL_RenderCopy(_renderer, texture, NULL, &tileRect);
+}
+
 void arcade::SDL2Display::displayTiles(cacarcade::TileContainer container)
 {
     setTileDimensions(container._dimension);
 
-    for (auto tile : container._tiles) {
+    for (cacarcade::Tile &tile : container._tiles) {
         int x = tile.x * _tileSize;
         int y = tile.y * _tileSize;
 
@@ -181,13 +229,11 @@ void arcade::SDL2Display::displayTiles(cacarcade::TileContainer container)
             .h = static_cast<int>(_tileSize)
         };
 
-        setRendererDrawColor(tile.backgroundColor);
-        SDL_RenderFillRect(_renderer, &tileRect);
-        setRendererDrawColor(cacarcade::Color::Red);
-        SDL_RenderDrawRect(_renderer, &tileRect);
-
-        if (tile.text != '\0')
-            displayTextOnTile(tile.text, tileRect);
+        if (!tile.textureName.empty()) {
+            displayTileTexture(tile, tileRect);
+        } else {
+            displayTileText(tile, tileRect);
+        }
     }
     SDL_RenderPresent(_renderer);
 }
