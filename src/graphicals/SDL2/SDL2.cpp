@@ -40,7 +40,7 @@ void arcade::SDL2Display::open()
     if (_window == nullptr)
         throw arcade::Exception(std::string("Impossible to create window: ") + SDL_GetError());
 
-    _renderer = SDL_CreateRenderer(_window, -1, 0);
+    _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
     if (_renderer == nullptr)
         throw arcade::Exception(std::string("Impossible to create renderer: ") + SDL_GetError());
