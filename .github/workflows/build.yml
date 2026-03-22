@@ -1,0 +1,67 @@
+name: Build
+
+on:
+  push:
+
+env:
+  CORE_BINARY: arcade
+  GAME_BINARIES: lib/arcade_minesweeper.so
+  GRAPHICAL_BINARIES: lib/arcade_sdl2.so
+
+jobs:
+  build_core:
+    name: Build Core
+    if: ${{ github.repository_owner == 'hugoschool' }}
+    runs-on: ubuntu-latest
+    container:
+      image: epitechcontent/epitest-docker:latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build only core
+        timeout-minutes: 2
+        run: make core -j`nproc`
+
+      - name: Checking if file exist
+        run: test -f ${{ env.CORE_BINARY }}
+
+  build_games:
+    name: Build Games
+    if: ${{ github.repository_owner == 'hugoschool' }}
+    runs-on: ubuntu-latest
+    container:
+      image: epitechcontent/epitest-docker:latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build only games
+        timeout-minutes: 2
+        run: make games -j`nproc`
+
+      - name: Checking if files exist
+        run: |
+          for file in ${{ env.GAME_BINARIES }}; do
+            test -f $file
+          done
+
+  build_graphicals:
+    name: Build Graphicals
+    if: ${{ github.repository_owner == 'hugoschool' }}
+    runs-on: ubuntu-latest
+    container:
+      image: epitechcontent/epitest-docker:latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build only graphicals
+        timeout-minutes: 2
+        run: make graphicals -j`nproc`
+
+      - name: Checking if files exist
+        run: |
+          for file in ${{ env.GRAPHICAL_BINARIES }}; do
+            test -f $file
+          done
