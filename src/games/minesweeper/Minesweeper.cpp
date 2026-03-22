@@ -65,26 +65,33 @@ void arcade::MinesweeperGame::resetUntilNoBomb(const std::pair<std::size_t, std:
     }
 }
 
+void arcade::MinesweeperGame::getBoundedXY(struct BoundedXY &bound, const std::pair<std::size_t, std::size_t> position)
+{
+    bound.xStart = position.first;
+    bound.xEnd = position.first;
+
+    bound.yStart = position.second;
+    bound.yEnd = position.second;
+
+    // TODO: this definitely can be simplified with ternaries
+    if (bound.xStart > 0)
+        bound.xStart = bound.xStart - 1;
+    if (bound.xEnd < _container._dimension.first - 1)
+        bound.xEnd = bound.xEnd + 1;
+
+    if (bound.yStart > 0)
+        bound.yStart = bound.yStart - 1;
+    if (bound.yEnd < _container._dimension.second - 1)
+        bound.yEnd = bound.yEnd + 1;
+}
+
 void arcade::MinesweeperGame::updateNeighborsTile(const std::pair<std::size_t, std::size_t> position)
 {
-    std::size_t xStart = position.first;
-    std::size_t xEnd = position.first;
+    struct BoundedXY bound;
+    getBoundedXY(bound, position);
 
-    std::size_t yStart = position.second;
-    std::size_t yEnd = position.second;
-
-    if (xStart > 0)
-        xStart = xStart - 1;
-    if (xEnd < _container._dimension.first - 1)
-        xEnd = xEnd + 1;
-
-    if (yStart > 0)
-        yStart = yStart - 1;
-    if (yEnd < _container._dimension.second - 1)
-        yEnd = yEnd + 1;
-
-    for (std::size_t y = yStart; y <= yEnd; y++) {
-        for (std::size_t x = xStart; x <= xEnd; x++) {
+    for (std::size_t y = bound.yStart; y <= bound.yEnd; y++) {
+        for (std::size_t x = bound.xStart; x <= bound.xEnd; x++) {
             try {
                 TileInfo &info = _tileInfo.at({x, y});
                 info.neighborAmount++;
@@ -181,15 +188,15 @@ void arcade::MinesweeperGame::revealAllZeroesOnTile(const std::pair<std::size_t,
 
         revealTile(position);
 
-        if (position.first > 0)
-            revealAllZeroesOnTile({position.first - 1, position.second});
-        if (position.first < _container._dimension.first - 1)
-            revealAllZeroesOnTile({position.first + 1, position.second});
+        struct BoundedXY bound;
+        getBoundedXY(bound, position);
 
-        if (position.second > 0)
-            revealAllZeroesOnTile({position.first, position.second - 1});
-        if (position.second < _container._dimension.first - 1)
-            revealAllZeroesOnTile({position.first, position.second + 1});
+        for (std::size_t y = bound.yStart; y <= bound.yEnd; y++) {
+            for (std::size_t x = bound.xStart; x <= bound.xEnd; x++) {
+                revealAllZeroesOnTile({x, y});
+                revealTile({x, y});
+            }
+        }
     } catch (const std::exception &e) {
         std::cerr << "Unexpected error: " << e.what() << std::endl;
     }

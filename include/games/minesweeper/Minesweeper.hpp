@@ -18,6 +18,17 @@ namespace arcade {
             std::size_t _bombAmount;
             bool _firstClick;
 
+            struct BoundedXY {
+                std::size_t xStart;
+                std::size_t xEnd;
+                std::size_t yStart;
+                std::size_t yEnd;
+            };
+
+            // This function modifies the given bound
+            // This is due to the fact that I cannot return a struct in C++
+            void getBoundedXY(struct BoundedXY &bound, const std::pair<std::size_t, std::size_t> position);
+
             struct TileInfo {
                 bool isBomb;
                 bool isRevealed;
