@@ -81,7 +81,7 @@ std::pair<std::size_t, std::size_t> arcade::SDL2Display::findClosestTile(int x, 
     std::pair<std::size_t, std::size_t> closestCoordinates;
     bool firstPass = true;
 
-    for (auto coordinates : _currentDimensions.coordinates) {
+    for (std::pair<std::size_t, std::size_t> &coordinates : _currentDimensions.coordinates) {
         if (firstPass) {
             closestCoordinates = coordinates;
             firstPass = false;
@@ -177,7 +177,7 @@ SDL_Texture *arcade::SDL2Display::createTexture(std::string &textureName)
 {
     try {
         return _textureMap.at(textureName);
-    } catch (const std::out_of_range &e) {
+    } catch (const std::out_of_range &) {
         SDL_Surface *surface = SDL_LoadBMP(textureName.c_str());
 
         if (surface == nullptr) {
