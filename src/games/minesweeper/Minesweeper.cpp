@@ -58,11 +58,15 @@ void arcade::MinesweeperGame::reset()
     createBombs();
 }
 
-void arcade::MinesweeperGame::resetUntilNoBomb(const std::pair<std::size_t, std::size_t> position)
+void arcade::MinesweeperGame::resetUntilZeroNeighbors(const std::pair<std::size_t, std::size_t> position)
 {
-    while (isTileCoordinatesBomb(position)) {
-        reset();
-    }
+    try {
+        TileInfo &info = _tileInfo.at(position);
+        while (info.neighborAmount != 0) {
+            reset();
+            info = _tileInfo.at(position);
+        }
+    } catch (const std::out_of_range &) {}
 }
 
 void arcade::MinesweeperGame::getBoundedXY(struct BoundedXY &bound, const std::pair<std::size_t, std::size_t> position)
@@ -145,16 +149,6 @@ void arcade::MinesweeperGame::createBombs()
     }
 }
 
-bool arcade::MinesweeperGame::isTileCoordinatesBomb(const std::pair<std::size_t, std::size_t> position) const
-{
-    try {
-        return _tileInfo.at(position).isBomb;
-    } catch (const std::out_of_range &) {
-        std::cerr << "Unexpected error: impossible to get bomb of tile " << position.first << ", " << position.second << std::endl;
-        return false;
-    }
-}
-
 void arcade::MinesweeperGame::revealTile(const std::pair<std::size_t, std::size_t> &position)
 {
     try {
@@ -221,11 +215,10 @@ void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &ev
         case cacarcade::EventType::TileClicked: {
             std::pair<std::size_t, std::size_t> position = event->getTilePosition();
 
-            if (_firstClick == true && isTileCoordinatesBomb(position) == true)
-                resetUntilNoBomb(position);
-
-            if (_firstClick == true)
+            if (_firstClick == true) {
+                resetUntilZeroNeighbors(position);
                 _firstClick = false;
+            }
 
             revealAllZeroesOnTile(position);
             revealTile(position);

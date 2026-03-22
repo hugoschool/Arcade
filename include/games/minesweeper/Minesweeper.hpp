@@ -38,10 +38,9 @@ namespace arcade {
             std::map<std::pair<std::size_t, std::size_t>, TileInfo> _tileInfo;
 
             void reset();
-            void resetUntilNoBomb(const std::pair<std::size_t, std::size_t> position);
+            void resetUntilZeroNeighbors(const std::pair<std::size_t, std::size_t> position);
             void createBombs();
 
-            bool isTileCoordinatesBomb(const std::pair<std::size_t, std::size_t> position) const;
             void updateNeighborsTile(const std::pair<std::size_t, std::size_t> position);
 
             cacarcade::Tile &getTileAtPosition(const std::pair<std::size_t, std::size_t> &position);
