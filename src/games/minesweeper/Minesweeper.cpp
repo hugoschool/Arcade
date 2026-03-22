@@ -11,7 +11,7 @@
 #include <utility>
 
 arcade::MinesweeperGame::MinesweeperGame() : AGameModule(), _bombAmount(10),
-    _isTileBomb(), _neighborsMap()
+    _firstClick(true), _tileBombs(), _neighborsMap()
 {
     size_t width = 9;
     size_t height = 9;
@@ -40,6 +40,21 @@ arcade::MinesweeperGame::MinesweeperGame() : AGameModule(), _bombAmount(10),
 
 arcade::MinesweeperGame::~MinesweeperGame()
 {
+}
+
+void arcade::MinesweeperGame::reset()
+{
+    for (auto &[_, amount] : _neighborsMap) {
+        amount = 0;
+    }
+    createBombs();
+}
+
+void arcade::MinesweeperGame::resetUntilNoBomb(const std::pair<std::size_t, std::size_t> position)
+{
+    while (isTileCoordinatesBomb(position)) {
+        reset();
+    }
 }
 
 void arcade::MinesweeperGame::updateNeighborsTile(const std::pair<std::size_t, std::size_t> position)
@@ -79,7 +94,7 @@ void arcade::MinesweeperGame::updateNeighborsTile(const std::pair<std::size_t, s
 
 void arcade::MinesweeperGame::createBombs()
 {
-    _isTileBomb.clear();
+    _tileBombs.clear();
 
     std::random_device device;
     std::mt19937 rng(device());
@@ -95,14 +110,24 @@ void arcade::MinesweeperGame::createBombs()
         const std::size_t randomHeight = height(rng);
 
         try {
-            _isTileBomb.at({randomWidth, randomHeight});
+            _tileBombs.at({randomWidth, randomHeight});
             bombAmount++;
             continue;
         } catch (const std::out_of_range &e) {
-            _isTileBomb.insert({{randomWidth, randomHeight}, true});
+            _tileBombs.insert({{randomWidth, randomHeight}, true});
         };
 
         updateNeighborsTile({randomWidth, randomHeight});
+    }
+}
+
+bool arcade::MinesweeperGame::isTileCoordinatesBomb(const std::pair<std::size_t, std::size_t> position) const
+{
+    try {
+        _tileBombs.at(position);
+        return true;
+    } catch (const std::out_of_range &e) {
+        return false;
     }
 }
 
@@ -112,11 +137,17 @@ void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &ev
         case cacarcade::EventType::TileClicked: {
             std::pair<std::size_t, std::size_t> position = event->getTilePosition();
 
+            if (_firstClick == true && isTileCoordinatesBomb(position) == true)
+                resetUntilNoBomb(position);
+
+            if (_firstClick == true)
+                _firstClick = false;
+
             // TODO: this is very bad detection but I don't want to think about maths rn
             for (cacarcade::Tile &tile : _container._tiles) {
                 if (tile.x == position.first && tile.y == position.second) {
                     try {
-                        _isTileBomb.at({tile.x, tile.y});
+                        _tileBombs.at({tile.x, tile.y});
                         tile.text = 'B';
                         tile.backgroundColor = cacarcade::Color::Red;
                     } catch (const std::out_of_range &e) {

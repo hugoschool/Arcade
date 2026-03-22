@@ -16,12 +16,17 @@ namespace arcade {
 
         private:
             std::size_t _bombAmount;
+            bool _firstClick;
 
-            std::map<std::pair<std::size_t, std::size_t>, bool> _isTileBomb;
+            // TODO: struct TileInfo;
+            std::map<std::pair<std::size_t, std::size_t>, bool> _tileBombs;
             std::map<std::pair<std::size_t, std::size_t>, std::size_t> _neighborsMap;
 
+            void reset();
+            void resetUntilNoBomb(const std::pair<std::size_t, std::size_t> position);
             void createBombs();
 
+            bool isTileCoordinatesBomb(const std::pair<std::size_t, std::size_t> position) const;
             void updateNeighborsTile(const std::pair<std::size_t, std::size_t> position);
     };
 }
