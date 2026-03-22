@@ -54,7 +54,7 @@ void arcade::SDL2Display::close()
 
 void arcade::SDL2Display::clear()
 {
-    setRendererColor(cacarcade::Color::White);
+    setRendererDrawColor(cacarcade::Color::White);
     SDL_RenderClear(_renderer);
 }
 
@@ -103,12 +103,19 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SDL2Display::pollEvent
     return std::nullopt;
 }
 
-void arcade::SDL2Display::setRendererColor(cacarcade::Color color)
+const SDL_Color arcade::SDL2Display::getRendererColor(cacarcade::Color color)
 {
     try {
-        const RendererColor c = _rendererColorMap.at(color);
-        SDL_SetRenderDrawColor(_renderer, c.r, c.g, c.b, c.a);
-    } catch (const std::out_of_range &) {};
+        return _rendererColorMap.at(color);
+    } catch (const std::out_of_range &) {
+        return {0xFF, 0xFF, 0xFF, 0xFF};
+    };
+}
+
+void arcade::SDL2Display::setRendererDrawColor(cacarcade::Color color)
+{
+    const SDL_Color c = getRendererColor(color);
+    SDL_SetRenderDrawColor(_renderer, c.r, c.g, c.b, c.a);
 }
 
 void arcade::SDL2Display::setTileDimensions(std::pair<std::size_t, std::size_t> &pair)
@@ -144,9 +151,9 @@ void arcade::SDL2Display::displayTiles(cacarcade::TileContainer container)
             .h = static_cast<int>(_tileSize)
         };
 
-        setRendererColor(tile.backgroundColor);
+        setRendererDrawColor(tile.backgroundColor);
         SDL_RenderFillRect(_renderer, &tileRect);
-        setRendererColor(cacarcade::Color::Red);
+        setRendererDrawColor(cacarcade::Color::Red);
         SDL_RenderDrawRect(_renderer, &tileRect);
     }
     SDL_RenderPresent(_renderer);

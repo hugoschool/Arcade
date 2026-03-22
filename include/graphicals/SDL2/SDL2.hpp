@@ -38,14 +38,7 @@ namespace arcade {
             CurrentTileDimensions _currentDimensions;
             void setTileDimensions(std::pair<std::size_t, std::size_t> &);
 
-            struct RendererColor {
-                const Uint8 r;
-                const Uint8 g;
-                const Uint8 b;
-                const Uint8 a;
-            };
-
-            const std::map<const cacarcade::Color, const RendererColor> _rendererColorMap = {
+            const std::map<const cacarcade::Color, const SDL_Color> _rendererColorMap = {
                 {cacarcade::Color::Black, {0x00, 0x00, 0x00, 0xFF}},
                 {cacarcade::Color::White, {0xFF, 0xFF, 0xFF, 0xFF}},
                 {cacarcade::Color::Blue, {0x00, 0x00, 0xFF, 0xFF}},
@@ -54,7 +47,8 @@ namespace arcade {
                 {cacarcade::Color::Yellow, {0xFF, 0xFF, 0x00, 0xFF}},
             };
 
-            void setRendererColor(cacarcade::Color color);
+            const SDL_Color getRendererColor(cacarcade::Color color);
+            void setRendererDrawColor(cacarcade::Color color);
 
             std::pair<std::size_t, std::size_t> findClosestTile(int x, int y);
     };
