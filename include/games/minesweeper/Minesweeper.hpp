@@ -18,9 +18,12 @@ namespace arcade {
             std::size_t _bombAmount;
             bool _firstClick;
 
-            // TODO: struct TileInfo;
-            std::map<std::pair<std::size_t, std::size_t>, bool> _tileBombs;
-            std::map<std::pair<std::size_t, std::size_t>, std::size_t> _neighborsMap;
+            struct TileInfo {
+                bool isBomb;
+                std::size_t neighborAmount;
+            };
+
+            std::map<std::pair<std::size_t, std::size_t>, TileInfo> _tileInfo;
 
             void reset();
             void resetUntilNoBomb(const std::pair<std::size_t, std::size_t> position);

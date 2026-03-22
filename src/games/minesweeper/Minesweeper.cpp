@@ -11,7 +11,7 @@
 #include <utility>
 
 arcade::MinesweeperGame::MinesweeperGame() : AGameModule(), _bombAmount(10),
-    _firstClick(true), _tileBombs(), _neighborsMap()
+    _firstClick(true), _tileInfo()
 {
     size_t width = 9;
     size_t height = 9;
@@ -31,7 +31,12 @@ arcade::MinesweeperGame::MinesweeperGame() : AGameModule(), _bombAmount(10),
             };
 
             _container._tiles.emplace_back(tile);
-            _neighborsMap.insert({{x, y}, 0});
+
+            TileInfo info = {
+                .isBomb = false,
+                .neighborAmount = 0,
+            };
+            _tileInfo.insert({{x, y}, info});
         }
     }
 
@@ -44,8 +49,8 @@ arcade::MinesweeperGame::~MinesweeperGame()
 
 void arcade::MinesweeperGame::reset()
 {
-    for (auto &[_, amount] : _neighborsMap) {
-        amount = 0;
+    for (auto &[_, info] : _tileInfo) {
+        info.neighborAmount = 0;
     }
     createBombs();
 }
@@ -78,9 +83,9 @@ void arcade::MinesweeperGame::updateNeighborsTile(const std::pair<std::size_t, s
     for (std::size_t y = yStart; y <= yEnd; y++) {
         for (std::size_t x = xStart; x <= xEnd; x++) {
             try {
-                std::size_t &amount = _neighborsMap.at({x, y});
-                amount++;
-            } catch (const std::out_of_range &e) {
+                TileInfo &info = _tileInfo.at({x, y});
+                info.neighborAmount++;
+            } catch (const std::out_of_range &) {
                 std::cerr << "Unexpected error: impossible to update neighbors of tile " << x << ", " << y << std::endl;
             }
         }
@@ -88,13 +93,15 @@ void arcade::MinesweeperGame::updateNeighborsTile(const std::pair<std::size_t, s
 
     // TODO: delete this later
     for (cacarcade::Tile &tile : _container._tiles) {
-        tile.text = _neighborsMap[{tile.x, tile.y}] + '0';
+        tile.text = _tileInfo[{tile.x, tile.y}].neighborAmount + '0';
     }
 }
 
 void arcade::MinesweeperGame::createBombs()
 {
-    _tileBombs.clear();
+    for (auto &[_, info] : _tileInfo) {
+        info.isBomb = false;
+    }
 
     std::random_device device;
     std::mt19937 rng(device());
@@ -110,11 +117,15 @@ void arcade::MinesweeperGame::createBombs()
         const std::size_t randomHeight = height(rng);
 
         try {
-            _tileBombs.at({randomWidth, randomHeight});
-            bombAmount++;
-            continue;
-        } catch (const std::out_of_range &e) {
-            _tileBombs.insert({{randomWidth, randomHeight}, true});
+            TileInfo &info = _tileInfo.at({randomWidth, randomHeight});
+            if (!info.isBomb) {
+                info.isBomb = true;
+            } else {
+                bombAmount++;
+                continue;
+            }
+        } catch (const std::out_of_range &) {
+            std::cerr << "Unexpected error: impossible to get bomb of tile " << randomWidth << ", " << randomHeight << std::endl;
         };
 
         updateNeighborsTile({randomWidth, randomHeight});
@@ -124,9 +135,9 @@ void arcade::MinesweeperGame::createBombs()
 bool arcade::MinesweeperGame::isTileCoordinatesBomb(const std::pair<std::size_t, std::size_t> position) const
 {
     try {
-        _tileBombs.at(position);
-        return true;
-    } catch (const std::out_of_range &e) {
+        return _tileInfo.at(position).isBomb;
+    } catch (const std::out_of_range &) {
+        std::cerr << "Unexpected error: impossible to get bomb of tile " << position.first << ", " << position.second << std::endl;
         return false;
     }
 }
@@ -147,12 +158,13 @@ void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &ev
             for (cacarcade::Tile &tile : _container._tiles) {
                 if (tile.x == position.first && tile.y == position.second) {
                     try {
-                        _tileBombs.at({tile.x, tile.y});
-                        tile.text = 'B';
-                        tile.backgroundColor = cacarcade::Color::Red;
-                    } catch (const std::out_of_range &e) {
-                        tile.backgroundColor = cacarcade::Color::Blue;
-                    }
+                        if (_tileInfo.at({tile.x, tile.y}).isBomb) {
+                            tile.text = 'B';
+                            tile.backgroundColor = cacarcade::Color::Red;
+                        } else {
+                            tile.backgroundColor = cacarcade::Color::Blue;
+                        }
+                    } catch (const std::out_of_range &) {}
                 }
             }
             break;
