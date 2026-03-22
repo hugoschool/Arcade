@@ -76,6 +76,7 @@ void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &ev
                 if (tile.x == position.first && tile.y == position.second) {
                     try {
                         _isTileBomb.at({tile.x, tile.y});
+                        tile.text = 'B';
                         tile.backgroundColor = cacarcade::Color::Red;
                     } catch (const std::out_of_range &e) {
                         tile.backgroundColor = cacarcade::Color::Blue;

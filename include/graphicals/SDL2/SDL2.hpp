@@ -3,6 +3,8 @@
 #include "cacarcade/Color.hpp"
 #include "cacarcade/IDisplayModule.hpp"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_pixels.h>
+#include <SDL2/SDL_ttf.h>
 #include <cstddef>
 #include <map>
 #include <vector>
@@ -24,8 +26,12 @@ namespace arcade {
             SDL_Window *_window;
             SDL_Renderer *_renderer;
 
+            TTF_Font *_font;
+
             std::size_t _screenWidth;
             std::size_t _screenHeight;
+
+            std::size_t _fontSize;
 
             // A tile is a square, so no need to precise its width and height
             const size_t _tileSize;
@@ -51,5 +57,7 @@ namespace arcade {
             void setRendererDrawColor(cacarcade::Color color);
 
             std::pair<std::size_t, std::size_t> findClosestTile(int x, int y);
+
+            void displayTextOnTile(const char c, SDL_Rect &tileRect);
     };
 }

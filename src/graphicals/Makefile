@@ -8,7 +8,7 @@ include $(BASE_DIR)/common.mk
 
 all:	$(SDL2_BIN)
 
-$(SDL2_BIN):	LDLIBS	+=	-lSDL2
+$(SDL2_BIN):	LDLIBS	+=	-lSDL2 -lSDL2_ttf
 $(SDL2_BIN):	$(SDL2_OBJ)
 
 clean:

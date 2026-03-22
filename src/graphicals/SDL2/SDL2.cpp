@@ -8,7 +8,8 @@
 #include <vector>
 
 arcade::SDL2Display::SDL2Display() : _window(nullptr), _renderer(nullptr),
-    _screenWidth(1000), _screenHeight(500), _tileSize(50), _currentDimensions()
+    _screenWidth(1000), _screenHeight(500), _fontSize(20),
+    _tileSize(50), _currentDimensions()
 {
 }
 
@@ -26,6 +27,9 @@ void arcade::SDL2Display::open()
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
         throw arcade::Exception(std::string("Impossible to initialize SDL: ") + SDL_GetError());
 
+    if (TTF_Init() < 0)
+        throw arcade::Exception(std::string("Impossible to initialize SDL Text (TTF): ") + TTF_GetError());
+
     _window = SDL_CreateWindow(
         "Arcade",
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -40,6 +44,12 @@ void arcade::SDL2Display::open()
 
     if (_renderer == nullptr)
         throw arcade::Exception(std::string("Impossible to create renderer: ") + SDL_GetError());
+
+    // TODO: need to find a way
+    _font = TTF_OpenFont("/usr/share/fonts/gnu-free/FreeSans.otf", _fontSize);
+
+    if (_font == nullptr)
+        throw arcade::Exception(std::string("Impossible to open font (TTF): ") + TTF_GetError());
 }
 
 void arcade::SDL2Display::close()
@@ -49,6 +59,7 @@ void arcade::SDL2Display::close()
 
     SDL_DestroyRenderer(_renderer);
     SDL_DestroyWindow(_window);
+    TTF_Quit();
     SDL_Quit();
 }
 
@@ -136,6 +147,25 @@ void arcade::SDL2Display::setTileDimensions(std::pair<std::size_t, std::size_t> 
     }
 }
 
+void arcade::SDL2Display::displayTextOnTile(const char c, SDL_Rect &tileRect)
+{
+    const char text[2] = {c, '\0'};
+    SDL_Surface *surface = TTF_RenderText_Solid(_font, text, getRendererColor(cacarcade::Color::White));
+
+    if (surface == nullptr)
+        return;
+
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(_renderer, surface);
+
+    if (texture == nullptr)
+        return;
+
+    SDL_RenderCopy(_renderer, texture, NULL, &tileRect);
+
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(texture);
+}
+
 void arcade::SDL2Display::displayTiles(cacarcade::TileContainer container)
 {
     setTileDimensions(container._dimension);
@@ -155,6 +185,9 @@ void arcade::SDL2Display::displayTiles(cacarcade::TileContainer container)
         SDL_RenderFillRect(_renderer, &tileRect);
         setRendererDrawColor(cacarcade::Color::Red);
         SDL_RenderDrawRect(_renderer, &tileRect);
+
+        if (tile.text != '\0')
+            displayTextOnTile(tile.text, tileRect);
     }
     SDL_RenderPresent(_renderer);
 }
