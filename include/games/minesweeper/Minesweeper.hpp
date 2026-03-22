@@ -20,6 +20,7 @@ namespace arcade {
 
             struct TileInfo {
                 bool isBomb;
+                bool isRevealed;
                 std::size_t neighborAmount;
             };
 
@@ -31,5 +32,9 @@ namespace arcade {
 
             bool isTileCoordinatesBomb(const std::pair<std::size_t, std::size_t> position) const;
             void updateNeighborsTile(const std::pair<std::size_t, std::size_t> position);
+
+            cacarcade::Tile &getTileAtPosition(const std::pair<std::size_t, std::size_t> &position);
+            void revealTile(const std::pair<std::size_t, std::size_t> &position);
+            void revealAllZeroesOnTile(const std::pair<std::size_t, std::size_t> &position);
     };
 }

@@ -3,7 +3,9 @@
 #include "cacarcade/EventType.hpp"
 #include "cacarcade/IEvent.hpp"
 #include "cacarcade/Tile.hpp"
+#include "common/Exception.hpp"
 #include "games/AGameModule.hpp"
+#include <exception>
 #include <iostream>
 #include <memory>
 #include <random>
@@ -34,6 +36,7 @@ arcade::MinesweeperGame::MinesweeperGame() : AGameModule(), _bombAmount(10),
 
             TileInfo info = {
                 .isBomb = false,
+                .isRevealed = false,
                 .neighborAmount = 0,
             };
             _tileInfo.insert({{x, y}, info});
@@ -93,7 +96,10 @@ void arcade::MinesweeperGame::updateNeighborsTile(const std::pair<std::size_t, s
 
     // TODO: delete this later
     for (cacarcade::Tile &tile : _container._tiles) {
-        tile.text = _tileInfo[{tile.x, tile.y}].neighborAmount + '0';
+        if (_tileInfo[{tile.x, tile.y}].neighborAmount != 0)
+            tile.text = _tileInfo[{tile.x, tile.y}].neighborAmount + '0';
+        else
+            tile.text = '\0';
     }
 }
 
@@ -142,6 +148,66 @@ bool arcade::MinesweeperGame::isTileCoordinatesBomb(const std::pair<std::size_t,
     }
 }
 
+void arcade::MinesweeperGame::revealTile(const std::pair<std::size_t, std::size_t> &position)
+{
+    try {
+        cacarcade::Tile &tile = getTileAtPosition(position);
+        TileInfo &info = _tileInfo.at(position);
+
+        if (info.isRevealed == true)
+            return;
+
+        if (info.isBomb) {
+            tile.text = 'B';
+            tile.backgroundColor = cacarcade::Color::Red;
+        } else {
+            if (info.neighborAmount != 0)
+                tile.text = info.neighborAmount + '0';
+            tile.backgroundColor = cacarcade::Color::Blue;
+        }
+        info.isRevealed = true;
+    } catch (const std::out_of_range &) {
+        std::cerr << "Unexpected error: impossible to get bomb of tile " << position.first << ", " << position.second << std::endl;
+    }
+}
+
+void arcade::MinesweeperGame::revealAllZeroesOnTile(const std::pair<std::size_t, std::size_t> &position)
+{
+    try {
+        TileInfo &info = _tileInfo.at(position);
+
+        if (info.neighborAmount != 0 || info.isRevealed == true)
+            return;
+
+        revealTile(position);
+
+        if (position.first > 0)
+            revealAllZeroesOnTile({position.first - 1, position.second});
+        if (position.first < _container._dimension.first - 1)
+            revealAllZeroesOnTile({position.first + 1, position.second});
+
+        if (position.second > 0)
+            revealAllZeroesOnTile({position.first, position.second - 1});
+        if (position.second < _container._dimension.first - 1)
+            revealAllZeroesOnTile({position.first, position.second + 1});
+    } catch (const std::exception &e) {
+        std::cerr << "Unexpected error: " << e.what() << std::endl;
+    }
+}
+
+// TODO: would be way better if this was an optional reference
+// but unfortunately C++ decided not to.
+cacarcade::Tile &arcade::MinesweeperGame::getTileAtPosition(const std::pair<std::size_t, std::size_t> &position)
+{
+    // TODO: do better than this pls
+    for (cacarcade::Tile &tile : _container._tiles) {
+        if (tile.x == position.first && tile.y == position.second) {
+            return tile;
+        }
+    }
+    throw arcade::Exception("Invalid position given");
+}
+
 void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &event)
 {
     switch (event->getType()) {
@@ -154,19 +220,8 @@ void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &ev
             if (_firstClick == true)
                 _firstClick = false;
 
-            // TODO: this is very bad detection but I don't want to think about maths rn
-            for (cacarcade::Tile &tile : _container._tiles) {
-                if (tile.x == position.first && tile.y == position.second) {
-                    try {
-                        if (_tileInfo.at({tile.x, tile.y}).isBomb) {
-                            tile.text = 'B';
-                            tile.backgroundColor = cacarcade::Color::Red;
-                        } else {
-                            tile.backgroundColor = cacarcade::Color::Blue;
-                        }
-                    } catch (const std::out_of_range &) {}
-                }
-            }
+            revealAllZeroesOnTile(position);
+            revealTile(position);
             break;
         }
         default:
