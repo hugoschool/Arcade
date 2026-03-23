@@ -88,6 +88,7 @@ std::pair<std::size_t, std::size_t> arcade::SFMLDisplay::findClosestTile(int x, 
     };
 }
 
+//TODO rework this part
 std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SFMLDisplay::pollEvent()
 {
     while (const std::optional evt = _window.pollEvent()) {
