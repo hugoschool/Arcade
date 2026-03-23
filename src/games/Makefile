@@ -1,4 +1,5 @@
-COMMON_SRC	:=	AGameModule.cpp
+COMMON_SRC	:=	AGameModule.cpp \
+				ScoreHandler.cpp
 
 MINESWEEPER_SRC	:=	$(COMMON_SRC) \
 					minesweeper/main.cpp \
