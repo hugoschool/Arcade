@@ -4,6 +4,7 @@
 #include "common/Exception.hpp"
 #include "events/QuitEvent.hpp"
 #include "events/TileClickedEvent.hpp"
+#include <SDL2/SDL_ttf.h>
 #include <cstddef>
 #include <memory>
 #include <iostream>
@@ -66,6 +67,8 @@ void arcade::SDL2Display::close()
 
     SDL_DestroyRenderer(_renderer);
     SDL_DestroyWindow(_window);
+    if (_font != nullptr)
+        TTF_CloseFont(_font);
     TTF_Quit();
     SDL_Quit();
 }
@@ -154,10 +157,10 @@ void arcade::SDL2Display::setTileDimensions(std::pair<std::size_t, std::size_t> 
     }
 }
 
-void arcade::SDL2Display::displayTextOnTile(const char c, SDL_Rect &tileRect)
+void arcade::SDL2Display::displayTextOnTile(const char c, cacarcade::Color color, SDL_Rect &tileRect)
 {
     const char text[2] = {c, '\0'};
-    SDL_Surface *surface = TTF_RenderText_Solid(_font, text, getRendererColor(cacarcade::Color::White));
+    SDL_Surface *surface = TTF_RenderText_Solid(_font, text, getRendererColor(color));
 
     if (surface == nullptr)
         return;
@@ -202,7 +205,7 @@ void arcade::SDL2Display::displayTileText(cacarcade::Tile &tile, SDL_Rect &tileR
     SDL_RenderDrawRect(_renderer, &tileRect);
 
     if (tile.text != '\0')
-        displayTextOnTile(tile.text, tileRect);
+        displayTextOnTile(tile.text, tile.textColor, tileRect);
 }
 
 void arcade::SDL2Display::displayTileTexture(cacarcade::Tile &tile, SDL_Rect &tileRect)

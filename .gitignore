@@ -5,3 +5,4 @@ arcade
 
 lib/
 *.json
+.scores

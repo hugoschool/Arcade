@@ -12,8 +12,10 @@
 #include <stdexcept>
 #include <utility>
 
-arcade::MinesweeperGame::MinesweeperGame() : AGameModule(), _bombAmount(10),
-    _firstClick(true), _tileInfo()
+arcade::MinesweeperGame::MinesweeperGame() : AGameModule("minesweeper"),
+    _revealedTileScore(100),
+    _bombAmount(10), _firstClick(true),
+    _tileInfo()
 {
     size_t width = 9;
     size_t height = 9;
@@ -29,7 +31,7 @@ arcade::MinesweeperGame::MinesweeperGame() : AGameModule(), _bombAmount(10),
                 .textureName = "",
                 .backgroundColor = cacarcade::Color::Black,
                 .text = '\0',
-                .textColor = cacarcade::Color::Blue,
+                .textColor = cacarcade::Color::White,
             };
 
             _container._tiles.emplace_back(tile);
@@ -52,6 +54,7 @@ arcade::MinesweeperGame::~MinesweeperGame()
 
 void arcade::MinesweeperGame::reset()
 {
+    AGameModule::reset();
     for (auto &[_, info] : _tileInfo) {
         info.neighborAmount = 0;
     }
@@ -104,14 +107,6 @@ void arcade::MinesweeperGame::updateNeighborsTile(const std::pair<std::size_t, s
             }
         }
     }
-
-    // TODO: delete this later
-    for (cacarcade::Tile &tile : _container._tiles) {
-        if (_tileInfo[{tile.x, tile.y}].neighborAmount != 0)
-            tile.text = _tileInfo[{tile.x, tile.y}].neighborAmount + '0';
-        else
-            tile.text = '\0';
-    }
 }
 
 void arcade::MinesweeperGame::createBombs()
@@ -149,6 +144,16 @@ void arcade::MinesweeperGame::createBombs()
     }
 }
 
+void arcade::MinesweeperGame::revealAll()
+{
+    for (cacarcade::Tile &tile : _container._tiles) {
+        revealTile({tile.x, tile.y});
+    }
+
+    // TODO: modify playerName
+    _scoreHandler.saveScore("Temporary");
+}
+
 void arcade::MinesweeperGame::revealTile(const std::pair<std::size_t, std::size_t> &position)
 {
     try {
@@ -158,15 +163,18 @@ void arcade::MinesweeperGame::revealTile(const std::pair<std::size_t, std::size_
         if (info.isRevealed == true)
             return;
 
+        info.isRevealed = true;
+
         if (info.isBomb) {
             tile.text = 'B';
             tile.backgroundColor = cacarcade::Color::Red;
+            revealAll();
         } else {
             if (info.neighborAmount != 0)
                 tile.text = info.neighborAmount + '0';
-            tile.backgroundColor = cacarcade::Color::White;
+            tile.backgroundColor = cacarcade::Color::Blue;
+            _scoreHandler.addScore(_revealedTileScore);
         }
-        info.isRevealed = true;
     } catch (const std::out_of_range &) {
         std::cerr << "Unexpected error: impossible to get bomb of tile " << position.first << ", " << position.second << std::endl;
     }
