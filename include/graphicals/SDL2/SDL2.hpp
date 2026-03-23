@@ -1,16 +1,15 @@
 #pragma once
 
 #include "cacarcade/Color.hpp"
-#include "cacarcade/IDisplayModule.hpp"
+#include "graphicals/ADisplayModule.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_ttf.h>
 #include <cstddef>
 #include <map>
-#include <vector>
 
 namespace arcade {
-    class SDL2Display : public cacarcade::IDisplayModule {
+    class SDL2Display : public arcade::ADisplayModule {
         public:
             SDL2Display();
             ~SDL2Display();
@@ -27,22 +26,6 @@ namespace arcade {
             SDL_Renderer *_renderer;
 
             TTF_Font *_font;
-
-            std::size_t _screenWidth;
-            std::size_t _screenHeight;
-
-            std::size_t _fontSize;
-
-            // A tile is a square, so no need to precise its width and height
-            const size_t _tileSize;
-
-            struct CurrentTileDimensions {
-                std::pair<std::size_t, std::size_t> dimensions;
-                std::vector<std::pair<std::size_t, std::size_t>> coordinates;
-            };
-
-            CurrentTileDimensions _currentDimensions;
-            void setTileDimensions(std::pair<std::size_t, std::size_t> &);
 
             const std::map<const cacarcade::Color, const SDL_Color> _rendererColorMap = {
                 {cacarcade::Color::Black, {0x00, 0x00, 0x00, 0xFF}},

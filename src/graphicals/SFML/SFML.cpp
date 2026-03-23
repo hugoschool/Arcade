@@ -4,6 +4,7 @@
 #include "common/Exception.hpp"
 #include "events/QuitEvent.hpp"
 #include "events/TileClickedEvent.hpp"
+#include "graphicals/ADisplayModule.hpp"
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Rect.hpp>
@@ -26,8 +27,7 @@
 #include <memory>
 #include <optional>
 
-arcade::SFMLDisplay::SFMLDisplay() : _window(), _videoMode(),
-    _screenWidth(1000), _screenHeight(500), _fontSize(20), _tileSize(50), _currentDimensions(),
+arcade::SFMLDisplay::SFMLDisplay() : arcade::ADisplayModule(), _window(), _videoMode(),
     _font(), _txt(_font), _texture()
 {
 }
@@ -102,23 +102,23 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SFMLDisplay::pollEvent
     return std::nullopt;
 }
 
-void arcade::SFMLDisplay::setTileDimensions(std::pair<std::size_t, std::size_t> &pair)
-{
-    if (_currentDimensions.dimensions != pair) {
-        _currentDimensions.dimensions = pair;
+// void arcade::SFMLDisplay::setTileDimensions(std::pair<std::size_t, std::size_t> &pair)
+// {
+//     if (_currentDimensions.dimensions != pair) {
+//         _currentDimensions.dimensions = pair;
 
-        const std::size_t dimensionsSize = _currentDimensions.dimensions.first * _currentDimensions.dimensions.second;
+//         const std::size_t dimensionsSize = _currentDimensions.dimensions.first * _currentDimensions.dimensions.second;
 
-        _currentDimensions.coordinates.clear();
-        _currentDimensions.coordinates.reserve(dimensionsSize);
+//         _currentDimensions.coordinates.clear();
+//         _currentDimensions.coordinates.reserve(dimensionsSize);
 
-        for (std::size_t y = 0; y < _currentDimensions.dimensions.second; y++) {
-            for (std::size_t x = 0; x < _currentDimensions.dimensions.first; x++) {
-                _currentDimensions.coordinates.push_back({x * _tileSize, y * _tileSize});
-            }
-        }
-    }
-}
+//         for (std::size_t y = 0; y < _currentDimensions.dimensions.second; y++) {
+//             for (std::size_t x = 0; x < _currentDimensions.dimensions.first; x++) {
+//                 _currentDimensions.coordinates.push_back({x * _tileSize, y * _tileSize});
+//             }
+//         }
+//     }
+// }
 
 void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleShape &tileRect)
 {
