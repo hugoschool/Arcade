@@ -101,9 +101,9 @@ void arcade::SFMLDisplay::displayTileTexture(cacarcade::Tile &tile, sf::Rectangl
 
 void arcade::SFMLDisplay::displayTiles(cacarcade::TileContainer container)
 {
-    setTileDimensions(container._dimension);
+    setTileDimensions(container.dimension);
 
-    for (cacarcade::Tile &tile : container._tiles) {
+    for (auto &[_, tile] : container.tiles) {
         int x = tile.x * _tileSize;
         int y = tile.y * _tileSize;
 

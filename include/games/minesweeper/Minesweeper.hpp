@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cacarcade/Utils.hpp"
 #include "games/AGameModule.hpp"
 #include <map>
 
@@ -31,7 +32,7 @@ namespace arcade {
 
             // This function modifies the given bound
             // This is due to the fact that I cannot return a struct in C++
-            void getBoundedXY(struct BoundedXY &bound, const std::pair<std::size_t, std::size_t> position);
+            void getBoundedXY(struct BoundedXY &bound, const cacarcade::tileCoordinates position);
 
             struct TileInfo {
                 bool isBomb;
@@ -39,17 +40,15 @@ namespace arcade {
                 std::size_t neighborAmount;
             };
 
-            std::map<std::pair<std::size_t, std::size_t>, TileInfo> _tileInfo;
+            std::map<const cacarcade::tileCoordinates, TileInfo> _tileInfo;
 
-            void resetUntilZeroNeighbors(const std::pair<std::size_t, std::size_t> position);
+            void resetUntilZeroNeighbors(const cacarcade::tileCoordinates position);
             void createBombs();
 
-            void updateNeighborsTile(const std::pair<std::size_t, std::size_t> position);
-
-            cacarcade::Tile &getTileAtPosition(const std::pair<std::size_t, std::size_t> &position);
+            void updateNeighborsTile(const cacarcade::tileCoordinates position);
 
             void revealAllOnFail();
-            void revealTile(const std::pair<std::size_t, std::size_t> &position);
-            void revealAllZeroesOnTile(const std::pair<std::size_t, std::size_t> &position);
+            void revealTile(const cacarcade::tileCoordinates &position);
+            void revealAllZeroesOnTile(const cacarcade::tileCoordinates &position);
     };
 }
