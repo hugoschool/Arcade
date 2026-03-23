@@ -1,6 +1,8 @@
+#pragma once
+
 #include "cacarcade/IDisplayModule.hpp"
 #include <optional>
-#pragma once
+#include <vector>
 
 namespace arcade {
     class ADisplayModule : public cacarcade::IDisplayModule {
