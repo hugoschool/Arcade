@@ -103,7 +103,7 @@ void arcade::SFMLDisplay::displayTiles(cacarcade::TileContainer container)
 {
     setTileDimensions(container.dimension);
 
-    for (cacarcade::Tile &tile : container.tiles) {
+    for (auto &[_, tile] : container.tiles) {
         int x = tile.x * _tileSize;
         int y = tile.y * _tileSize;
 
