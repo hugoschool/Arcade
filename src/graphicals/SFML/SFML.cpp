@@ -1,6 +1,4 @@
-
 #include "graphicals/SFML.hpp"
-#include "cacarcade/Color.hpp"
 #include "cacarcade/Tile.hpp"
 #include "cacarcade/TileContainer.hpp"
 #include "common/Exception.hpp"
@@ -25,10 +23,8 @@
 #include <SFML/Window/VideoMode.hpp>
 #include <cstddef>
 #include <exception>
-#include <iostream>
 #include <memory>
 #include <optional>
-#include <ostream>
 
 arcade::SFMLDisplay::SFMLDisplay() : _window(), _videoMode(),
     _screenWidth(1000), _screenHeight(500), _fontSize(20), _tileSize(50), _currentDimensions(),
@@ -92,7 +88,6 @@ std::pair<std::size_t, std::size_t> arcade::SFMLDisplay::findClosestTile(int x, 
 
 std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SFMLDisplay::pollEvent()
 {
-
     while (const std::optional evt = _window.pollEvent()) {
         if (evt->is<sf::Event::Closed>()) {
             return std::make_unique<arcade::QuitEvent>();
