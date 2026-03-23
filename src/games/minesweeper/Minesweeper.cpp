@@ -20,8 +20,7 @@ arcade::MinesweeperGame::MinesweeperGame() : AGameModule("minesweeper"),
     size_t width = 9;
     size_t height = 9;
 
-    _container._dimension = std::make_pair(width, height);
-    _container._tiles.reserve(width * height);
+    _container.dimension = std::make_pair(width, height);
 
     for (size_t y = 0; y < height; y++) {
         for (size_t x = 0; x < width; x++) {
@@ -34,7 +33,7 @@ arcade::MinesweeperGame::MinesweeperGame() : AGameModule("minesweeper"),
                 .textColor = cacarcade::Color::White,
             };
 
-            _container._tiles.emplace_back(tile);
+            _container.tiles.insert({{x ,y}, tile});
 
             TileInfo info = {
                 .isBomb = false,
@@ -85,12 +84,12 @@ void arcade::MinesweeperGame::getBoundedXY(struct BoundedXY &bound, const std::p
     // TODO: this definitely can be simplified with ternaries
     if (bound.xStart > 0)
         bound.xStart = bound.xStart - 1;
-    if (bound.xEnd < _container._dimension.first - 1)
+    if (bound.xEnd < _container.dimension.first - 1)
         bound.xEnd = bound.xEnd + 1;
 
     if (bound.yStart > 0)
         bound.yStart = bound.yStart - 1;
-    if (bound.yEnd < _container._dimension.second - 1)
+    if (bound.yEnd < _container.dimension.second - 1)
         bound.yEnd = bound.yEnd + 1;
 }
 
@@ -121,8 +120,8 @@ void arcade::MinesweeperGame::createBombs()
     std::mt19937 rng(device());
 
     // - 1 to the dimensions as it is included in the range ([0, dimension])
-    std::uniform_int_distribution<std::mt19937::result_type> width(0, _container._dimension.first - 1);
-    std::uniform_int_distribution<std::mt19937::result_type> height(0, _container._dimension.second - 1);
+    std::uniform_int_distribution<std::mt19937::result_type> width(0, _container.dimension.first - 1);
+    std::uniform_int_distribution<std::mt19937::result_type> height(0, _container.dimension.second - 1);
 
     std::size_t bombAmount = _bombAmount;
 
@@ -150,7 +149,7 @@ void arcade::MinesweeperGame::revealAllOnFail()
 {
     _gameEnded = true;
 
-    for (cacarcade::Tile &tile : _container._tiles) {
+    for (auto &[_, tile] : _container.tiles) {
         revealTile({tile.x, tile.y});
     }
 
@@ -214,7 +213,7 @@ void arcade::MinesweeperGame::revealAllZeroesOnTile(const std::pair<std::size_t,
 cacarcade::Tile &arcade::MinesweeperGame::getTileAtPosition(const std::pair<std::size_t, std::size_t> &position)
 {
     // TODO: do better than this pls
-    for (cacarcade::Tile &tile : _container._tiles) {
+    for (auto &[_, tile] : _container.tiles) {
         if (tile.x == position.first && tile.y == position.second) {
             return tile;
         }
