@@ -5,7 +5,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_ttf.h>
-#include <cstddef>
 #include <map>
 
 namespace arcade {
@@ -38,8 +37,6 @@ namespace arcade {
 
             const SDL_Color getRendererColor(cacarcade::Color color);
             void setRendererDrawColor(cacarcade::Color color);
-
-            std::pair<std::size_t, std::size_t> findClosestTile(int x, int y);
 
             void displayTextOnTile(const char c, cacarcade::Color color, SDL_Rect &tileRect);
 

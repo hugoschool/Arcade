@@ -10,7 +10,6 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
-#include <cstddef>
 #include <map>
 
 namespace arcade {
@@ -44,7 +43,6 @@ namespace arcade {
                 {cacarcade::Color::Yellow, sf::Color::Yellow},
             };
 
-            std::pair<std::size_t, std::size_t> findClosestTile(int x, int y);
             void displayTileText(cacarcade::Tile &tile, sf::RectangleShape &tileRect);
             void displayTileTexture(cacarcade::Tile &tile, sf::RectangleShape &tileRect);
     };

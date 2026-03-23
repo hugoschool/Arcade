@@ -31,5 +31,7 @@ namespace arcade {
 
             CurrentTileDimensions _currentDimensions;
             void setTileDimensions(std::pair<std::size_t, std::size_t> &);
+
+            std::pair<std::size_t, std::size_t> findClosestTile(int x, int y);
         };
 }

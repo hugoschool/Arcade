@@ -45,3 +45,31 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::ADisplayModule::pollEv
 {
     return std::nullopt;
 }
+
+std::pair<std::size_t, std::size_t> arcade::ADisplayModule::findClosestTile(int x, int y)
+{
+    std::pair<std::size_t, std::size_t> closestCoordinates;
+    bool firstPass = true;
+
+    for (std::pair<std::size_t, std::size_t> &coordinates : _currentDimensions.coordinates) {
+        if (firstPass) {
+            closestCoordinates = coordinates;
+            firstPass = false;
+            continue;
+        }
+
+        const std::size_t xDistance = x - coordinates.first;
+        const std::size_t yDistance = y - coordinates.second;
+
+        if ((xDistance > 0 && xDistance < x - closestCoordinates.first) ||
+            (yDistance > 0 && yDistance < y - closestCoordinates.second)) {
+            closestCoordinates = coordinates;
+        }
+    }
+
+    // Divide by the rectangle size to find the actual X and Y of the tile
+    return {
+        closestCoordinates.first / _tileSize,
+        closestCoordinates.second / _tileSize,
+    };
+}
