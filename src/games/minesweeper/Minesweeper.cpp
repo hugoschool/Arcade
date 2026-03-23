@@ -13,8 +13,8 @@
 #include <utility>
 
 arcade::MinesweeperGame::MinesweeperGame() : AGameModule("minesweeper"),
-    _revealedTileScore(100),
-    _bombAmount(10), _firstClick(true),
+    _revealedTileScore(100), _bombAmount(10),
+    _firstClick(true), _gameEnded(false),
     _tileInfo()
 {
     size_t width = 9;
@@ -55,6 +55,8 @@ arcade::MinesweeperGame::~MinesweeperGame()
 void arcade::MinesweeperGame::reset()
 {
     AGameModule::reset();
+
+    _gameEnded = false;
     for (auto &[_, info] : _tileInfo) {
         info.neighborAmount = 0;
     }
@@ -144,8 +146,10 @@ void arcade::MinesweeperGame::createBombs()
     }
 }
 
-void arcade::MinesweeperGame::revealAll()
+void arcade::MinesweeperGame::revealAllOnFail()
 {
+    _gameEnded = true;
+
     for (cacarcade::Tile &tile : _container._tiles) {
         revealTile({tile.x, tile.y});
     }
@@ -168,12 +172,13 @@ void arcade::MinesweeperGame::revealTile(const std::pair<std::size_t, std::size_
         if (info.isBomb) {
             tile.text = 'B';
             tile.backgroundColor = cacarcade::Color::Red;
-            revealAll();
+            revealAllOnFail();
         } else {
             if (info.neighborAmount != 0)
                 tile.text = info.neighborAmount + '0';
             tile.backgroundColor = cacarcade::Color::Blue;
-            _scoreHandler.addScore(_revealedTileScore);
+            if (_gameEnded == false)
+                _scoreHandler.addScore(_revealedTileScore);
         }
     } catch (const std::out_of_range &) {
         std::cerr << "Unexpected error: impossible to get bomb of tile " << position.first << ", " << position.second << std::endl;

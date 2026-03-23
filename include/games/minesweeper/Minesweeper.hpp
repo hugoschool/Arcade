@@ -20,6 +20,7 @@ namespace arcade {
 
             std::size_t _bombAmount;
             bool _firstClick;
+            bool _gameEnded;
 
             struct BoundedXY {
                 std::size_t xStart;
@@ -47,7 +48,7 @@ namespace arcade {
 
             cacarcade::Tile &getTileAtPosition(const std::pair<std::size_t, std::size_t> &position);
 
-            void revealAll();
+            void revealAllOnFail();
             void revealTile(const std::pair<std::size_t, std::size_t> &position);
             void revealAllZeroesOnTile(const std::pair<std::size_t, std::size_t> &position);
     };
