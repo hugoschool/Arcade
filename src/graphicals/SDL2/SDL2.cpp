@@ -4,6 +4,7 @@
 #include "common/Exception.hpp"
 #include "events/QuitEvent.hpp"
 #include "events/TileClickedEvent.hpp"
+#include <SDL2/SDL_ttf.h>
 #include <cstddef>
 #include <memory>
 #include <iostream>
@@ -66,6 +67,8 @@ void arcade::SDL2Display::close()
 
     SDL_DestroyRenderer(_renderer);
     SDL_DestroyWindow(_window);
+    if (_font != nullptr)
+        TTF_CloseFont(_font);
     TTF_Quit();
     SDL_Quit();
 }
