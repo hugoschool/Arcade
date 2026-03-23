@@ -164,7 +164,7 @@ void arcade::MinesweeperGame::revealTile(const std::pair<std::size_t, std::size_
         } else {
             if (info.neighborAmount != 0)
                 tile.text = info.neighborAmount + '0';
-            tile.backgroundColor = cacarcade::Color::Blue;
+            tile.backgroundColor = cacarcade::Color::White;
         }
         info.isRevealed = true;
     } catch (const std::out_of_range &) {

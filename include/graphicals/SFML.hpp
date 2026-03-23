@@ -2,10 +2,12 @@
 
 #include "cacarcade/Color.hpp"
 #include "cacarcade/IDisplayModule.hpp"
-#include <SDL2/SDL_pixels.h>
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/Text.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 #include <cstddef>
@@ -26,7 +28,7 @@ namespace arcade {
 
         private:
             sf::RenderWindow _window;
-            sf::VideoMode _video_mode;
+            sf::VideoMode _videoMode;
 
             std::size_t _screenWidth;
             std::size_t _screenHeight;
@@ -42,6 +44,11 @@ namespace arcade {
 
             CurrentTileDimensions _currentDimensions;
             void setTileDimensions(std::pair<std::size_t, std::size_t> &);
+
+            sf::Font _font;
+            sf::Text _txt;
+
+            sf::Texture _texture;
 
             const std::map<const cacarcade::Color, const sf::Color> _rendererColorMap = {
                 {cacarcade::Color::Black, sf::Color::Black},

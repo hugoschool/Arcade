@@ -6,24 +6,33 @@
 #include "common/Exception.hpp"
 #include "events/QuitEvent.hpp"
 #include "events/TileClickedEvent.hpp"
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/System/String.hpp>
+#include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
+#include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/VideoMode.hpp>
 #include <cstddef>
 #include <exception>
+#include <iostream>
 #include <memory>
 #include <optional>
+#include <ostream>
 
-arcade::SFMLDisplay::SFMLDisplay() : _window(), _video_mode(),
-    _screenWidth(1000), _screenHeight(500), _fontSize(20), _tileSize(50), _currentDimensions()
+arcade::SFMLDisplay::SFMLDisplay() : _window(), _videoMode(),
+    _screenWidth(1000), _screenHeight(500), _fontSize(20), _tileSize(50), _currentDimensions(),
+    _font("/usr/share/fonts/gnu-free/FreeSans.otf"), _txt(_font), _texture()
 {
 }
 
@@ -33,9 +42,9 @@ arcade::SFMLDisplay::~SFMLDisplay()
 void arcade::SFMLDisplay::open()
 {
     try {
-        _video_mode = sf::VideoMode();
-        _video_mode.size = sf::Vector2u(_screenWidth, _screenHeight);
-        _window = sf::RenderWindow(_video_mode, "SFML");
+        _videoMode = sf::VideoMode();
+        _videoMode.size = sf::Vector2u(_screenWidth, _screenHeight);
+        _window = sf::RenderWindow(_videoMode, "SFML");
         _window.setFramerateLimit(60);
     } catch (std::exception &e) {
         throw arcade::Exception("Something went wrong with the creation of the window.");
@@ -49,7 +58,7 @@ void arcade::SFMLDisplay::close()
 
 void arcade::SFMLDisplay::clear()
 {
-    _window.clear();
+    _window.clear(sf::Color::White);
 }
 
 //TODO: Abstract
@@ -83,13 +92,14 @@ std::pair<std::size_t, std::size_t> arcade::SFMLDisplay::findClosestTile(int x, 
 
 std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SFMLDisplay::pollEvent()
 {
-    std::optional<sf::Event> evt = _window.pollEvent();
 
-    if (evt->getIf<sf::Event::Closed>()) {
-        return std::make_unique<arcade::QuitEvent>();
-    } else if (evt->getIf<sf::Event::MouseButtonPressed>() != nullptr) {
-        const sf::Event::MouseButtonPressed *tevt = evt->getIf<sf::Event::MouseButtonPressed>();
-        return std::make_unique<arcade::TileClickedEvent>(findClosestTile(tevt->position.x, tevt->position.y));
+    while (const std::optional evt = _window.pollEvent()) {
+        if (evt->is<sf::Event::Closed>()) {
+            return std::make_unique<arcade::QuitEvent>();
+        } else if (evt->is<sf::Event::MouseButtonPressed>()) {
+            const sf::Event::MouseButtonPressed *mouseEvent = evt->getIf<sf::Event::MouseButtonPressed>();
+            return std::make_unique<arcade::TileClickedEvent>(findClosestTile(mouseEvent->position.x, mouseEvent->position.y));
+        }
     }
     return std::nullopt;
 }
@@ -114,21 +124,25 @@ void arcade::SFMLDisplay::setTileDimensions(std::pair<std::size_t, std::size_t> 
 
 void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleShape &tileRect)
 {
-    sf::Font font("/usr/share/fonts/gnu-free/FreeSans.otf");
-    sf::Text txt(font);
-
-    txt.setString(tile.text);
-    txt.setPosition(tileRect.getPosition());
-    txt.setFillColor(_rendererColorMap.at(cacarcade::Color::Red));
-    txt.setCharacterSize(_fontSize);
-    _window.draw(txt);
+    if (tile.text != '\0')
+        _txt.setString(tile.text);
+    else
+        _txt.setString(" ");
+    _txt.setPosition(tileRect.getPosition());
+    _txt.setFillColor(_rendererColorMap.at(tile.textColor));
+    _txt.setCharacterSize(_fontSize);
+    tileRect.setFillColor(_rendererColorMap.at(tile.backgroundColor));
+    tileRect.setOutlineColor(_rendererColorMap.at(tile.textColor));
+    tileRect.setOutlineThickness(2);
+    _window.draw(tileRect);
+    _window.draw(_txt);
 }
 
 void arcade::SFMLDisplay::displayTileTexture(cacarcade::Tile &tile, sf::RectangleShape &tileRect)
 {
-    sf::Texture texture(tile.textureName);
-    texture.setSmooth(true);
-    tileRect.setTexture(&texture);
+    _texture = sf::Texture(tile.textureName);
+    _texture.setSmooth(true);
+    tileRect.setTexture(&_texture);
     _window.draw(tileRect);
 }
 
