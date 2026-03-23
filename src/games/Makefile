@@ -2,7 +2,7 @@ COMMON_SRC	:=	AGameModule.cpp \
 				ScoreHandler.cpp
 
 MINESWEEPER_SRC	:=	$(COMMON_SRC) \
-					minesweeper/main.cpp \
+					minesweeper/entrypoint.cpp \
 					minesweeper/Minesweeper.cpp
 
 MINESWEEPER_OBJ	:=	$(MINESWEEPER_SRC:.cpp=.o)
