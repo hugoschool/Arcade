@@ -1,7 +1,11 @@
-SDL2_SRC	:=	SDL2/entrypoint.cpp \
+COMMON_SRC	:=	ADisplayModule.cpp
+
+SDL2_SRC	:= 	$(COMMON_SRC) \
+				SDL2/entrypoint.cpp \
 				SDL2/SDL2.cpp
 
-SFML_SRC	:= 	SFML/entrypoint.cpp \
+SFML_SRC	:= 	$(COMMON_SRC) \
+				SFML/entrypoint.cpp \
 				SFML/SFML.cpp
 
 SDL2_OBJ	:=	$(SDL2_SRC:.cpp=.o)

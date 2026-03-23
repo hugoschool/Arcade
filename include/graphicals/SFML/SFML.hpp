@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cacarcade/Color.hpp"
-#include "cacarcade/IDisplayModule.hpp"
+#include "graphicals/ADisplayModule.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Font.hpp>
@@ -14,7 +14,7 @@
 #include <map>
 
 namespace arcade {
-    class SFMLDisplay : public cacarcade::IDisplayModule {
+    class SFMLDisplay : public arcade::ADisplayModule {
         public:
             SFMLDisplay();
             ~SFMLDisplay();
@@ -29,21 +29,6 @@ namespace arcade {
         private:
             sf::RenderWindow _window;
             sf::VideoMode _videoMode;
-
-            std::size_t _screenWidth;
-            std::size_t _screenHeight;
-
-            std::size_t _fontSize;
-
-            const size_t _tileSize;
-
-            struct CurrentTileDimensions {
-                std::pair<std::size_t, std::size_t> dimensions;
-                std::vector<std::pair<std::size_t, std::size_t>> coordinates;
-            };
-
-            CurrentTileDimensions _currentDimensions;
-            void setTileDimensions(std::pair<std::size_t, std::size_t> &);
 
             sf::Font _font;
             sf::Text _txt;
