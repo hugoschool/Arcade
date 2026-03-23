@@ -43,7 +43,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 
         run: |
-          git add -u include
+          git add include
 
           if ! git status | tail -1 | grep -q "nothing added to commit"; then
             git config user.name "github-actions[bot]"
