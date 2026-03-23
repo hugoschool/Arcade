@@ -149,6 +149,13 @@ void arcade::MinesweeperGame::createBombs()
     }
 }
 
+void arcade::MinesweeperGame::revealAll()
+{
+    for (cacarcade::Tile &tile : _container._tiles) {
+        revealTile({tile.x, tile.y});
+    }
+}
+
 void arcade::MinesweeperGame::revealTile(const std::pair<std::size_t, std::size_t> &position)
 {
     try {
@@ -158,15 +165,17 @@ void arcade::MinesweeperGame::revealTile(const std::pair<std::size_t, std::size_
         if (info.isRevealed == true)
             return;
 
+        info.isRevealed = true;
+
         if (info.isBomb) {
             tile.text = 'B';
             tile.backgroundColor = cacarcade::Color::Red;
+            revealAll();
         } else {
             if (info.neighborAmount != 0)
                 tile.text = info.neighborAmount + '0';
             tile.backgroundColor = cacarcade::Color::White;
         }
-        info.isRevealed = true;
     } catch (const std::out_of_range &) {
         std::cerr << "Unexpected error: impossible to get bomb of tile " << position.first << ", " << position.second << std::endl;
     }

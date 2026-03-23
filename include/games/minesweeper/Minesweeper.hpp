@@ -44,6 +44,8 @@ namespace arcade {
             void updateNeighborsTile(const std::pair<std::size_t, std::size_t> position);
 
             cacarcade::Tile &getTileAtPosition(const std::pair<std::size_t, std::size_t> &position);
+
+            void revealAll();
             void revealTile(const std::pair<std::size_t, std::size_t> &position);
             void revealAllZeroesOnTile(const std::pair<std::size_t, std::size_t> &position);
     };
