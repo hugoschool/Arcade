@@ -1,5 +1,6 @@
 #pragma once
 
+#include "EventKey.hpp"
 #include "EventType.hpp"
 #include <utility>
 
@@ -8,8 +9,8 @@ namespace cacarcade {
         public:
             virtual ~IEvent() = default;
 
-            virtual char getKey() = 0;
-            virtual void setKey(char c) = 0;
+            virtual EventKey getKey() = 0;
+            virtual void setKey(EventKey key) = 0;
 
             virtual EventType getType() = 0;
             virtual void setType(EventType type) = 0;
