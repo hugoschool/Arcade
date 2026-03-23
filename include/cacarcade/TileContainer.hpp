@@ -1,13 +1,14 @@
 #pragma once
 
 #include "Tile.hpp"
-#include <vector>
+#include <cstddef>
+#include <utility>
+#include <map>
 
 namespace cacarcade {
-    class TileContainer {
-        public:
-            std::vector<Tile> _tiles;
-            // First element is the width, second is the height
-            std::pair<std::size_t, std::size_t> _dimension;
+    struct TileContainer {
+        std::map<std::pair<std::size_t, std::size_t>, Tile> tiles;
+        // First element is the width, second is the height
+        std::pair<std::size_t, std::size_t> dimension;
     };
 }
