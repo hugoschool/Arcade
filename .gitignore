@@ -4,3 +4,4 @@ arcade
 *.so
 
 lib/
+*.json

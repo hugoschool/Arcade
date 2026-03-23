@@ -54,6 +54,15 @@ jobs:
       image: epitechcontent/epitest-docker:latest
 
     steps:
+      - name: Install SFML v3
+        run: |
+          cd /tmp
+          wget https://github.com/SFML/SFML/releases/download/3.0.2/SFML-3.0.2-Linux.GCC.tar.gz -O SFML.tar.gz
+          mkdir SFML
+          tar -xvf SFML.tar.gz -C SFML --strip-components=1
+          cp -r ./SFML/lib /usr
+          cp -r ./SFML/include /usr
+
       - uses: actions/checkout@v6
 
       - name: Build only graphicals
