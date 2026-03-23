@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cacarcade/EventKey.hpp"
 #include "cacarcade/EventType.hpp"
 #include "cacarcade/IEvent.hpp"
 #include <utility>
@@ -34,12 +35,12 @@ namespace arcade {
             {
             }
 
-            char getKey() override
+            cacarcade::EventKey getKey() override
             {
-                return 0;
+                return cacarcade::EventKey::A;
             }
 
-            void setKey(char) override
+            void setKey(cacarcade::EventKey) override
             {
             }
 
