@@ -61,7 +61,7 @@ void arcade::MinesweeperGame::reset()
     createBombs();
 }
 
-void arcade::MinesweeperGame::resetUntilZeroNeighbors(const std::pair<std::size_t, std::size_t> position)
+void arcade::MinesweeperGame::resetUntilZeroNeighbors(const cacarcade::tileCoordinates position)
 {
     try {
         TileInfo &info = _tileInfo.at(position);
@@ -72,7 +72,7 @@ void arcade::MinesweeperGame::resetUntilZeroNeighbors(const std::pair<std::size_
     } catch (const std::out_of_range &) {}
 }
 
-void arcade::MinesweeperGame::getBoundedXY(struct BoundedXY &bound, const std::pair<std::size_t, std::size_t> position)
+void arcade::MinesweeperGame::getBoundedXY(struct BoundedXY &bound, const cacarcade::tileCoordinates position)
 {
     bound.xStart = position.first;
     bound.xEnd = position.first;
@@ -92,7 +92,7 @@ void arcade::MinesweeperGame::getBoundedXY(struct BoundedXY &bound, const std::p
         bound.yEnd = bound.yEnd + 1;
 }
 
-void arcade::MinesweeperGame::updateNeighborsTile(const std::pair<std::size_t, std::size_t> position)
+void arcade::MinesweeperGame::updateNeighborsTile(const cacarcade::tileCoordinates position)
 {
     struct BoundedXY bound;
     getBoundedXY(bound, position);
@@ -156,7 +156,7 @@ void arcade::MinesweeperGame::revealAllOnFail()
     _scoreHandler.saveScore("Temporary");
 }
 
-void arcade::MinesweeperGame::revealTile(const std::pair<std::size_t, std::size_t> &position)
+void arcade::MinesweeperGame::revealTile(const cacarcade::tileCoordinates &position)
 {
     try {
         cacarcade::Tile &tile = _container.tiles.at(position);
@@ -183,7 +183,7 @@ void arcade::MinesweeperGame::revealTile(const std::pair<std::size_t, std::size_
     }
 }
 
-void arcade::MinesweeperGame::revealAllZeroesOnTile(const std::pair<std::size_t, std::size_t> &position)
+void arcade::MinesweeperGame::revealAllZeroesOnTile(const cacarcade::tileCoordinates &position)
 {
     try {
         TileInfo &info = _tileInfo.at(position);
