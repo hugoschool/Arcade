@@ -1,4 +1,4 @@
-#include "graphicals/SFML.hpp"
+#include "graphicals/SFML/SFML.hpp"
 #include "cacarcade/Tile.hpp"
 #include "cacarcade/TileContainer.hpp"
 #include "common/Exception.hpp"
