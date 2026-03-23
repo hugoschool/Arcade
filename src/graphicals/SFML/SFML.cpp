@@ -28,7 +28,7 @@
 
 arcade::SFMLDisplay::SFMLDisplay() : _window(), _videoMode(),
     _screenWidth(1000), _screenHeight(500), _fontSize(20), _tileSize(50), _currentDimensions(),
-    _font("/usr/share/fonts/gnu-free/FreeSans.otf"), _txt(_font), _texture()
+    _font(), _txt(_font), _texture()
 {
 }
 
@@ -42,6 +42,8 @@ void arcade::SFMLDisplay::open()
         _videoMode.size = sf::Vector2u(_screenWidth, _screenHeight);
         _window = sf::RenderWindow(_videoMode, "SFML");
         _window.setFramerateLimit(60);
+        _font = sf::Font("/usr/share/fonts/gnu-free/FreeSans.otf");
+        _txt = sf::Text(_font);
     } catch (std::exception &e) {
         throw arcade::Exception("Something went wrong with the creation of the window.");
     }
