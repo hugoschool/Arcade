@@ -13,8 +13,11 @@ namespace arcade {
 
         protected:
             void handleEvent(std::unique_ptr<cacarcade::IEvent> &event) override;
+            void reset() override;
 
         private:
+            const std::size_t _revealedTileScore;
+
             std::size_t _bombAmount;
             bool _firstClick;
 
@@ -37,7 +40,6 @@ namespace arcade {
 
             std::map<std::pair<std::size_t, std::size_t>, TileInfo> _tileInfo;
 
-            void reset();
             void resetUntilZeroNeighbors(const std::pair<std::size_t, std::size_t> position);
             void createBombs();
 
