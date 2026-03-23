@@ -37,9 +37,8 @@ void arcade::ADisplayModule::close()
 void arcade::ADisplayModule::clear()
 {}
 
-void arcade::ADisplayModule::displayTiles(cacarcade::TileContainer tiles)
+void arcade::ADisplayModule::displayTiles(cacarcade::TileContainer)
 {
-    static_cast<void>(tiles);
 }
 
 std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::ADisplayModule::pollEvent()
