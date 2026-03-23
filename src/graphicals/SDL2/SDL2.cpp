@@ -138,24 +138,6 @@ void arcade::SDL2Display::setRendererDrawColor(cacarcade::Color color)
     SDL_SetRenderDrawColor(_renderer, c.r, c.g, c.b, c.a);
 }
 
-// void arcade::SDL2Display::setTileDimensions(std::pair<std::size_t, std::size_t> &pair)
-// {
-//     if (_currentDimensions.dimensions != pair) {
-//         _currentDimensions.dimensions = pair;
-
-//         const std::size_t dimensionsSize = _currentDimensions.dimensions.first * _currentDimensions.dimensions.second;
-
-//         _currentDimensions.coordinates.clear();
-//         _currentDimensions.coordinates.reserve(dimensionsSize);
-
-//         for (std::size_t y = 0; y < _currentDimensions.dimensions.second; y++) {
-//             for (std::size_t x = 0; x < _currentDimensions.dimensions.first; x++) {
-//                 _currentDimensions.coordinates.push_back({x * _tileSize, y * _tileSize});
-//             }
-//         }
-//     }
-// }
-
 void arcade::SDL2Display::displayTextOnTile(const char c, cacarcade::Color color, SDL_Rect &tileRect)
 {
     const char text[2] = {c, '\0'};

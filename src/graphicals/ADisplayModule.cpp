@@ -1,4 +1,6 @@
 #include "graphicals/ADisplayModule.hpp"
+#include "cacarcade/TileContainer.hpp"
+#include <optional>
 
 arcade::ADisplayModule::ADisplayModule() : _screenWidth(1000), _screenHeight(500), _fontSize(20),
     _tileSize(50), _currentDimensions()
@@ -24,4 +26,23 @@ void arcade::ADisplayModule::setTileDimensions(std::pair<std::size_t, std::size_
             }
         }
     }
+}
+
+void arcade::ADisplayModule::open()
+{}
+
+void arcade::ADisplayModule::close()
+{}
+
+void arcade::ADisplayModule::clear()
+{}
+
+void arcade::ADisplayModule::displayTiles(cacarcade::TileContainer tiles)
+{
+    static_cast<void>(tiles);
+}
+
+std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::ADisplayModule::pollEvent()
+{
+    return std::nullopt;
 }

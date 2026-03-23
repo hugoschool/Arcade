@@ -9,12 +9,12 @@ namespace arcade {
             ADisplayModule();
             ~ADisplayModule();
 
-            virtual void open(){};
-            virtual void close(){};
-            virtual void clear(){};
+            virtual void open();
+            virtual void close();
+            virtual void clear();
 
-            virtual std::optional<std::unique_ptr<cacarcade::IEvent>> pollEvent(){return std::nullopt;};
-            virtual void displayTiles(cacarcade::TileContainer tiles){static_cast<void>(tiles);};
+            virtual std::optional<std::unique_ptr<cacarcade::IEvent>> pollEvent();
+            virtual void displayTiles(cacarcade::TileContainer tiles);
 
         protected:
             std::size_t _screenWidth;
