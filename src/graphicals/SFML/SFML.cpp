@@ -108,9 +108,12 @@ void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleSh
         _txt.setString(tile.text);
     else
         _txt.setString(" ");
-    _txt.setPosition(tileRect.getPosition());
+    sf::Vector2f pos = tileRect.getPosition();
+    pos.x += tileRect.getSize().x / 4;
+    pos.y -= tileRect.getSize().y / 20;
+    _txt.setPosition(pos);
     _txt.setFillColor(_rendererColorMap.at(tile.textColor));
-    _txt.setCharacterSize(_fontSize);
+    _txt.setCharacterSize(_tileSize - (tileRect.getSize().x / 5));
     tileRect.setFillColor(_rendererColorMap.at(tile.backgroundColor));
     tileRect.setOutlineColor(_rendererColorMap.at(tile.textColor));
     tileRect.setOutlineThickness(2);
