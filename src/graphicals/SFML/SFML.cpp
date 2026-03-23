@@ -7,10 +7,13 @@
 #include "events/QuitEvent.hpp"
 #include "events/TileClickedEvent.hpp"
 #include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/VideoMode.hpp>
@@ -18,6 +21,7 @@
 #include <exception>
 #include <memory>
 #include <optional>
+
 arcade::SFMLDisplay::SFMLDisplay() : _window(), _video_mode(),
     _screenWidth(1000), _screenHeight(500), _fontSize(20), _tileSize(50), _currentDimensions()
 {
@@ -118,6 +122,14 @@ void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleSh
     txt.setFillColor(_rendererColorMap.at(cacarcade::Color::Red));
     txt.setCharacterSize(_fontSize);
     _window.draw(txt);
+}
+
+void arcade::SFMLDisplay::displayTileTexture(cacarcade::Tile &tile, sf::RectangleShape &tileRect)
+{
+    sf::Texture texture(tile.textureName);
+    texture.setSmooth(true);
+    tileRect.setTexture(&texture);
+    _window.draw(tileRect);
 }
 
 void arcade::SFMLDisplay::displayTiles(cacarcade::TileContainer container)
