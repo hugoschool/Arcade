@@ -3,7 +3,6 @@
 #include "cacarcade/EventType.hpp"
 #include "cacarcade/IEvent.hpp"
 #include "cacarcade/Tile.hpp"
-#include "common/Exception.hpp"
 #include "games/AGameModule.hpp"
 #include <exception>
 #include <iostream>
@@ -160,7 +159,7 @@ void arcade::MinesweeperGame::revealAllOnFail()
 void arcade::MinesweeperGame::revealTile(const std::pair<std::size_t, std::size_t> &position)
 {
     try {
-        cacarcade::Tile &tile = getTileAtPosition(position);
+        cacarcade::Tile &tile = _container.tiles.at(position);
         TileInfo &info = _tileInfo.at(position);
 
         if (info.isRevealed == true)
@@ -206,19 +205,6 @@ void arcade::MinesweeperGame::revealAllZeroesOnTile(const std::pair<std::size_t,
     } catch (const std::exception &e) {
         std::cerr << "Unexpected error: " << e.what() << std::endl;
     }
-}
-
-// TODO: would be way better if this was an optional reference
-// but unfortunately C++ decided not to.
-cacarcade::Tile &arcade::MinesweeperGame::getTileAtPosition(const std::pair<std::size_t, std::size_t> &position)
-{
-    // TODO: do better than this pls
-    for (auto &[_, tile] : _container.tiles) {
-        if (tile.x == position.first && tile.y == position.second) {
-            return tile;
-        }
-    }
-    throw arcade::Exception("Invalid position given");
 }
 
 void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &event)
