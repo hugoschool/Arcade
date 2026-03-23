@@ -1,8 +1,8 @@
-SDL2_SRC	:=	SDL2/EntryPoint.cpp \
+SDL2_SRC	:=	SDL2/entrypoint.cpp \
 				SDL2/SDL2.cpp
 
-SFML_SRC	:= 	SFML/SFML.cpp \
-			   	SFML/EntryPoint.cpp
+SFML_SRC	:= 	SFML/entrypoint.cpp \
+				SFML/SFML.cpp
 
 SDL2_OBJ	:=	$(SDL2_SRC:.cpp=.o)
 SDL2_BIN	:=	$(LIB_PATH)/arcade_sdl2.so
