@@ -31,9 +31,6 @@ namespace arcade {
             sf::VideoMode _videoMode;
 
             sf::Font _font;
-            sf::Text _txt;
-
-            sf::Texture _texture;
 
             std::size_t _outlineThickness;
 

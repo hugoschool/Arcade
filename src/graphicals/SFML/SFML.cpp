@@ -30,8 +30,8 @@
 #include <memory>
 #include <optional>
 
-arcade::SFMLDisplay::SFMLDisplay() : arcade::ADisplayModule(), _window(), _videoMode(),
-    _font(), _txt(_font), _texture(), _outlineThickness(1)
+arcade::SFMLDisplay::SFMLDisplay() : arcade::ADisplayModule(),
+    _window(), _videoMode(), _font(), _outlineThickness(1)
 {
 }
 
@@ -46,7 +46,6 @@ void arcade::SFMLDisplay::open()
         _window = sf::RenderWindow(_videoMode, "SFML");
         _window.setFramerateLimit(60);
         _font = sf::Font("/usr/share/fonts/gnu-free/FreeSans.otf");
-        _txt = sf::Text(_font);
     } catch (std::exception &e) {
         throw arcade::Exception("Something went wrong with the creation of the window.");
     }
@@ -117,28 +116,33 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SFMLDisplay::pollEvent
 
 void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleShape &tileRect)
 {
-    if (tile.text != '\0')
-        _txt.setString(tile.text);
-    else
-        _txt.setString(" ");
-    sf::Vector2f pos = tileRect.getPosition();
-    pos.x += tileRect.getSize().x / 4;
-    pos.y -= tileRect.getSize().y / 20;
-    _txt.setPosition(pos);
-    _txt.setFillColor(_rendererColorMap.at(tile.textColor));
-    _txt.setCharacterSize(_tileSize - (tileRect.getSize().x / 5));
     tileRect.setFillColor(_rendererColorMap.at(tile.backgroundColor));
     tileRect.setOutlineColor(_rendererColorMap.at(tile.textColor));
-    tileRect.setOutlineThickness(_outlineThickness);
+    tileRect.setOutlineThickness(2);
+
     _window.draw(tileRect);
-    _window.draw(_txt);
+
+    if (tile.text != '\0') {
+        sf::Text text(_font, tile.text);
+
+        sf::Vector2f pos = tileRect.getPosition();
+        pos.x += tileRect.getSize().x / 4;
+        pos.y -= tileRect.getSize().y / 20;
+        text.setPosition(pos);
+
+        text.setFillColor(_rendererColorMap.at(tile.textColor));
+        text.setCharacterSize(_tileSize - (tileRect.getSize().x / 5));
+
+        _window.draw(text);
+    }
 }
 
 void arcade::SFMLDisplay::displayTileTexture(cacarcade::Tile &tile, sf::RectangleShape &tileRect)
 {
-    _texture = sf::Texture(tile.textureName);
-    _texture.setSmooth(true);
-    tileRect.setTexture(&_texture);
+    sf::Texture texture = sf::Texture(tile.textureName);
+
+    texture.setSmooth(true);
+    tileRect.setTexture(&texture);
     _window.draw(tileRect);
 }
 
