@@ -1,5 +1,6 @@
 #include "games/minesweeper/Minesweeper.hpp"
 #include "cacarcade/Color.hpp"
+#include "cacarcade/EventMouseButton.hpp"
 #include "cacarcade/EventType.hpp"
 #include "cacarcade/IEvent.hpp"
 #include "cacarcade/Tile.hpp"
@@ -217,15 +218,20 @@ void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &ev
 {
     switch (event->getType()) {
         case cacarcade::EventType::TileClicked: {
-            std::pair<std::size_t, std::size_t> position = event->getTilePosition();
+            const cacarcade::EventMouseButton &mouseButton = event->getMouseButton();
+            if (mouseButton == cacarcade::EventMouseButton::Left) {
+                std::pair<std::size_t, std::size_t> position = event->getTilePosition();
 
-            if (_firstClick == true) {
-                resetUntilZeroNeighbors(position);
-                _firstClick = false;
+                if (_firstClick == true) {
+                    resetUntilZeroNeighbors(position);
+                    _firstClick = false;
+                }
+
+                revealAllZeroesOnTile(position);
+                revealTile(position);
+            } else if (mouseButton == cacarcade::EventMouseButton::Right) {
+                // TODO: use flags
             }
-
-            revealAllZeroesOnTile(position);
-            revealTile(position);
             break;
         }
         case cacarcade::EventType::Reset:

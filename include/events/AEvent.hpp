@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cacarcade/EventKey.hpp"
+#include "cacarcade/EventMouseButton.hpp"
 #include "cacarcade/EventType.hpp"
 #include "cacarcade/IEvent.hpp"
 #include <utility>
@@ -41,6 +42,15 @@ namespace arcade {
             }
 
             void setKey(cacarcade::EventKey) override
+            {
+            }
+
+            cacarcade::EventMouseButton getMouseButton() override
+            {
+                return cacarcade::EventMouseButton::Left;
+            }
+
+            void setMouseButton(cacarcade::EventMouseButton) override
             {
             }
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cacarcade/EventMouseButton.hpp"
 #include "cacarcade/EventType.hpp"
 #include "events/AEvent.hpp"
 #include <cstddef>
@@ -10,8 +11,10 @@ namespace arcade {
             TileClickedEvent() = delete;
 
             // Memory loves this one simple trick: only accepting rvalues
-            TileClickedEvent(std::pair<std::size_t, std::size_t> &&coordinates)
-                : AEvent(cacarcade::EventType::TileClicked), _coordinates(coordinates)
+            TileClickedEvent(std::pair<std::size_t, std::size_t> &&coordinates,
+                cacarcade::EventMouseButton &&mouseButton)
+                : AEvent(cacarcade::EventType::TileClicked),
+                    _coordinates(coordinates), _mouseButton(mouseButton)
             {
             }
 
@@ -29,7 +32,18 @@ namespace arcade {
                 _coordinates = coordinates;
             }
 
+            cacarcade::EventMouseButton getMouseButton() override
+            {
+                return _mouseButton;
+            }
+
+            void setMouseButton(cacarcade::EventMouseButton mouseButton) override
+            {
+                _mouseButton = mouseButton;
+            }
+
         private:
             std::pair<std::size_t, std::size_t> _coordinates;
+            cacarcade::EventMouseButton _mouseButton;
     };
 }
