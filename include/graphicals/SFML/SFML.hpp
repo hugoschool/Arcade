@@ -24,8 +24,6 @@ namespace arcade {
 
         private:
             sf::RenderWindow _window;
-            sf::VideoMode _videoMode;
-
             sf::Font _font;
 
             std::size_t _outlineThickness;

@@ -13,7 +13,7 @@
 #include <optional>
 
 arcade::SFMLDisplay::SFMLDisplay() : arcade::ADisplayModule(),
-    _window(), _videoMode(), _font(), _outlineThickness(1)
+    _window(), _font(), _outlineThickness(1)
 {
 }
 
@@ -23,9 +23,9 @@ arcade::SFMLDisplay::~SFMLDisplay()
 void arcade::SFMLDisplay::open()
 {
     try {
-        _videoMode = sf::VideoMode();
-        _videoMode.size = sf::Vector2u(_screenWidth, _screenHeight);
-        _window = sf::RenderWindow(_videoMode, "SFML");
+        sf::VideoMode videoMode(sf::Vector2u(_screenWidth, _screenHeight));
+
+        _window = sf::RenderWindow(videoMode, "Arcade");
         _window.setFramerateLimit(60);
         _font = sf::Font("/usr/share/fonts/gnu-free/FreeSans.otf");
     } catch (std::exception &e) {
