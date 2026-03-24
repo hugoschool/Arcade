@@ -34,8 +34,13 @@ namespace arcade {
             // This is due to the fact that I cannot return a struct in C++
             void getBoundedXY(struct BoundedXY &bound, const cacarcade::tileCoordinates position);
 
+            enum class TileState {
+                Normal,
+                Bomb,
+            };
+
             struct TileInfo {
-                bool isBomb;
+                TileState state;
                 bool isRevealed;
                 std::size_t neighborAmount;
             };

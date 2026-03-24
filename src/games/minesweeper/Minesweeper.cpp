@@ -36,7 +36,7 @@ arcade::MinesweeperGame::MinesweeperGame() : AGameModule("minesweeper"),
             _container.tiles.insert({{x ,y}, tile});
 
             TileInfo info = {
-                .isBomb = false,
+                .state = TileState::Normal,
                 .isRevealed = false,
                 .neighborAmount = 0,
             };
@@ -62,6 +62,7 @@ void arcade::MinesweeperGame::reset()
         tile.text = '\0';
     }
     for (auto &[_, info] : _tileInfo) {
+        info.state = TileState::Normal;
         info.isRevealed = false;
         info.neighborAmount = 0;
     }
@@ -118,10 +119,6 @@ void arcade::MinesweeperGame::updateNeighborsTile(const cacarcade::tileCoordinat
 
 void arcade::MinesweeperGame::createBombs()
 {
-    for (auto &[_, info] : _tileInfo) {
-        info.isBomb = false;
-    }
-
     std::random_device device;
     std::mt19937 rng(device());
 
@@ -137,8 +134,9 @@ void arcade::MinesweeperGame::createBombs()
 
         try {
             TileInfo &info = _tileInfo.at({randomWidth, randomHeight});
-            if (!info.isBomb) {
-                info.isBomb = true;
+
+            if (info.state != TileState::Bomb) {
+                info.state = TileState::Bomb;
             } else {
                 bombAmount++;
                 continue;
@@ -174,16 +172,23 @@ void arcade::MinesweeperGame::revealTile(const cacarcade::tileCoordinates &posit
 
         info.isRevealed = true;
 
-        if (info.isBomb) {
-            tile.text = 'B';
-            tile.backgroundColor = cacarcade::Color::Red;
-            revealAllOnFail();
-        } else {
-            if (info.neighborAmount != 0)
-                tile.text = info.neighborAmount + '0';
-            tile.backgroundColor = cacarcade::Color::Blue;
-            if (_gameEnded == false)
-                _scoreHandler.addScore(_revealedTileScore);
+        switch (info.state) {
+            case TileState::Normal: {
+                if (info.neighborAmount != 0)
+                    tile.text = info.neighborAmount + '0';
+                tile.backgroundColor = cacarcade::Color::Blue;
+                if (_gameEnded == false)
+                    _scoreHandler.addScore(_revealedTileScore);
+                break;
+            }
+            case TileState::Bomb: {
+                tile.text = 'B';
+                tile.backgroundColor = cacarcade::Color::Red;
+                revealAllOnFail();
+                break;
+            }
+            default:
+                break;
         }
     } catch (const std::out_of_range &) {
         std::cerr << "Unexpected error: impossible to get bomb of tile " << position.first << ", " << position.second << std::endl;
