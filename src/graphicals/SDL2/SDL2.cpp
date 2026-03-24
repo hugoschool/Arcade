@@ -1,9 +1,12 @@
 #include "graphicals/SDL2/SDL2.hpp"
 #include "cacarcade/Color.hpp"
+#include "cacarcade/EventKey.hpp"
 #include "cacarcade/Tile.hpp"
 #include "common/Exception.hpp"
+#include "events/KeyPressedEvent.hpp"
 #include "events/QuitEvent.hpp"
 #include "events/TileClickedEvent.hpp"
+#include <SDL2/SDL_keycode.h>
 #include <SDL2/SDL_ttf.h>
 #include "graphicals/ADisplayModule.hpp"
 #include <cstddef>
@@ -78,6 +81,28 @@ void arcade::SDL2Display::clear()
     SDL_RenderClear(_renderer);
 }
 
+cacarcade::EventKey arcade::SDL2Display::getKey(const SDL_Keycode keycode)
+{
+    if (keycode >= SDLK_a && keycode <= SDLK_z) {
+        return static_cast<cacarcade::EventKey>(static_cast<int>(cacarcade::EventKey::A) + keycode - SDLK_a);
+    }
+
+    switch (keycode) {
+        case SDLK_BACKSPACE:
+            return cacarcade::EventKey::Backspace;
+        case SDLK_UP:
+            return cacarcade::EventKey::Up;
+        case SDLK_DOWN:
+            return cacarcade::EventKey::Down;
+        case SDLK_LEFT:
+            return cacarcade::EventKey::Left;
+        case SDLK_RIGHT:
+            return cacarcade::EventKey::Right;
+        default:
+            return cacarcade::EventKey::None;
+    }
+}
+
 std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SDL2Display::pollEvent()
 {
     SDL_Event event;
@@ -90,6 +115,8 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SDL2Display::pollEvent
             return std::make_unique<arcade::QuitEvent>();
         case SDL_MOUSEBUTTONDOWN:
             return std::make_unique<arcade::TileClickedEvent>(findClosestTile(event.button.x, event.button.y));
+        case SDL_KEYDOWN:
+            return std::make_unique<arcade::KeyPressedEvent>(getKey(event.key.keysym.sym));
     }
 
     return std::nullopt;

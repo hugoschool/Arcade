@@ -1,7 +1,9 @@
 #include "graphicals/SFML/SFML.hpp"
+#include "cacarcade/EventKey.hpp"
 #include "cacarcade/Tile.hpp"
 #include "cacarcade/TileContainer.hpp"
 #include "common/Exception.hpp"
+#include "events/KeyPressedEvent.hpp"
 #include "events/QuitEvent.hpp"
 #include "events/TileClickedEvent.hpp"
 #include "graphicals/ADisplayModule.hpp"
@@ -20,6 +22,7 @@
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
+#include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/VideoMode.hpp>
 #include <exception>
@@ -58,6 +61,30 @@ void arcade::SFMLDisplay::clear()
     _window.clear(sf::Color::White);
 }
 
+cacarcade::EventKey arcade::SFMLDisplay::getKey(const sf::Keyboard::Key key)
+{
+    if (key >= sf::Keyboard::Key::A && key <= sf::Keyboard::Key::Z) {
+        return static_cast<cacarcade::EventKey>(
+            static_cast<int>(cacarcade::EventKey::A) + static_cast<int>(key) - static_cast<int>(sf::Keyboard::Key::A)
+        );
+    }
+
+    switch (key) {
+        case sf::Keyboard::Key::Backspace:
+            return cacarcade::EventKey::Backspace;
+        case sf::Keyboard::Key::Up:
+            return cacarcade::EventKey::Up;
+        case sf::Keyboard::Key::Down:
+            return cacarcade::EventKey::Down;
+        case sf::Keyboard::Key::Left:
+            return cacarcade::EventKey::Left;
+        case sf::Keyboard::Key::Right:
+            return cacarcade::EventKey::Right;
+        default:
+            return cacarcade::EventKey::None;
+    }
+}
+
 //TODO rework this part
 std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SFMLDisplay::pollEvent()
 {
@@ -67,6 +94,9 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SFMLDisplay::pollEvent
         } else if (evt->is<sf::Event::MouseButtonPressed>()) {
             const sf::Event::MouseButtonPressed *mouseEvent = evt->getIf<sf::Event::MouseButtonPressed>();
             return std::make_unique<arcade::TileClickedEvent>(findClosestTile(mouseEvent->position.x, mouseEvent->position.y));
+        } else if (evt->is<sf::Event::KeyPressed>()) {
+            const sf::Event::KeyPressed *keyPressed = evt->getIf<sf::Event::KeyPressed>();
+            return std::make_unique<arcade::KeyPressedEvent>(getKey(keyPressed->code));
         }
     }
     return std::nullopt;

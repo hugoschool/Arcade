@@ -38,6 +38,8 @@ namespace arcade {
             const SDL_Color getRendererColor(cacarcade::Color color);
             void setRendererDrawColor(cacarcade::Color color);
 
+            cacarcade::EventKey getKey(const SDL_Keycode keycode);
+
             void displayTextOnTile(const char c, cacarcade::Color color, SDL_Rect &tileRect);
 
             std::map<std::string, SDL_Texture *> _textureMap;
