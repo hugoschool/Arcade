@@ -4,6 +4,7 @@
 #include "games/AGameModule.hpp"
 #include <cstddef>
 #include <utility>
+#include <vector>
 
 namespace arcade {
     class CentipedeGame : public AGameModule {
@@ -45,9 +46,11 @@ namespace arcade {
 
             std::pair<size_t, size_t> PlayerPos;
             std::pair<size_t, size_t> OldPlayerPos;
+            std::vector<std::pair<size_t, size_t>> projectiles;
 
             void placeMushroom();
             void updateTiles();
             void updatePlayer();
+            // void addProjectile();
     };
 }

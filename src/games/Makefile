@@ -24,9 +24,11 @@ $(MINESWEEPER_BIN):	$(MINESWEEPER_OBJ)
 $(CENTIPEDE_BIN):	$(CENTIPEDE_OBJ)
 
 clean:
+	$(RM) $(CENTIPEDE_OBJ)
 	$(RM) $(MINESWEEPER_OBJ)
 
 fclean:	clean
+	$(RM) $(CENTIPEDE_BIN)
 	$(RM) $(MINESWEEPER_BIN)
 
 re:	fclean all

@@ -11,7 +11,8 @@
 #include <utility>
 
 arcade::CentipedeGame::CentipedeGame() : AGameModule("centipede"),
-    _tileInfo(), PlayerPos({10, 15}), OldPlayerPos(PlayerPos)
+    _tileInfo(), PlayerPos({10, 15}), OldPlayerPos(PlayerPos),
+    projectiles()
 {
     size_t width = 21;
     size_t height = 16;
@@ -126,6 +127,8 @@ void arcade::CentipedeGame::updatePlayer()
     OldPlayerPos = PlayerPos;
 }
 
+// void arcade::CentipedeGame::
+
 void arcade::CentipedeGame::reset()
 {
     AGameModule::reset();
@@ -137,14 +140,20 @@ void arcade::CentipedeGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &even
         case cacarcade::EventType::KeyPressed: {
             switch (event->getKey()) {
                 case cacarcade::EventKey::Q:
-                    PlayerPos.first -= 1;
+                    if (PlayerPos.first > 0)
+                        PlayerPos.first -= 1;
                     break;
                 case cacarcade::EventKey::D:
-                    PlayerPos.first += 1;
+                    if (PlayerPos.first < 20)
+                        PlayerPos.first += 1;
                     break;
                 default:
                     break;
             }
+            break;
+        }
+        case cacarcade::EventType::TileClicked: {
+            // addProjectile();
             break;
         }
         default:
