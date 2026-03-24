@@ -8,30 +8,12 @@
 #include "events/QuitEvent.hpp"
 #include "events/TileClickedEvent.hpp"
 #include "graphicals/ADisplayModule.hpp"
-#include <SFML/Graphics/Color.hpp>
-#include <SFML/Graphics/Font.hpp>
-#include <SFML/Graphics/Rect.hpp>
-#include <SFML/Graphics/RectangleShape.hpp>
-#include <SFML/Graphics/RenderTarget.hpp>
-#include <SFML/Graphics/RenderTexture.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/Text.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/System/Clock.hpp>
-#include <SFML/System/String.hpp>
-#include <SFML/System/Time.hpp>
-#include <SFML/System/Vector2.hpp>
-#include <SFML/Window/Event.hpp>
-#include <SFML/Window/Keyboard.hpp>
-#include <SFML/Window/Mouse.hpp>
-#include <SFML/Window/VideoMode.hpp>
 #include <exception>
 #include <memory>
 #include <optional>
 
-arcade::SFMLDisplay::SFMLDisplay() : arcade::ADisplayModule(), _window(), _videoMode(),
-    _font(), _txt(_font), _texture(), _outlineThickness(1)
+arcade::SFMLDisplay::SFMLDisplay() : arcade::ADisplayModule(),
+    _window(), _font(), _outlineThickness(1)
 {
 }
 
@@ -41,12 +23,11 @@ arcade::SFMLDisplay::~SFMLDisplay()
 void arcade::SFMLDisplay::open()
 {
     try {
-        _videoMode = sf::VideoMode();
-        _videoMode.size = sf::Vector2u(_screenWidth, _screenHeight);
-        _window = sf::RenderWindow(_videoMode, "SFML");
+        sf::VideoMode videoMode(sf::Vector2u(_screenWidth, _screenHeight));
+
+        _window = sf::RenderWindow(videoMode, "Arcade");
         _window.setFramerateLimit(60);
         _font = sf::Font("/usr/share/fonts/gnu-free/FreeSans.otf");
-        _txt = sf::Text(_font);
     } catch (std::exception &e) {
         throw arcade::Exception("Something went wrong with the creation of the window.");
     }
@@ -95,50 +76,74 @@ cacarcade::EventMouseButton arcade::SFMLDisplay::getMouseButton(sf::Mouse::Butto
     return cacarcade::EventMouseButton::Left;
 }
 
-//TODO rework this part
 std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SFMLDisplay::pollEvent()
 {
-    while (const std::optional evt = _window.pollEvent()) {
-        if (evt->is<sf::Event::Closed>()) {
+    while (const std::optional event = _window.pollEvent()) {
+        if (event->is<sf::Event::Closed>()) {
             return std::make_unique<arcade::QuitEvent>();
-        } else if (evt->is<sf::Event::MouseButtonPressed>()) {
-            const sf::Event::MouseButtonPressed *mouseEvent = evt->getIf<sf::Event::MouseButtonPressed>();
+        }
+
+        if (event->is<sf::Event::MouseButtonPressed>()) {
+            const sf::Event::MouseButtonPressed *mouseEvent = event->getIf<sf::Event::MouseButtonPressed>();
+
             return std::make_unique<arcade::TileClickedEvent>(
                 findClosestTile(mouseEvent->position.x, mouseEvent->position.y),
                 getMouseButton(mouseEvent->button)
             );
-        } else if (evt->is<sf::Event::KeyPressed>()) {
-            const sf::Event::KeyPressed *keyPressed = evt->getIf<sf::Event::KeyPressed>();
+        }
+
+        if (event->is<sf::Event::KeyPressed>()) {
+            const sf::Event::KeyPressed *keyPressed = event->getIf<sf::Event::KeyPressed>();
+
             return std::make_unique<arcade::KeyPressedEvent>(getKey(keyPressed->code));
         }
     }
     return std::nullopt;
 }
 
+std::weak_ptr<sf::Texture> arcade::SFMLDisplay::createTexture(std::string &textureName)
+{
+    try {
+        return std::weak_ptr<sf::Texture>(_textureMap.at(textureName));
+    } catch (const std::out_of_range &) {
+        std::shared_ptr<sf::Texture> texture = std::make_shared<sf::Texture>(textureName);
+
+        texture->setSmooth(true);
+        _textureMap.insert({textureName, texture});
+
+        return std::weak_ptr<sf::Texture>(texture);
+    }
+}
+
 void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleShape &tileRect)
 {
-    if (tile.text != '\0')
-        _txt.setString(tile.text);
-    else
-        _txt.setString(" ");
-    sf::Vector2f pos = tileRect.getPosition();
-    pos.x += tileRect.getSize().x / 4;
-    pos.y -= tileRect.getSize().y / 20;
-    _txt.setPosition(pos);
-    _txt.setFillColor(_rendererColorMap.at(tile.textColor));
-    _txt.setCharacterSize(_tileSize - (tileRect.getSize().x / 5));
     tileRect.setFillColor(_rendererColorMap.at(tile.backgroundColor));
     tileRect.setOutlineColor(_rendererColorMap.at(tile.textColor));
-    tileRect.setOutlineThickness(_outlineThickness);
+    tileRect.setOutlineThickness(2);
+
     _window.draw(tileRect);
-    _window.draw(_txt);
+
+    if (tile.text != '\0') {
+        sf::Text text(_font, tile.text);
+
+        sf::Vector2f pos = tileRect.getPosition();
+        pos.x += tileRect.getSize().x / 4;
+        pos.y -= tileRect.getSize().y / 20;
+        text.setPosition(pos);
+
+        text.setFillColor(_rendererColorMap.at(tile.textColor));
+        text.setCharacterSize(_tileSize - (tileRect.getSize().x / 5));
+
+        _window.draw(text);
+    }
 }
 
 void arcade::SFMLDisplay::displayTileTexture(cacarcade::Tile &tile, sf::RectangleShape &tileRect)
 {
-    _texture = sf::Texture(tile.textureName);
-    _texture.setSmooth(true);
-    tileRect.setTexture(&_texture);
+    std::weak_ptr<sf::Texture> ptr = createTexture(tile.textureName);
+    sf::Texture texture = *ptr.lock();
+
+    tileRect.setTexture(&texture);
     _window.draw(tileRect);
 }
 
@@ -152,7 +157,10 @@ void arcade::SFMLDisplay::displayTiles(cacarcade::TileContainer container)
 
         sf::RectangleShape rec(sf::Vector2f(_tileSize - (_outlineThickness * 2), _tileSize - (_outlineThickness * 2)));
         rec.setPosition(sf::Vector2f(x, y));
-        if (tile.textureName.empty()) {
+
+        if (!tile.textureName.empty()) {
+            displayTileTexture(tile, rec);
+        } else {
             displayTileText(tile, rec);
         }
     }
