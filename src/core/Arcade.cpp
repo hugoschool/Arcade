@@ -26,12 +26,24 @@ void arcade::Arcade::loop()
 
     std::optional<std::unique_ptr<cacarcade::IEvent>> event;
 
-    while (true) {
+    bool running = true;
+
+    while (running) {
         event = _display->pollEvent();
         if (event.has_value()) {
-            if (event.value()->getType() == cacarcade::EventType::Quit)
-                break;
+            std::unique_ptr<cacarcade::IEvent> &actualEvent = event.value();
+
+            switch (actualEvent->getType()) {
+                case cacarcade::EventType::Quit:
+                    running = false;
+                    break;
+                default:
+                    break;
+            }
         }
+
+        if (running == false)
+            break;
 
         _game->update(event);
 
