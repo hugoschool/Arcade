@@ -4,6 +4,7 @@
 #include "cacarcade/EventType.hpp"
 #include "cacarcade/IEvent.hpp"
 #include "cacarcade/Tile.hpp"
+#include "cacarcade/Utils.hpp"
 #include "games/AGameModule.hpp"
 #include <exception>
 #include <iostream>
@@ -37,6 +38,7 @@ arcade::MinesweeperGame::MinesweeperGame() : AGameModule("minesweeper"),
 
             TileInfo info = {
                 .state = TileState::Normal,
+                .isFlag = false,
                 .isRevealed = false,
                 .neighborAmount = 0,
             };
@@ -161,29 +163,60 @@ void arcade::MinesweeperGame::revealAllOnFail()
     _scoreHandler.saveScore("Temporary");
 }
 
+void arcade::MinesweeperGame::setTileContent(cacarcade::Tile &tile, TileInfo &info)
+{
+    if (info.isFlag == true && info.isRevealed == false) {
+        tile.text = 'F';
+        tile.backgroundColor = cacarcade::Color::Green;
+        return;
+    }
+
+    if (info.isRevealed == false) {
+        tile.text = '\0';
+        tile.backgroundColor = cacarcade::Color::Black;
+        return;
+    }
+
+    switch (info.state) {
+        case TileState::Normal: {
+            if (info.neighborAmount != 0)
+                tile.text = info.neighborAmount + '0';
+            else
+                tile.text = '\0';
+            tile.backgroundColor = cacarcade::Color::Blue;
+            break;
+        }
+        case TileState::Bomb: {
+            tile.text = 'B';
+            tile.backgroundColor = cacarcade::Color::Red;
+            break;
+        }
+        default:
+            break;
+    }
+}
+
 void arcade::MinesweeperGame::revealTile(const cacarcade::tileCoordinates &position)
 {
     try {
         cacarcade::Tile &tile = _container.tiles.at(position);
         TileInfo &info = _tileInfo.at(position);
 
-        if (info.isRevealed == true)
+        // Flags shouldn't have action when clicking on them
+        if (info.isRevealed == true || info.isFlag == true)
             return;
 
         info.isRevealed = true;
 
+        setTileContent(tile, info);
+
         switch (info.state) {
             case TileState::Normal: {
-                if (info.neighborAmount != 0)
-                    tile.text = info.neighborAmount + '0';
-                tile.backgroundColor = cacarcade::Color::Blue;
                 if (_gameEnded == false)
                     _scoreHandler.addScore(_revealedTileScore);
                 break;
             }
             case TileState::Bomb: {
-                tile.text = 'B';
-                tile.backgroundColor = cacarcade::Color::Red;
                 revealAllOnFail();
                 break;
             }
@@ -219,14 +252,32 @@ void arcade::MinesweeperGame::revealAllZeroesOnTile(const cacarcade::tileCoordin
     }
 }
 
+void arcade::MinesweeperGame::toggleFlag(const cacarcade::tileCoordinates &position)
+{
+    try {
+        cacarcade::Tile &tile = _container.tiles.at(position);
+        TileInfo &info = _tileInfo.at(position);
+
+        if (info.isFlag == true) {
+            info.isFlag = false;
+        } else {
+            info.isFlag = true;
+        }
+
+        setTileContent(tile, info);
+    } catch (const std::out_of_range &) {
+        std::cerr << "Unexpected error: impossible to get bomb of tile " << position.first << ", " << position.second << std::endl;
+    }
+}
+
 void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &event)
 {
     switch (event->getType()) {
         case cacarcade::EventType::TileClicked: {
             const cacarcade::EventMouseButton &mouseButton = event->getMouseButton();
-            if (mouseButton == cacarcade::EventMouseButton::Left) {
-                std::pair<std::size_t, std::size_t> position = event->getTilePosition();
+            std::pair<std::size_t, std::size_t> position = event->getTilePosition();
 
+            if (mouseButton == cacarcade::EventMouseButton::Left) {
                 if (_firstClick == true) {
                     resetUntilZeroNeighbors(position);
                     _firstClick = false;
@@ -235,7 +286,7 @@ void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &ev
                 revealAllZeroesOnTile(position);
                 revealTile(position);
             } else if (mouseButton == cacarcade::EventMouseButton::Right) {
-                // TODO: use flags
+                toggleFlag(position);
             }
             break;
         }

@@ -41,6 +41,7 @@ namespace arcade {
 
             struct TileInfo {
                 TileState state;
+                bool isFlag;
                 bool isRevealed;
                 std::size_t neighborAmount;
             };
@@ -51,7 +52,9 @@ namespace arcade {
             void createBombs();
 
             void updateNeighborsTile(const cacarcade::tileCoordinates position);
+            void toggleFlag(const cacarcade::tileCoordinates &position);
 
+            void setTileContent(cacarcade::Tile &tile, TileInfo &info);
             void revealAllOnFail();
             void revealTile(const cacarcade::tileCoordinates &position);
             void revealAllZeroesOnTile(const cacarcade::tileCoordinates &position);
