@@ -31,7 +31,7 @@
 #include <optional>
 
 arcade::SFMLDisplay::SFMLDisplay() : arcade::ADisplayModule(), _window(), _videoMode(),
-    _font(), _txt(_font), _texture(), _outLineThickness(1)
+    _font(), _txt(_font), _texture(), _outlineThickness(1)
 {
 }
 
