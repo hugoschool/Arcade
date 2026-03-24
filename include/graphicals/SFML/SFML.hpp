@@ -35,7 +35,7 @@ namespace arcade {
 
             sf::Texture _texture;
 
-            size_t _outLineThickness;
+            std::size_t _outlineThickness;
 
             const std::map<const cacarcade::Color, const sf::Color> _rendererColorMap = {
                 {cacarcade::Color::Black, sf::Color::Black},
