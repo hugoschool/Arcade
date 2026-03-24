@@ -54,8 +54,14 @@ void arcade::MinesweeperGame::reset()
 {
     AGameModule::reset();
 
+    _firstClick = true;
     _gameEnded = false;
+    for (auto &[_, tile] : _container.tiles) {
+        tile.backgroundColor = cacarcade::Color::Black;
+        tile.text = '\0';
+    }
     for (auto &[_, info] : _tileInfo) {
+        info.isRevealed = false;
         info.neighborAmount = 0;
     }
     createBombs();
@@ -222,6 +228,9 @@ void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &ev
             revealTile(position);
             break;
         }
+        case cacarcade::EventType::Reset:
+            reset();
+            break;
         default:
             break;
     }
