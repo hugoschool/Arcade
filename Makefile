@@ -6,7 +6,8 @@ CXXFLAGS	:=	-Wall -Wextra -std=c++20
 CPPFLAGS	:=	-I $(BASE_DIR)/include/
 
 ifeq ($(ENV), dev)
-	CXXFLAGS	+=	-g3
+	CXXFLAGS	+=	-fsanitize=address
+	LDLIBS	+=	-fsanitize=address
 endif
 
 # Make all calls to other makefiles inherit those variables
@@ -15,6 +16,8 @@ export LIB_PATH
 export CXX
 export CXXFLAGS
 export CPPFLAGS
+export LDFLAGS
+export LDLIBS
 
 # Disable "Entering directory" for every -C option
 MAKEFLAGS += --no-print-directory

@@ -8,7 +8,7 @@ BINARY	:=	$(BASE_DIR)/arcade
 all:	$(BINARY)
 
 $(BINARY):	$(OBJ)
-	$(CXX) -o $(BINARY) $(OBJ)
+	$(CXX) -o $(BINARY) $(OBJ) $(LDFLAGS) $(LDLIBS)
 
 clean:
 	$(RM) $(OBJ)
