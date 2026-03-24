@@ -16,6 +16,21 @@ arcade::Arcade::~Arcade()
 {
 }
 
+void arcade::Arcade::handleGlobalEvents(std::unique_ptr<cacarcade::IEvent> &event, bool &running)
+{
+    switch (event->getType()) {
+        case cacarcade::EventType::Quit:
+            running = false;
+            break;
+        case cacarcade::EventType::KeyPressed: {
+            if (event->getKey() == cacarcade::EventKey::R)
+                event->setType(cacarcade::EventType::Reset);
+        }
+        default:
+            break;
+    }
+}
+
 void arcade::Arcade::loop()
 {
     try {
@@ -32,19 +47,7 @@ void arcade::Arcade::loop()
     while (running) {
         event = _display->pollEvent();
         if (event.has_value()) {
-            std::unique_ptr<cacarcade::IEvent> &actualEvent = event.value();
-
-            switch (actualEvent->getType()) {
-                case cacarcade::EventType::Quit:
-                    running = false;
-                    break;
-                case cacarcade::EventType::KeyPressed: {
-                    if (actualEvent->getKey() == cacarcade::EventKey::R)
-                        actualEvent->setType(cacarcade::EventType::Reset);
-                }
-                default:
-                    break;
-            }
+            handleGlobalEvents(event.value(), running);
         }
 
         if (running == false)
