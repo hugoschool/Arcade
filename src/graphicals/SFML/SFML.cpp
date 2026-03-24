@@ -121,12 +121,6 @@ void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleSh
         _txt.setString(tile.text);
     else
         _txt.setString(" ");
-    // sf::Vector2f tempos = tileRect.getPosition();
-    // if (tempos.x > 0)
-    //     tempos.x += _outLineThickness * 2;
-    // if (tempos.y > 0)
-    //     tempos.y += _outLineThickness * 2;
-    // tileRect.setPosition(tempos);
     sf::Vector2f pos = tileRect.getPosition();
     pos.x += tileRect.getSize().x / 4;
     pos.y -= tileRect.getSize().y / 20;
