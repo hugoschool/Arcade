@@ -114,6 +114,20 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SFMLDisplay::pollEvent
     return std::nullopt;
 }
 
+std::weak_ptr<sf::Texture> arcade::SFMLDisplay::createTexture(std::string &textureName)
+{
+    try {
+        return std::weak_ptr<sf::Texture>(_textureMap.at(textureName));
+    } catch (const std::out_of_range &) {
+        std::shared_ptr<sf::Texture> texture = std::make_shared<sf::Texture>(textureName);
+
+        texture->setSmooth(true);
+        _textureMap.insert({textureName, texture});
+
+        return std::weak_ptr<sf::Texture>(texture);
+    }
+}
+
 void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleShape &tileRect)
 {
     tileRect.setFillColor(_rendererColorMap.at(tile.backgroundColor));
@@ -139,9 +153,9 @@ void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleSh
 
 void arcade::SFMLDisplay::displayTileTexture(cacarcade::Tile &tile, sf::RectangleShape &tileRect)
 {
-    sf::Texture texture = sf::Texture(tile.textureName);
+    std::weak_ptr<sf::Texture> ptr = createTexture(tile.textureName);
+    sf::Texture texture = *ptr.lock();
 
-    texture.setSmooth(true);
     tileRect.setTexture(&texture);
     _window.draw(tileRect);
 }
@@ -156,7 +170,10 @@ void arcade::SFMLDisplay::displayTiles(cacarcade::TileContainer container)
 
         sf::RectangleShape rec(sf::Vector2f(_tileSize - (_outlineThickness * 2), _tileSize - (_outlineThickness * 2)));
         rec.setPosition(sf::Vector2f(x, y));
-        if (tile.textureName.empty()) {
+
+        if (!tile.textureName.empty()) {
+            displayTileTexture(tile, rec);
+        } else {
             displayTileText(tile, rec);
         }
     }

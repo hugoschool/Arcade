@@ -12,6 +12,7 @@
 #include <SFML/Window.hpp>
 #include <cstddef>
 #include <map>
+#include <memory>
 
 namespace arcade {
     class SFMLDisplay : public arcade::ADisplayModule {
@@ -45,6 +46,9 @@ namespace arcade {
 
             cacarcade::EventKey getKey(const sf::Keyboard::Key key);
             cacarcade::EventMouseButton getMouseButton(sf::Mouse::Button button);
+
+            std::map<std::string, std::shared_ptr<sf::Texture>> _textureMap;
+            std::weak_ptr<sf::Texture> createTexture(std::string &textureName);
 
             void displayTileText(cacarcade::Tile &tile, sf::RectangleShape &tileRect);
             void displayTileTexture(cacarcade::Tile &tile, sf::RectangleShape &tileRect);
