@@ -37,7 +37,7 @@ namespace arcade {
 
             cacarcade::EventKey getKey() override
             {
-                return cacarcade::EventKey::A;
+                return cacarcade::EventKey::None;
             }
 
             void setKey(cacarcade::EventKey) override
