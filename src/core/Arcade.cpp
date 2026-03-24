@@ -1,4 +1,5 @@
 #include "core/Arcade.hpp"
+#include "cacarcade/EventKey.hpp"
 #include "cacarcade/EventType.hpp"
 #include "cacarcade/IEvent.hpp"
 #include "cacarcade/Utils.hpp"
@@ -37,6 +38,10 @@ void arcade::Arcade::loop()
                 case cacarcade::EventType::Quit:
                     running = false;
                     break;
+                case cacarcade::EventType::KeyPressed: {
+                    if (actualEvent->getKey() == cacarcade::EventKey::R)
+                        actualEvent->setType(cacarcade::EventType::Reset);
+                }
                 default:
                     break;
             }
