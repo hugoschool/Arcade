@@ -31,7 +31,7 @@
 #include <optional>
 
 arcade::SFMLDisplay::SFMLDisplay() : arcade::ADisplayModule(), _window(), _videoMode(),
-    _font(), _txt(_font), _texture()
+    _font(), _txt(_font), _texture(), _outlineThickness(1)
 {
 }
 
@@ -129,7 +129,7 @@ void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleSh
     _txt.setCharacterSize(_tileSize - (tileRect.getSize().x / 5));
     tileRect.setFillColor(_rendererColorMap.at(tile.backgroundColor));
     tileRect.setOutlineColor(_rendererColorMap.at(tile.textColor));
-    tileRect.setOutlineThickness(2);
+    tileRect.setOutlineThickness(_outlineThickness);
     _window.draw(tileRect);
     _window.draw(_txt);
 }
@@ -150,9 +150,8 @@ void arcade::SFMLDisplay::displayTiles(cacarcade::TileContainer container)
         int x = tile.x * _tileSize;
         int y = tile.y * _tileSize;
 
-        sf::RectangleShape rec(sf::Vector2f(_tileSize, _tileSize));
+        sf::RectangleShape rec(sf::Vector2f(_tileSize - (_outlineThickness * 2), _tileSize - (_outlineThickness * 2)));
         rec.setPosition(sf::Vector2f(x, y));
-
         if (tile.textureName.empty()) {
             displayTileText(tile, rec);
         }

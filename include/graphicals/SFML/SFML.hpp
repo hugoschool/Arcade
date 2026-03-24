@@ -10,6 +10,7 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
+#include <cstddef>
 #include <map>
 
 namespace arcade {
@@ -33,6 +34,8 @@ namespace arcade {
             sf::Text _txt;
 
             sf::Texture _texture;
+
+            std::size_t _outlineThickness;
 
             const std::map<const cacarcade::Color, const sf::Color> _rendererColorMap = {
                 {cacarcade::Color::Black, sf::Color::Black},
