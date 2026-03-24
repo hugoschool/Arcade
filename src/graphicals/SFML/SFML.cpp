@@ -31,7 +31,7 @@
 #include <optional>
 
 arcade::SFMLDisplay::SFMLDisplay() : arcade::ADisplayModule(), _window(), _videoMode(),
-    _font(), _txt(_font), _texture()
+    _font(), _txt(_font), _texture(), _outLineThickness(1)
 {
 }
 
@@ -121,6 +121,12 @@ void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleSh
         _txt.setString(tile.text);
     else
         _txt.setString(" ");
+    // sf::Vector2f tempos = tileRect.getPosition();
+    // if (tempos.x > 0)
+    //     tempos.x += _outLineThickness * 2;
+    // if (tempos.y > 0)
+    //     tempos.y += _outLineThickness * 2;
+    // tileRect.setPosition(tempos);
     sf::Vector2f pos = tileRect.getPosition();
     pos.x += tileRect.getSize().x / 4;
     pos.y -= tileRect.getSize().y / 20;
@@ -128,8 +134,11 @@ void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleSh
     _txt.setFillColor(_rendererColorMap.at(tile.textColor));
     _txt.setCharacterSize(_tileSize - (tileRect.getSize().x / 5));
     tileRect.setFillColor(_rendererColorMap.at(tile.backgroundColor));
-    tileRect.setOutlineColor(_rendererColorMap.at(tile.textColor));
-    tileRect.setOutlineThickness(2);
+    if (tile.text == '\0')
+        tileRect.setOutlineColor(_rendererColorMap.at(tile.textColor));
+    else
+        tileRect.setOutlineColor(sf::Color::Magenta);
+    tileRect.setOutlineThickness(_outLineThickness);
     _window.draw(tileRect);
     _window.draw(_txt);
 }
@@ -150,9 +159,8 @@ void arcade::SFMLDisplay::displayTiles(cacarcade::TileContainer container)
         int x = tile.x * _tileSize;
         int y = tile.y * _tileSize;
 
-        sf::RectangleShape rec(sf::Vector2f(_tileSize, _tileSize));
+        sf::RectangleShape rec(sf::Vector2f(_tileSize - (_outLineThickness * 2), _tileSize - (_outLineThickness * 2)));
         rec.setPosition(sf::Vector2f(x, y));
-
         if (tile.textureName.empty()) {
             displayTileText(tile, rec);
         }
