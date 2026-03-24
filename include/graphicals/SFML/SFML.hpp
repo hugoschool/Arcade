@@ -44,6 +44,7 @@ namespace arcade {
             };
 
             cacarcade::EventKey getKey(const sf::Keyboard::Key key);
+            cacarcade::EventMouseButton getMouseButton(sf::Mouse::Button button);
 
             void displayTileText(cacarcade::Tile &tile, sf::RectangleShape &tileRect);
             void displayTileTexture(cacarcade::Tile &tile, sf::RectangleShape &tileRect);

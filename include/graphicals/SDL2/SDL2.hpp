@@ -39,6 +39,7 @@ namespace arcade {
             void setRendererDrawColor(cacarcade::Color color);
 
             cacarcade::EventKey getKey(const SDL_Keycode keycode);
+            cacarcade::EventMouseButton getMouseButton(Uint8 button);
 
             void displayTextOnTile(const char c, cacarcade::Color color, SDL_Rect &tileRect);
 

@@ -1,5 +1,6 @@
 #include "graphicals/SFML/SFML.hpp"
 #include "cacarcade/EventKey.hpp"
+#include "cacarcade/EventMouseButton.hpp"
 #include "cacarcade/Tile.hpp"
 #include "cacarcade/TileContainer.hpp"
 #include "common/Exception.hpp"
@@ -85,6 +86,15 @@ cacarcade::EventKey arcade::SFMLDisplay::getKey(const sf::Keyboard::Key key)
     }
 }
 
+cacarcade::EventMouseButton arcade::SFMLDisplay::getMouseButton(sf::Mouse::Button button)
+{
+    if (button == sf::Mouse::Button::Left)
+        return cacarcade::EventMouseButton::Left;
+    if (button == sf::Mouse::Button::Right)
+        return cacarcade::EventMouseButton::Right;
+    return cacarcade::EventMouseButton::Left;
+}
+
 //TODO rework this part
 std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SFMLDisplay::pollEvent()
 {
@@ -93,7 +103,10 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SFMLDisplay::pollEvent
             return std::make_unique<arcade::QuitEvent>();
         } else if (evt->is<sf::Event::MouseButtonPressed>()) {
             const sf::Event::MouseButtonPressed *mouseEvent = evt->getIf<sf::Event::MouseButtonPressed>();
-            return std::make_unique<arcade::TileClickedEvent>(findClosestTile(mouseEvent->position.x, mouseEvent->position.y));
+            return std::make_unique<arcade::TileClickedEvent>(
+                findClosestTile(mouseEvent->position.x, mouseEvent->position.y),
+                getMouseButton(mouseEvent->button)
+            );
         } else if (evt->is<sf::Event::KeyPressed>()) {
             const sf::Event::KeyPressed *keyPressed = evt->getIf<sf::Event::KeyPressed>();
             return std::make_unique<arcade::KeyPressedEvent>(getKey(keyPressed->code));
