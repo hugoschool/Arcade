@@ -66,6 +66,7 @@ void arcade::MinesweeperGame::reset()
     for (auto &[_, info] : _tileInfo) {
         info.state = TileState::Normal;
         info.isRevealed = false;
+        info.isFlag = false;
         info.neighborAmount = 0;
     }
     createBombs();
