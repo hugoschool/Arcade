@@ -150,7 +150,7 @@ void arcade::SFMLDisplay::displayTiles(cacarcade::TileContainer container)
         int x = tile.x * _tileSize;
         int y = tile.y * _tileSize;
 
-        sf::RectangleShape rec(sf::Vector2f(_tileSize - (_outLineThickness * 2), _tileSize - (_outLineThickness * 2)));
+        sf::RectangleShape rec(sf::Vector2f(_tileSize - (_outlineThickness * 2), _tileSize - (_outlineThickness * 2)));
         rec.setPosition(sf::Vector2f(x, y));
         if (tile.textureName.empty()) {
             displayTileText(tile, rec);
