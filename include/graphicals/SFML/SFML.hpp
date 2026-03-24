@@ -3,11 +3,6 @@
 #include "cacarcade/Color.hpp"
 #include "graphicals/ADisplayModule.hpp"
 #include <SFML/Graphics.hpp>
-#include <SFML/Graphics/Color.hpp>
-#include <SFML/Graphics/Font.hpp>
-#include <SFML/Graphics/RectangleShape.hpp>
-#include <SFML/Graphics/Text.hpp>
-#include <SFML/Graphics/Texture.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 #include <cstddef>
