@@ -2,6 +2,7 @@
 
 #include "cacarcade/Utils.hpp"
 #include "games/AGameModule.hpp"
+#include <chrono>
 #include <map>
 
 namespace arcade {
@@ -47,6 +48,9 @@ namespace arcade {
             };
 
             std::map<const cacarcade::tileCoordinates, TileInfo> _tileInfo;
+
+            std::chrono::steady_clock::time_point _gameClock;
+            void removeTimeFromScore();
 
             void resetUntilZeroNeighbors(const cacarcade::tileCoordinates position);
             void createBombs();

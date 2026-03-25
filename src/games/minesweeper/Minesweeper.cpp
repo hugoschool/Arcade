@@ -6,6 +6,7 @@
 #include "cacarcade/Tile.hpp"
 #include "cacarcade/Utils.hpp"
 #include "games/AGameModule.hpp"
+#include <chrono>
 #include <exception>
 #include <iostream>
 #include <memory>
@@ -16,7 +17,7 @@
 arcade::MinesweeperGame::MinesweeperGame() : AGameModule("minesweeper"),
     _revealedTileScore(100), _bombAmount(10),
     _firstClick(true), _gameEnded(false),
-    _tileInfo()
+    _tileInfo(), _gameClock()
 {
     size_t width = 9;
     size_t height = 9;
@@ -152,6 +153,17 @@ void arcade::MinesweeperGame::createBombs()
     }
 }
 
+void arcade::MinesweeperGame::removeTimeFromScore()
+{
+    if (_scoreHandler.getSavedState() == true)
+        return;
+
+    std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
+    const std::chrono::duration<double> timeElapsed = (currentTime - _gameClock) * 100;
+
+    _scoreHandler.addScore(static_cast<int>(-timeElapsed.count()));
+}
+
 void arcade::MinesweeperGame::revealAllOnFail()
 {
     _gameEnded = true;
@@ -160,6 +172,7 @@ void arcade::MinesweeperGame::revealAllOnFail()
         revealTile({tile.x, tile.y});
     }
 
+    removeTimeFromScore();
     // TODO: modify playerName
     _scoreHandler.saveScore("Temporary");
 }
@@ -282,6 +295,7 @@ void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &ev
                 if (_firstClick == true) {
                     resetUntilZeroNeighbors(position);
                     _firstClick = false;
+                    _gameClock = std::chrono::steady_clock::now();
                 }
 
                 revealAllZeroesOnTile(position);
