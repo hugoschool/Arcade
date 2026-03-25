@@ -1,5 +1,6 @@
 #pragma once
 
+#include "DisplayTextContent.hpp"
 #include "EventKey.hpp"
 #include "EventMouseButton.hpp"
 #include "EventType.hpp"
@@ -22,5 +23,8 @@ namespace cacarcade {
             // Pair of X, Y coordinates
             virtual std::pair<std::size_t, std::size_t> getTilePosition() = 0;
             virtual void setTilePosition(std::pair<std::size_t, std::size_t>) = 0;
+
+            virtual cacarcade::DisplayTextContent getTextContent() = 0;
+            virtual void setTextContent(cacarcade::DisplayTextContent) = 0;
     };
 }

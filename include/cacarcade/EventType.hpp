@@ -11,6 +11,12 @@ namespace cacarcade {
         PrevDisplay,
         NextDisplay,
 
+        // Game specific Events
+        DisplayText,
+
+        // Menu specific Events
+        LaunchGame,
+
         Reset,
         Quit,
         Menu
