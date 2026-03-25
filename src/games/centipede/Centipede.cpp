@@ -5,6 +5,7 @@
 #include "cacarcade/Tile.hpp"
 #include "cacarcade/Utils.hpp"
 #include "games/AGameModule.hpp"
+#include <chrono>
 #include <cstddef>
 #include <iostream>
 #include <random>
@@ -13,7 +14,7 @@
 
 arcade::CentipedeGame::CentipedeGame() : AGameModule("centipede"),
     _tileInfo(), PlayerPos({10, 15}), OldPlayerPos(PlayerPos),
-    Projectiles()
+    Projectiles(), updateTime(std::chrono::milliseconds(500)), _time()
 {
     size_t width = 21;
     size_t height = 16;
@@ -86,7 +87,7 @@ void arcade::CentipedeGame::setEntityPosition(cacarcade::Tile &tile, std::pair<c
             tile.textColor = cacarcade::Color::Blue;
             break;
         case EntityTiles::Projectile:
-            tile.text = 'I';
+            tile.text = '|';
             tile.textColor = cacarcade::Color::Yellow;
             break;
         case EntityTiles::Centipede:
@@ -111,11 +112,57 @@ void arcade::CentipedeGame::updateTiles()
         } else {
             if (info.second.Mushroom != MushroomDamage::Destroyed) {
                 tile.textColor = cacarcade::Color::Red;
-                tile.text = 'M';
+                tile.text = '0' + static_cast<char>(info.second.Mushroom) + 1;
             } else {
                 setEntityPosition(tile, info);
             }
         }
+    }
+}
+
+void arcade::CentipedeGame::projectileCollisons(std::pair<size_t, size_t> position)
+{
+    TileInfo &info = _tileInfo.at(position);
+
+    if (info.Mushroom != MushroomDamage::Destroyed) {
+        int dmg = static_cast<int>(info.Mushroom) - 1;
+        if (dmg < 0) {
+            info.Mushroom = MushroomDamage::Destroyed;
+            info.isEmpty = true;
+            info.Entity = EntityTiles::None;
+        } else {
+            info.Mushroom = static_cast<MushroomDamage>(dmg);
+        }
+    } else {
+        info.Mushroom = MushroomDamage::VeryHigh;
+        info.Entity = EntityTiles::None;
+        info.isEmpty = false;
+    }
+}
+
+void arcade::CentipedeGame::updateProjectile()
+{
+    if ((std::chrono::steady_clock::now() - _time) >= updateTime) {
+        for (auto i = Projectiles.begin(); i != Projectiles.end(); i++) {
+            std::pair<size_t, size_t> &Projectile = *i;
+            TileInfo &oldProj = _tileInfo.at(Projectile);
+            oldProj.Entity = EntityTiles::None;
+            oldProj.isEmpty = true;
+            oldProj.Mushroom = MushroomDamage::Destroyed;
+            if (Projectile.second > 0) {
+                Projectile.second -= 1;
+                TileInfo &NextTile = _tileInfo.at(Projectile);
+                if (!NextTile.isEmpty) {
+                    projectileCollisons(Projectile);
+                    Projectiles.erase(i);
+                    break;
+                }
+            } else {
+                Projectiles.erase(i);
+                break;
+            }
+        }
+        _time = std::chrono::steady_clock::now();
     }
 }
 
@@ -132,7 +179,8 @@ void arcade::CentipedeGame::updatePlayer()
     info2.isEmpty = false;
     OldPlayerPos = PlayerPos;
 
-    //update Projectiles Position
+    //update Projectiles Position to the tile info
+    updateProjectile();
     for (auto &proj : Projectiles) {
         TileInfo &projectileInfo = _tileInfo.at(proj);
         projectileInfo.Entity = EntityTiles::Projectile;
@@ -144,6 +192,8 @@ void arcade::CentipedeGame::updatePlayer()
 void arcade::CentipedeGame::addProjectile()
 {
     this->Projectiles.push_back({PlayerPos.first, PlayerPos.second - 1});
+    if (Projectiles.size() == 1)
+        _time = std::chrono::steady_clock::now();
 }
 
 void arcade::CentipedeGame::reset()
