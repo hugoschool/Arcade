@@ -45,11 +45,23 @@ namespace arcade {
             };
             std::map<const cacarcade::tileCoordinates, TileInfo> _tileInfo;
 
+            struct Centipede {
+                int direction;
+                //TODO: make this an enum for textures
+                int bodypart;
+                std::pair<size_t, size_t> position;
+            };
+
             std::pair<size_t, size_t> PlayerPos;
             std::pair<size_t, size_t> OldPlayerPos;
+
             std::vector<std::pair<size_t, size_t>> Projectiles;
             std::chrono::milliseconds updateTime;
             std::chrono::steady_clock::time_point _time;
+
+            std::vector<Centipede> vecCentipedes;
+            std::chrono::milliseconds updateTimeCentipede;
+            std::chrono::steady_clock::time_point _timeCentipede;
 
             void placeMushroom();
             void updateTiles();
@@ -58,5 +70,8 @@ namespace arcade {
             void addProjectile();
             void updateProjectile();
             void projectileCollisons(std::pair<size_t, size_t>);
+            void createCentipede();
+            void placeCentipede();
+            void updateCentipede();
     };
 }
