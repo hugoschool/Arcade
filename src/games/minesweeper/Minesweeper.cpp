@@ -16,7 +16,7 @@
 
 arcade::MinesweeperGame::MinesweeperGame() : AGameModule("minesweeper"),
     _revealedTileScore(100), _bombAmount(10), _gameState(GameState::NotStarted),
-    _tileInfo(), _gameClock(), _maxTime(30) // TODO: make changeable depending on difficulty
+    _tileInfo(), _gameClock(), _maxTime(60) // TODO: make changeable depending on difficulty
 {
     size_t width = 9;
     size_t height = 9;
@@ -177,12 +177,16 @@ void arcade::MinesweeperGame::removeTimeFromScore()
 
 void arcade::MinesweeperGame::revealAllOnFail()
 {
+    if (_gameState == GameState::Exploded)
+        return;
+
+    _gameState = GameState::Exploded;
+    saveScore();
+
     for (auto &[_, tile] : _container.tiles) {
         revealTile({tile.x, tile.y});
     }
 
-    _gameState = GameState::Exploded;
-    saveScore();
     // TODO: proper
     std::cout << "Bomb exploded" << std::endl;
 }
@@ -222,9 +226,6 @@ void arcade::MinesweeperGame::setTileContent(cacarcade::Tile &tile, TileInfo &in
 
 void arcade::MinesweeperGame::revealTile(const cacarcade::tileCoordinates &position)
 {
-    if (_gameState != GameState::Ongoing)
-        return;
-
     try {
         cacarcade::Tile &tile = _container.tiles.at(position);
         TileInfo &info = _tileInfo.at(position);
