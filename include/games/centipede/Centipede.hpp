@@ -46,11 +46,12 @@ namespace arcade {
 
             std::pair<size_t, size_t> PlayerPos;
             std::pair<size_t, size_t> OldPlayerPos;
-            std::vector<std::pair<size_t, size_t>> projectiles;
+            std::vector<std::pair<size_t, size_t>> Projectiles;
 
             void placeMushroom();
             void updateTiles();
             void updatePlayer();
-            // void addProjectile();
+            void setEntityPosition(cacarcade::Tile &tile, std::pair<const cacarcade::tileCoordinates, TileInfo> info);
+            void addProjectile();
     };
 }
