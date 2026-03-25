@@ -2,6 +2,7 @@
 
 #include "cacarcade/Utils.hpp"
 #include "games/AGameModule.hpp"
+#include <chrono>
 #include <cstddef>
 #include <utility>
 #include <vector>
@@ -47,11 +48,15 @@ namespace arcade {
             std::pair<size_t, size_t> PlayerPos;
             std::pair<size_t, size_t> OldPlayerPos;
             std::vector<std::pair<size_t, size_t>> Projectiles;
+            std::chrono::milliseconds updateTime;
+            std::chrono::steady_clock::time_point _time;
 
             void placeMushroom();
             void updateTiles();
             void updatePlayer();
             void setEntityPosition(cacarcade::Tile &tile, std::pair<const cacarcade::tileCoordinates, TileInfo> info);
             void addProjectile();
+            void updateProjectile();
+            void projectileCollisons(std::pair<size_t, size_t>);
     };
 }
