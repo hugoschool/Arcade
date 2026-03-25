@@ -1,4 +1,5 @@
 #include "graphicals/SFML/SFML.hpp"
+#include "cacarcade/Color.hpp"
 #include "cacarcade/EventKey.hpp"
 #include "cacarcade/EventMouseButton.hpp"
 #include "cacarcade/Tile.hpp"
@@ -8,6 +9,7 @@
 #include "events/QuitEvent.hpp"
 #include "events/TileClickedEvent.hpp"
 #include "graphicals/ADisplayModule.hpp"
+#include <SFML/Graphics/Color.hpp>
 #include <exception>
 #include <memory>
 #include <optional>
@@ -115,10 +117,18 @@ std::weak_ptr<sf::Texture> arcade::SFMLDisplay::createTexture(std::string &textu
     }
 }
 
+sf::Color arcade::SFMLDisplay::getColor(cacarcade::ColorCode color)
+{
+    return sf::Color(color.r, color.g, color.b, color.a);
+}
+
 void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleShape &tileRect)
 {
-    tileRect.setFillColor(_rendererColorMap.at(tile.backgroundColor));
-    tileRect.setOutlineColor(_rendererColorMap.at(tile.textColor));
+    sf::Color backgroundColor = getColor(tile.backgroundColor);
+    sf::Color textColor = getColor(tile.textColor);
+
+    tileRect.setFillColor(backgroundColor);
+    tileRect.setOutlineColor(textColor);
     tileRect.setOutlineThickness(2);
 
     _window.draw(tileRect);
@@ -131,7 +141,7 @@ void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleSh
         pos.y -= tileRect.getSize().y / 20;
         text.setPosition(pos);
 
-        text.setFillColor(_rendererColorMap.at(tile.textColor));
+        text.setFillColor(textColor);
         text.setCharacterSize(_tileSize - (tileRect.getSize().x / 5));
 
         _window.draw(text);
