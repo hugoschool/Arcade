@@ -52,6 +52,7 @@ arcade::MinesweeperGame::MinesweeperGame() : AGameModule("minesweeper"),
 
 arcade::MinesweeperGame::~MinesweeperGame()
 {
+    saveScore();
 }
 
 void arcade::MinesweeperGame::reset()
@@ -153,6 +154,15 @@ void arcade::MinesweeperGame::createBombs()
     }
 }
 
+void arcade::MinesweeperGame::saveScore()
+{
+    if (_scoreHandler.getSavedState() == false) {
+        removeTimeFromScore();
+        // TODO: remove this
+        _scoreHandler.saveScore("Temporary");
+    }
+}
+
 void arcade::MinesweeperGame::removeTimeFromScore()
 {
     if (_scoreHandler.getSavedState() == true)
@@ -172,9 +182,7 @@ void arcade::MinesweeperGame::revealAllOnFail()
         revealTile({tile.x, tile.y});
     }
 
-    removeTimeFromScore();
-    // TODO: modify playerName
-    _scoreHandler.saveScore("Temporary");
+    saveScore();
 }
 
 void arcade::MinesweeperGame::setTileContent(cacarcade::Tile &tile, TileInfo &info)

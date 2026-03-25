@@ -52,6 +52,8 @@ namespace arcade {
             std::chrono::steady_clock::time_point _gameClock;
             void removeTimeFromScore();
 
+            void saveScore();
+
             void resetUntilZeroNeighbors(const cacarcade::tileCoordinates position);
             void createBombs();
 
