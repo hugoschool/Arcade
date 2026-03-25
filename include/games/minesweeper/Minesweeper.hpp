@@ -54,7 +54,21 @@ namespace arcade {
                 std::size_t neighborAmount;
             };
 
+            BoundedXY _gameSize;
+
+            struct MenuTileInfo {
+                enum class State {
+                    Unused,
+                    ResetButton,
+                    Chrono,
+                    Bombs,
+                } state;
+            };
+
+            void createMenuBar();
+
             std::map<const cacarcade::tileCoordinates, TileInfo> _tileInfo;
+            std::map<const cacarcade::tileCoordinates, MenuTileInfo> _menuTiles;
 
             std::chrono::steady_clock::time_point _gameClock;
             std::chrono::seconds _maxTime;
