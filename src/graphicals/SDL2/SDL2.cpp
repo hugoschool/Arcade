@@ -190,7 +190,7 @@ void arcade::SDL2Display::displayTileText(cacarcade::Tile &tile, SDL_Rect &tileR
 {
     setRendererDrawColor(tile.backgroundColor);
     SDL_RenderFillRect(_renderer, &tileRect);
-    setRendererDrawColor(cacarcade::Color::Red);
+    setRendererDrawColor(tile.textColor);
     SDL_RenderDrawRect(_renderer, &tileRect);
 
     if (tile.text != '\0')
