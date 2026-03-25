@@ -54,6 +54,15 @@ namespace arcade {
             {
             }
 
+            cacarcade::DisplayTextContent getTextContent() override
+            {
+                return {};
+            }
+
+            void setTextContent(cacarcade::DisplayTextContent) override
+            {
+            }
+
         private:
             cacarcade::EventType _type;
     };
