@@ -25,9 +25,14 @@ void arcade::Arcade::handleGlobalEvents(std::unique_ptr<cacarcade::IEvent> &even
         case cacarcade::EventType::KeyPressed: {
             if (event->getKey() == cacarcade::EventKey::R)
                 event->setType(cacarcade::EventType::Reset);
+            break;
         }
         default:
             break;
+    }
+
+    if (event->getType() == cacarcade::EventType::Reset) {
+        _game->reset();
     }
 }
 

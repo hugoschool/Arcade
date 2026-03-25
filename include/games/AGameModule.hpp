@@ -15,6 +15,8 @@ namespace arcade {
             cacarcade::TileContainer getTiles() const override;
             std::optional<std::unique_ptr<cacarcade::IEvent>> pollEvent() override;
 
+            virtual void reset() override;
+
         protected:
             cacarcade::TileContainer _container;
             arcade::ScoreHandler _scoreHandler;
@@ -22,6 +24,5 @@ namespace arcade {
             std::queue<std::unique_ptr<cacarcade::IEvent>> _eventQueue;
 
             virtual void handleEvent(std::unique_ptr<cacarcade::IEvent> &event);
-            virtual void reset();
     };
 }

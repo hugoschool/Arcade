@@ -11,10 +11,10 @@ namespace arcade {
             ~MinesweeperGame();
 
             void update(std::optional<std::unique_ptr<cacarcade::IEvent>> &event) override;
+            void reset() override;
 
         protected:
             void handleEvent(std::unique_ptr<cacarcade::IEvent> &event) override;
-            void reset() override;
 
         private:
             const std::size_t _revealedTileScore;
