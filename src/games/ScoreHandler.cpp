@@ -18,12 +18,12 @@ arcade::ScoreHandler::~ScoreHandler()
         _fileInput.close();
 }
 
-void arcade::ScoreHandler::addScore(std::size_t plusScore)
+void arcade::ScoreHandler::addScore(std::int64_t plusScore)
 {
     _score += plusScore;
 }
 
-std::size_t arcade::ScoreHandler::getScore() const
+std::int64_t arcade::ScoreHandler::getScore() const
 {
     return _score;
 }
@@ -61,9 +61,9 @@ std::string arcade::ScoreHandler::getKeyGameName() const
     return keyGameName;
 }
 
-std::vector<std::pair<const std::string, const std::size_t>> arcade::ScoreHandler::loadScores()
+std::vector<std::pair<const std::string, const std::int64_t>> arcade::ScoreHandler::loadScores()
 {
-    std::vector<std::pair<const std::string, const std::size_t>> scores;
+    std::vector<std::pair<const std::string, const std::int64_t>> scores;
 
     if (!_fileInput.is_open())
         return scores;
@@ -92,7 +92,7 @@ std::vector<std::pair<const std::string, const std::size_t>> arcade::ScoreHandle
             std::string playerName = line.substr(0, line.find(delimiter));
             std::string scoreString = line.substr(line.find(delimiter), line.length());
 
-            std::size_t score = 0;
+            std::int64_t score = 0;
             std::stringstream ss(scoreString);
 
             ss >> score;
