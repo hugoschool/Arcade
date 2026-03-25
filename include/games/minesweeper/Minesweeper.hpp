@@ -61,6 +61,7 @@ namespace arcade {
             void toggleFlag(const cacarcade::tileCoordinates &position);
 
             void setTileContent(cacarcade::Tile &tile, TileInfo &info);
+            void checkVictory();
             void revealAllOnFail();
             void revealTile(const cacarcade::tileCoordinates &position);
             void revealAllZeroesOnTile(const cacarcade::tileCoordinates &position);

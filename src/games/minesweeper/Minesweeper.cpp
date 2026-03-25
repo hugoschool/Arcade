@@ -220,6 +220,9 @@ void arcade::MinesweeperGame::setTileContent(cacarcade::Tile &tile, TileInfo &in
 
 void arcade::MinesweeperGame::revealTile(const cacarcade::tileCoordinates &position)
 {
+    if (_gameEnded == true)
+        return;
+
     try {
         cacarcade::Tile &tile = _container.tiles.at(position);
         TileInfo &info = _tileInfo.at(position);
@@ -292,6 +295,19 @@ void arcade::MinesweeperGame::toggleFlag(const cacarcade::tileCoordinates &posit
     }
 }
 
+void arcade::MinesweeperGame::checkVictory()
+{
+    for (const auto &[_, info] : _tileInfo) {
+        if (info.state == MinesweeperGame::TileState::Normal && info.isRevealed == false)
+            return;
+    }
+
+    _gameEnded = true;
+    saveScore();
+    // TODO: do a proper victory stuff
+    std::cout << "Victory! Reset game with R" << std::endl;;
+}
+
 void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &event)
 {
     switch (event->getType()) {
@@ -308,6 +324,8 @@ void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &ev
 
                 revealAllZeroesOnTile(position);
                 revealTile(position);
+
+                checkVictory();
             } else if (mouseButton == cacarcade::EventMouseButton::Right) {
                 toggleFlag(position);
             }
