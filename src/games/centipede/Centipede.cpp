@@ -3,6 +3,7 @@
 #include "cacarcade/EventKey.hpp"
 #include "cacarcade/EventType.hpp"
 #include "cacarcade/Tile.hpp"
+#include "cacarcade/Utils.hpp"
 #include "games/AGameModule.hpp"
 #include <cstddef>
 #include <iostream>
@@ -12,7 +13,7 @@
 
 arcade::CentipedeGame::CentipedeGame() : AGameModule("centipede"),
     _tileInfo(), PlayerPos({10, 15}), OldPlayerPos(PlayerPos),
-    projectiles()
+    Projectiles()
 {
     size_t width = 21;
     size_t height = 16;
@@ -77,6 +78,28 @@ void arcade::CentipedeGame::placeMushroom()
     }
 }
 
+void arcade::CentipedeGame::setEntityPosition(cacarcade::Tile &tile, std::pair<const cacarcade::tileCoordinates, TileInfo> info)
+{
+    switch (info.second.Entity) {
+        case EntityTiles::Player:
+            tile.text = 'P';
+            tile.textColor = cacarcade::Color::Blue;
+            break;
+        case EntityTiles::Projectile:
+            tile.text = 'I';
+            tile.textColor = cacarcade::Color::Yellow;
+            break;
+        case EntityTiles::Centipede:
+            tile.text = 'C';
+            tile.textColor = cacarcade::Color::White;
+            break;
+        case EntityTiles::None:
+            tile.text = '\0';
+            tile.textColor = cacarcade::Color::Green;
+            break;
+    }
+}
+
 void arcade::CentipedeGame::updateTiles()
 {
     for (auto &info : _tileInfo) {
@@ -90,24 +113,7 @@ void arcade::CentipedeGame::updateTiles()
                 tile.textColor = cacarcade::Color::Red;
                 tile.text = 'M';
             } else {
-                switch (info.second.Entity) {
-                    case EntityTiles::Player:
-                        tile.text = 'P';
-                        tile.textColor = cacarcade::Color::Blue;
-                        break;
-                    case EntityTiles::Projectile:
-                        tile.text = 'I';
-                        tile.textColor = cacarcade::Color::Yellow;
-                        break;
-                    case EntityTiles::Centipede:
-                        tile.text = 'C';
-                        tile.textColor = cacarcade::Color::White;
-                        break;
-                    case EntityTiles::None:
-                        tile.text = '\0';
-                        tile.textColor = cacarcade::Color::Green;
-                        break;
-                }
+                setEntityPosition(tile, info);
             }
         }
     }
@@ -125,9 +131,20 @@ void arcade::CentipedeGame::updatePlayer()
     info2.Entity = EntityTiles::Player;
     info2.isEmpty = false;
     OldPlayerPos = PlayerPos;
+
+    //update Projectiles Position
+    for (auto &proj : Projectiles) {
+        TileInfo &projectileInfo = _tileInfo.at(proj);
+        projectileInfo.Entity = EntityTiles::Projectile;
+        projectileInfo.isEmpty = false;
+        projectileInfo.Mushroom = MushroomDamage::Destroyed;
+    }
 }
 
-// void arcade::CentipedeGame::
+void arcade::CentipedeGame::addProjectile()
+{
+    this->Projectiles.push_back({PlayerPos.first, PlayerPos.second - 1});
+}
 
 void arcade::CentipedeGame::reset()
 {
@@ -153,7 +170,7 @@ void arcade::CentipedeGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &even
             break;
         }
         case cacarcade::EventType::TileClicked: {
-            // addProjectile();
+            addProjectile();
             break;
         }
         default:
