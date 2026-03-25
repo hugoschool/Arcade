@@ -291,9 +291,6 @@ void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &ev
             }
             break;
         }
-        case cacarcade::EventType::Reset:
-            reset();
-            break;
         default:
             break;
     }
