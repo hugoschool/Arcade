@@ -16,7 +16,7 @@
 
 arcade::MinesweeperGame::MinesweeperGame() : AGameModule("minesweeper"),
     _revealedTileScore(100), _bombAmount(10), _gameState(GameState::NotStarted),
-    _tileInfo(), _gameClock(), _maxTime(5) // TODO: make changeable depending on difficulty
+    _tileInfo(), _gameClock(), _maxTime(30) // TODO: make changeable depending on difficulty
 {
     size_t width = 9;
     size_t height = 9;
@@ -154,6 +154,9 @@ void arcade::MinesweeperGame::createBombs()
 
 void arcade::MinesweeperGame::saveScore()
 {
+    if (_gameState == GameState::NotStarted)
+        return;
+
     if (_scoreHandler.getSavedState() == false) {
         removeTimeFromScore();
         // TODO: remove this
@@ -174,13 +177,14 @@ void arcade::MinesweeperGame::removeTimeFromScore()
 
 void arcade::MinesweeperGame::revealAllOnFail()
 {
-    _gameState = GameState::Exploded;
-
     for (auto &[_, tile] : _container.tiles) {
         revealTile({tile.x, tile.y});
     }
 
+    _gameState = GameState::Exploded;
     saveScore();
+    // TODO: proper
+    std::cout << "Bomb exploded" << std::endl;
 }
 
 void arcade::MinesweeperGame::setTileContent(cacarcade::Tile &tile, TileInfo &info)
@@ -309,7 +313,7 @@ void arcade::MinesweeperGame::checkVictory()
     _gameState = GameState::Victory;
     saveScore();
     // TODO: do a proper victory stuff
-    std::cout << "Victory! Reset game with R" << std::endl;;
+    std::cout << "Victory! Reset game with R" << std::endl;
 }
 
 void arcade::MinesweeperGame::isTimeOver()
@@ -322,6 +326,9 @@ void arcade::MinesweeperGame::isTimeOver()
 
     if (timeElapsed >= _maxTime) {
         _gameState = GameState::TimeExpired;
+        saveScore();
+        // TODO: proper
+        std::cout << "Time expired" << std::endl;
     }
 }
 

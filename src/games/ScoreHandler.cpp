@@ -116,25 +116,29 @@ void arcade::ScoreHandler::saveScore(const std::string playerName)
 
     const std::string keyGameName = getKeyGameName();
 
-    if (_fileInput.is_open()) {
-        _fileInput.seekg(0, std::fstream::beg);
+    // In case of changes in the scores file, we reopen the file for fresh content.
+    if (_fileInput.is_open())
+        _fileInput.close();
 
-        std::string line;
-        bool keyGameNameInFile = false;
+    _fileInput.open(_fileName);
 
-        while (std::getline(_fileInput, line)) {
-            lines.push_back(line);
-            if (line == keyGameName) {
-                keyGameNameInFile = true;
-                lines.push_back(scoreLine);
-            }
-        }
+    if (!_fileInput.is_open()) {
+        std::cerr << "Impossible to write to " << _fileName << std::endl;
+        return;
+    }
 
-        if (keyGameNameInFile == false) {
-            lines.push_back(keyGameName);
+    std::string line;
+    bool keyGameNameInFile = false;
+
+    while (std::getline(_fileInput, line)) {
+        lines.push_back(line);
+        if (line == keyGameName) {
+            keyGameNameInFile = true;
             lines.push_back(scoreLine);
         }
-    } else {
+    }
+
+    if (keyGameNameInFile == false || lines.empty()) {
         lines.push_back(keyGameName);
         lines.push_back(scoreLine);
     }
