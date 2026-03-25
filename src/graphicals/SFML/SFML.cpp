@@ -129,7 +129,7 @@ void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleSh
 
     tileRect.setFillColor(backgroundColor);
     tileRect.setOutlineColor(textColor);
-    tileRect.setOutlineThickness(2);
+    tileRect.setOutlineThickness(_outlineThickness);
 
     _window.draw(tileRect);
 
