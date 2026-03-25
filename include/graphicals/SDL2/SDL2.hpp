@@ -26,22 +26,13 @@ namespace arcade {
 
             TTF_Font *_font;
 
-            const std::map<const cacarcade::Color, const SDL_Color> _rendererColorMap = {
-                {cacarcade::Color::Black, {0x00, 0x00, 0x00, 0xFF}},
-                {cacarcade::Color::White, {0xFF, 0xFF, 0xFF, 0xFF}},
-                {cacarcade::Color::Blue, {0x00, 0x00, 0xFF, 0xFF}},
-                {cacarcade::Color::Red, {0xFF, 0x00, 0x00, 0xFF}},
-                {cacarcade::Color::Green, {0x00, 0xFF, 0x00, 0xFF}},
-                {cacarcade::Color::Yellow, {0xFF, 0xFF, 0x00, 0xFF}},
-            };
-
-            const SDL_Color getRendererColor(cacarcade::Color color);
-            void setRendererDrawColor(cacarcade::Color color);
+            const SDL_Color getRendererColor(cacarcade::ColorCode color);
+            void setRendererDrawColor(cacarcade::ColorCode color);
 
             cacarcade::EventKey getKey(const SDL_Keycode keycode);
             cacarcade::EventMouseButton getMouseButton(Uint8 button);
 
-            void displayTextOnTile(const char c, cacarcade::Color color, SDL_Rect &tileRect);
+            void displayTextOnTile(const char c, cacarcade::ColorCode color, SDL_Rect &tileRect);
 
             std::map<std::string, SDL_Texture *> _textureMap;
             SDL_Texture *createTexture(std::string &textureName);

@@ -135,22 +135,18 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SDL2Display::pollEvent
     return std::nullopt;
 }
 
-const SDL_Color arcade::SDL2Display::getRendererColor(cacarcade::Color color)
+const SDL_Color arcade::SDL2Display::getRendererColor(cacarcade::ColorCode color)
 {
-    try {
-        return _rendererColorMap.at(color);
-    } catch (const std::out_of_range &) {
-        return {0xFF, 0xFF, 0xFF, 0xFF};
-    };
+    return {color.r, color.g, color.b, color.a};
 }
 
-void arcade::SDL2Display::setRendererDrawColor(cacarcade::Color color)
+void arcade::SDL2Display::setRendererDrawColor(cacarcade::ColorCode color)
 {
     const SDL_Color c = getRendererColor(color);
     SDL_SetRenderDrawColor(_renderer, c.r, c.g, c.b, c.a);
 }
 
-void arcade::SDL2Display::displayTextOnTile(const char c, cacarcade::Color color, SDL_Rect &tileRect)
+void arcade::SDL2Display::displayTextOnTile(const char c, cacarcade::ColorCode color, SDL_Rect &tileRect)
 {
     const char text[2] = {c, '\0'};
     SDL_Surface *surface = TTF_RenderText_Solid(_font, text, getRendererColor(color));

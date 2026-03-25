@@ -11,8 +11,8 @@ namespace cacarcade {
 
         std::string textureName;
 
-        cacarcade::Color backgroundColor;
+        cacarcade::ColorCode backgroundColor;
         char text;
-        cacarcade::Color textColor;
+        cacarcade::ColorCode textColor;
     };
 }

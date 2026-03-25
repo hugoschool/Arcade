@@ -28,17 +28,10 @@ namespace arcade {
 
             std::size_t _outlineThickness;
 
-            const std::map<const cacarcade::Color, const sf::Color> _rendererColorMap = {
-                {cacarcade::Color::Black, sf::Color::Black},
-                {cacarcade::Color::White, sf::Color::White},
-                {cacarcade::Color::Blue, sf::Color::Blue},
-                {cacarcade::Color::Red, sf::Color::Red},
-                {cacarcade::Color::Green, sf::Color::Green},
-                {cacarcade::Color::Yellow, sf::Color::Yellow},
-            };
-
             cacarcade::EventKey getKey(const sf::Keyboard::Key key);
             cacarcade::EventMouseButton getMouseButton(sf::Mouse::Button button);
+
+            sf::Color getColor(cacarcade::ColorCode color);
 
             std::map<std::string, std::shared_ptr<sf::Texture>> _textureMap;
             std::weak_ptr<sf::Texture> createTexture(std::string &textureName);

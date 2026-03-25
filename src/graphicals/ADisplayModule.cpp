@@ -41,6 +41,10 @@ void arcade::ADisplayModule::displayTiles(cacarcade::TileContainer)
 {
 }
 
+void arcade::ADisplayModule::displayText(cacarcade::DisplayTextContent)
+{
+}
+
 std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::ADisplayModule::pollEvent()
 {
     return std::nullopt;
