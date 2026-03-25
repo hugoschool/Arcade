@@ -17,7 +17,7 @@
 arcade::MinesweeperGame::MinesweeperGame() : AGameModule("minesweeper"),
     _revealedTileScore(100), _bombAmount(10),
     _firstClick(true), _gameEnded(false),
-    _tileInfo(), _gameClock()
+    _tileInfo(), _gameClock(), _maxTime(30) // TODO: make changeable depending on difficulty
 {
     size_t width = 9;
     size_t height = 9;
@@ -308,6 +308,20 @@ void arcade::MinesweeperGame::checkVictory()
     std::cout << "Victory! Reset game with R" << std::endl;;
 }
 
+void arcade::MinesweeperGame::isTimeOver()
+{
+    // Check if game has not started yet or if it has already ended
+    if (_firstClick == true || _gameEnded == true)
+        return;
+
+    std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
+    const std::chrono::duration<double> timeElapsed = currentTime - _gameClock;
+
+    if (timeElapsed >= _maxTime) {
+        _gameEnded = true;
+    }
+}
+
 void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &event)
 {
     switch (event->getType()) {
@@ -341,6 +355,7 @@ void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &ev
 
 void arcade::MinesweeperGame::update(std::optional<std::unique_ptr<cacarcade::IEvent>> &event)
 {
+    isTimeOver();
     if (event.has_value()) {
         handleEvent(event.value());
     }

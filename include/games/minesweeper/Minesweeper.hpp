@@ -50,6 +50,7 @@ namespace arcade {
             std::map<const cacarcade::tileCoordinates, TileInfo> _tileInfo;
 
             std::chrono::steady_clock::time_point _gameClock;
+            std::chrono::seconds _maxTime;
             void removeTimeFromScore();
 
             void saveScore();
@@ -62,6 +63,7 @@ namespace arcade {
 
             void setTileContent(cacarcade::Tile &tile, TileInfo &info);
             void checkVictory();
+            void isTimeOver();
             void revealAllOnFail();
             void revealTile(const cacarcade::tileCoordinates &position);
             void revealAllZeroesOnTile(const cacarcade::tileCoordinates &position);
