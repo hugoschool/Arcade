@@ -21,8 +21,15 @@ namespace arcade {
             const std::size_t _revealedTileScore;
 
             std::size_t _bombAmount;
-            bool _firstClick;
-            bool _gameEnded;
+
+            enum class GameState {
+                NotStarted,
+                Ongoing,
+                TimeExpired,
+                Exploded,
+                Victory
+            };
+            GameState _gameState;
 
             struct BoundedXY {
                 std::size_t xStart;

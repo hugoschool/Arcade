@@ -15,9 +15,8 @@
 #include <utility>
 
 arcade::MinesweeperGame::MinesweeperGame() : AGameModule("minesweeper"),
-    _revealedTileScore(100), _bombAmount(10),
-    _firstClick(true), _gameEnded(false),
-    _tileInfo(), _gameClock(), _maxTime(30) // TODO: make changeable depending on difficulty
+    _revealedTileScore(100), _bombAmount(10), _gameState(GameState::NotStarted),
+    _tileInfo(), _gameClock(), _maxTime(5) // TODO: make changeable depending on difficulty
 {
     size_t width = 9;
     size_t height = 9;
@@ -59,8 +58,7 @@ void arcade::MinesweeperGame::reset()
 {
     AGameModule::reset();
 
-    _firstClick = true;
-    _gameEnded = false;
+    _gameState = GameState::NotStarted;
     for (auto &[_, tile] : _container.tiles) {
         tile.backgroundColor = cacarcade::Color::Black;
         tile.text = '\0';
@@ -176,7 +174,7 @@ void arcade::MinesweeperGame::removeTimeFromScore()
 
 void arcade::MinesweeperGame::revealAllOnFail()
 {
-    _gameEnded = true;
+    _gameState = GameState::Exploded;
 
     for (auto &[_, tile] : _container.tiles) {
         revealTile({tile.x, tile.y});
@@ -220,7 +218,7 @@ void arcade::MinesweeperGame::setTileContent(cacarcade::Tile &tile, TileInfo &in
 
 void arcade::MinesweeperGame::revealTile(const cacarcade::tileCoordinates &position)
 {
-    if (_gameEnded == true)
+    if (_gameState != GameState::Ongoing)
         return;
 
     try {
@@ -237,7 +235,7 @@ void arcade::MinesweeperGame::revealTile(const cacarcade::tileCoordinates &posit
 
         switch (info.state) {
             case TileState::Normal: {
-                if (_gameEnded == false)
+                if (_gameState == GameState::Ongoing)
                     _scoreHandler.addScore(_revealedTileScore);
                 break;
             }
@@ -279,6 +277,9 @@ void arcade::MinesweeperGame::revealAllZeroesOnTile(const cacarcade::tileCoordin
 
 void arcade::MinesweeperGame::toggleFlag(const cacarcade::tileCoordinates &position)
 {
+    if (_gameState != GameState::Ongoing)
+        return;
+
     try {
         cacarcade::Tile &tile = _container.tiles.at(position);
         TileInfo &info = _tileInfo.at(position);
@@ -297,12 +298,15 @@ void arcade::MinesweeperGame::toggleFlag(const cacarcade::tileCoordinates &posit
 
 void arcade::MinesweeperGame::checkVictory()
 {
+    if (_gameState != GameState::Ongoing)
+        return;
+
     for (const auto &[_, info] : _tileInfo) {
         if (info.state == MinesweeperGame::TileState::Normal && info.isRevealed == false)
             return;
     }
 
-    _gameEnded = true;
+    _gameState = GameState::Victory;
     saveScore();
     // TODO: do a proper victory stuff
     std::cout << "Victory! Reset game with R" << std::endl;;
@@ -310,15 +314,14 @@ void arcade::MinesweeperGame::checkVictory()
 
 void arcade::MinesweeperGame::isTimeOver()
 {
-    // Check if game has not started yet or if it has already ended
-    if (_firstClick == true || _gameEnded == true)
+    if (_gameState != GameState::Ongoing)
         return;
 
     std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
     const std::chrono::duration<double> timeElapsed = currentTime - _gameClock;
 
     if (timeElapsed >= _maxTime) {
-        _gameEnded = true;
+        _gameState = GameState::TimeExpired;
     }
 }
 
@@ -330,9 +333,9 @@ void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &ev
             std::pair<std::size_t, std::size_t> position = event->getTilePosition();
 
             if (mouseButton == cacarcade::EventMouseButton::Left) {
-                if (_firstClick == true) {
+                if (_gameState == GameState::NotStarted) {
                     resetUntilZeroNeighbors(position);
-                    _firstClick = false;
+                    _gameState = GameState::Ongoing;
                     _gameClock = std::chrono::steady_clock::now();
                 }
 
