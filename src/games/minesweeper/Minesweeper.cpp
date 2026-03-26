@@ -6,8 +6,10 @@
 #include "cacarcade/Tile.hpp"
 #include "cacarcade/Utils.hpp"
 #include "games/AGameModule.hpp"
+#include <array>
 #include <chrono>
 #include <exception>
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <random>
@@ -436,11 +438,45 @@ void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &ev
     }
 }
 
+void arcade::MinesweeperGame::updateMenuTiles()
+{
+    if (_gameState != GameState::Ongoing)
+        return;
+
+    const std::array<std::reference_wrapper<cacarcade::Tile>, 3> chrono = {
+        {
+            _container.tiles.at({0, 0}),
+            _container.tiles.at({1, 0}),
+            _container.tiles.at({2, 0}),
+        }
+    };
+
+    std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
+    const std::chrono::duration<double> timeElapsed = currentTime - _gameClock;
+    std::string countdown = std::to_string(static_cast<int>(_maxTime.count() - timeElapsed.count()));
+
+    std::size_t len = countdown.length();
+    if (len >= 3) {
+        for (int i = 2; i >= 0; i--) {
+            chrono[i].get().text = '9';
+        }
+    } else {
+        for (int i = 2; i >= 0; i--) {
+            if (len > 0) {
+                chrono[i].get().text = countdown[len - 1];
+                len--;
+            } else {
+                chrono[i].get().text = '0';
+            }
+        }
+    }
+}
+
 void arcade::MinesweeperGame::update(std::optional<std::unique_ptr<cacarcade::IEvent>> &event)
 {
     isTimeOver();
     if (event.has_value()) {
         handleEvent(event.value());
     }
-    // TODO: update menu tiles
+    updateMenuTiles();
 }
