@@ -62,6 +62,7 @@ namespace arcade {
             std::vector<Centipede> vecCentipedes;
             std::chrono::milliseconds updateTimeCentipede;
             std::chrono::steady_clock::time_point _timeCentipede;
+            int centipedeCount;
 
             size_t _width;
             size_t _height;
