@@ -150,10 +150,10 @@ void arcade::CentipedeGame::projectileCollisons(std::pair<size_t, size_t> positi
             info.Mushroom = MushroomDamage::Destroyed;
             info.isEmpty = true;
             info.Entity = EntityTiles::None;
+            _scoreHandler.addScore(1);
         } else {
             info.Mushroom = static_cast<MushroomDamage>(dmg);
         }
-        _scoreHandler.addScore(5);
     } else {
         for (auto i = vecCentipedes.begin(); i != vecCentipedes.end(); i++) {
             Centipede &centipede = *i;
@@ -194,6 +194,13 @@ void arcade::CentipedeGame::updateCentipede()
                 centipede.position.second += 1;
             else {
                 // chage score to an int instead of a size_t
+                for (auto i = vecCentipedes.begin(); i != vecCentipedes.end(); i++) {
+                    Centipede centi = *i;
+                    if (centi.position == centipede.position) {
+                        vecCentipedes.erase(i);
+                        break;
+                    }
+                }
                 _scoreHandler.addScore(0);
             }
         }
