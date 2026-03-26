@@ -18,7 +18,7 @@
 
 arcade::MinesweeperGame::MinesweeperGame() : AGameModule("minesweeper"),
     _revealedTileScore(100), _bombAmount(10), _gameState(GameState::NotStarted),
-    _tileInfo(), _menuTiles(), _gameClock(), _maxTime(60) // TODO: make changeable depending on difficulty
+    _tileInfo(), _menuTiles(), _bombFlagCount(0), _gameClock(), _maxTime(60) // TODO: make changeable depending on difficulty
 {
     std::size_t width = 9;
     std::size_t height = 9;
@@ -428,6 +428,9 @@ void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &ev
             } else if (mouseButton == cacarcade::EventMouseButton::Right) {
                 toggleFlag(position);
             }
+
+            setBombFlagCount();
+
             break;
         }
         case cacarcade::EventType::Reset:
@@ -438,7 +441,7 @@ void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &ev
     }
 }
 
-std::int64_t arcade::MinesweeperGame::getFlagsBombCount()
+void arcade::MinesweeperGame::setBombFlagCount()
 {
     std::int64_t count = 0;
 
@@ -451,7 +454,7 @@ std::int64_t arcade::MinesweeperGame::getFlagsBombCount()
                 count -= 1;
         } catch (const std::exception &) {}
     }
-    return count;
+    _bombFlagCount = count;
 }
 
 void arcade::MinesweeperGame::displayTextOnTiles(
@@ -483,6 +486,7 @@ void arcade::MinesweeperGame::updateMenuTiles()
     if (_gameState != GameState::Ongoing)
         return;
 
+    // TODO
     const std::vector<std::reference_wrapper<cacarcade::Tile>> chrono = {
         {
             _container.tiles.at({0, 0}),
@@ -497,6 +501,7 @@ void arcade::MinesweeperGame::updateMenuTiles()
 
     displayTextOnTiles(chrono, countdown);
 
+    // TODO
     const std::vector<std::reference_wrapper<cacarcade::Tile>> bombs = {
         {
             _container.tiles.at({6, 0}),
@@ -505,9 +510,8 @@ void arcade::MinesweeperGame::updateMenuTiles()
         }
     };
 
-    // TODO:
-    std::string a = std::to_string(getFlagsBombCount());
-    displayTextOnTiles(bombs, a);
+    std::string bombFlagCountStr = std::to_string(_bombFlagCount);
+    displayTextOnTiles(bombs, bombFlagCountStr);
 }
 
 void arcade::MinesweeperGame::update(std::optional<std::unique_ptr<cacarcade::IEvent>> &event)
