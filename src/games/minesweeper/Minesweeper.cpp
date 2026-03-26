@@ -355,6 +355,9 @@ void arcade::MinesweeperGame::toggleFlag(const cacarcade::tileCoordinates &posit
         cacarcade::Tile &tile = _container.tiles.at(position);
         TileInfo &info = _tileInfo.at(position);
 
+        if (info.isRevealed == true)
+            return;
+
         if (info.isFlag == true) {
             info.isFlag = false;
         } else {
