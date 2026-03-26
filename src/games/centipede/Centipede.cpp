@@ -18,7 +18,7 @@ arcade::CentipedeGame::CentipedeGame() : AGameModule("centipede"),
     _tileInfo(), PlayerPos({10, 15}), OldPlayerPos(PlayerPos),
     Projectiles(), updateTime(std::chrono::milliseconds(100)), _time(),
     vecCentipedes(), updateTimeCentipede(std::chrono::milliseconds(250)),
-    _timeCentipede(), _width(21), _height(16), _isPaused(false)
+    _timeCentipede(), centipedeCount(5), _width(21), _height(16), _isPaused(false)
 {
     _container.dimension = std::make_pair(_width, _height);
 
@@ -189,16 +189,17 @@ void arcade::CentipedeGame::updateCentipede()
                 centipede.position.first += centipede.direction;
             }
         } else {
-            centipede.direction *= -1;
-            if (centipede.position.second < _height - 1)
+            if (centipede.position.second < _height - 1) {
+                centipede.direction *= -1;
                 centipede.position.second += 1;
-            else {
+            } else {
                 // chage score to an int instead of a size_t
                 for (auto i = vecCentipedes.begin(); i != vecCentipedes.end(); i++) {
                     Centipede centi = *i;
                     if (centi.position == centipede.position) {
                         vecCentipedes.erase(i);
-                        break;
+                        _timeCentipede = std::chrono::steady_clock::now();
+                        return;
                     }
                 }
                 _scoreHandler.addScore(0);
@@ -222,6 +223,7 @@ void arcade::CentipedeGame::placeCentipede()
     }
     if (vecCentipedes.empty()) {
         createCentipede();
+        centipedeCount -= 1;
     }
 }
 
@@ -344,8 +346,10 @@ void arcade::CentipedeGame::update(std::optional<std::unique_ptr<cacarcade::IEve
     if (event.has_value())
         handleEvent(event.value());
     if (!_isPaused) {
-        placeCentipede();
-        updatePlayer();
+        if (centipedeCount > 0) {
+            placeCentipede();
+            updatePlayer();
+        }
         updateTiles();
     }
 }
