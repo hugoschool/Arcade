@@ -34,6 +34,7 @@ namespace arcade {
             };
             GameState _gameState;
 
+            // TODO: Find a way better name for this structure
             struct BoundedXY {
                 std::size_t xStart;
                 std::size_t xEnd;
