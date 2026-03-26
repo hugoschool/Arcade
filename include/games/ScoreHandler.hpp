@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -12,12 +13,12 @@ namespace arcade {
 
             ~ScoreHandler();
 
-            void addScore(std::size_t plusScore);
-            std::size_t getScore() const;
+            void addScore(std::int64_t plusScore);
+            std::int64_t getScore() const;
             void resetScore();
 
             // Pair of player names and scores
-            std::vector<std::pair<const std::string, const std::size_t>> loadScores();
+            std::vector<std::pair<const std::string, const std::int64_t>> loadScores();
 
             void saveScore(const std::string playerName);
 
@@ -29,7 +30,7 @@ namespace arcade {
             std::ifstream _fileInput;
 
             const std::string _gameName;
-            std::size_t _score;
+            std::int64_t _score;
 
             bool _isSaved;
 

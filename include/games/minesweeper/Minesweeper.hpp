@@ -1,8 +1,12 @@
 #pragma once
 
+#include "cacarcade/Tile.hpp"
 #include "cacarcade/Utils.hpp"
 #include "games/AGameModule.hpp"
+#include <chrono>
+#include <functional>
 #include <map>
+#include <vector>
 
 namespace arcade {
     class MinesweeperGame : public AGameModule {
@@ -20,9 +24,17 @@ namespace arcade {
             const std::size_t _revealedTileScore;
 
             std::size_t _bombAmount;
-            bool _firstClick;
-            bool _gameEnded;
 
+            enum class GameState {
+                NotStarted,
+                Ongoing,
+                TimeExpired,
+                Exploded,
+                Victory
+            };
+            GameState _gameState;
+
+            // TODO: Find a way better name for this structure
             struct BoundedXY {
                 std::size_t xStart;
                 std::size_t xEnd;
@@ -37,6 +49,7 @@ namespace arcade {
             enum class TileState {
                 Normal,
                 Bomb,
+                Menu,
             };
 
             struct TileInfo {
@@ -46,7 +59,33 @@ namespace arcade {
                 std::size_t neighborAmount;
             };
 
+            BoundedXY _gameSize;
+
+            void createMenuBar();
+
             std::map<const cacarcade::tileCoordinates, TileInfo> _tileInfo;
+            std::vector<std::reference_wrapper<cacarcade::Tile>> _chronoMenuTiles;
+            std::vector<std::reference_wrapper<cacarcade::Tile>> _bombMenuTiles;
+            std::optional<std::reference_wrapper<cacarcade::Tile>> _resetMenuTile;
+
+            // Returns true if a menu tile was clicked
+            bool handleMenuTileClicked(cacarcade::tileCoordinates &position);
+
+            std::int64_t _bombFlagCount;
+
+            void setBombFlagCount();
+            void displayTextOnTiles(
+                const std::vector<std::reference_wrapper<cacarcade::Tile>> &tiles,
+                const std::string &text
+            );
+            void updateMenuTiles();
+
+            std::chrono::steady_clock::time_point _gameClock;
+
+            std::chrono::seconds _maxTime;
+            void removeTimeFromScore();
+
+            void saveScore();
 
             void resetUntilZeroNeighbors(const cacarcade::tileCoordinates position);
             void createBombs();
@@ -55,6 +94,8 @@ namespace arcade {
             void toggleFlag(const cacarcade::tileCoordinates &position);
 
             void setTileContent(cacarcade::Tile &tile, TileInfo &info);
+            void checkVictory();
+            void isTimeOver();
             void revealAllOnFail();
             void revealTile(const cacarcade::tileCoordinates &position);
             void revealAllZeroesOnTile(const cacarcade::tileCoordinates &position);

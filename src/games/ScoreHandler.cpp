@@ -18,12 +18,12 @@ arcade::ScoreHandler::~ScoreHandler()
         _fileInput.close();
 }
 
-void arcade::ScoreHandler::addScore(std::size_t plusScore)
+void arcade::ScoreHandler::addScore(std::int64_t plusScore)
 {
     _score += plusScore;
 }
 
-std::size_t arcade::ScoreHandler::getScore() const
+std::int64_t arcade::ScoreHandler::getScore() const
 {
     return _score;
 }
@@ -61,9 +61,9 @@ std::string arcade::ScoreHandler::getKeyGameName() const
     return keyGameName;
 }
 
-std::vector<std::pair<const std::string, const std::size_t>> arcade::ScoreHandler::loadScores()
+std::vector<std::pair<const std::string, const std::int64_t>> arcade::ScoreHandler::loadScores()
 {
-    std::vector<std::pair<const std::string, const std::size_t>> scores;
+    std::vector<std::pair<const std::string, const std::int64_t>> scores;
 
     if (!_fileInput.is_open())
         return scores;
@@ -92,7 +92,7 @@ std::vector<std::pair<const std::string, const std::size_t>> arcade::ScoreHandle
             std::string playerName = line.substr(0, line.find(delimiter));
             std::string scoreString = line.substr(line.find(delimiter), line.length());
 
-            std::size_t score = 0;
+            std::int64_t score = 0;
             std::stringstream ss(scoreString);
 
             ss >> score;
@@ -116,25 +116,29 @@ void arcade::ScoreHandler::saveScore(const std::string playerName)
 
     const std::string keyGameName = getKeyGameName();
 
-    if (_fileInput.is_open()) {
-        _fileInput.seekg(0, std::fstream::beg);
+    // In case of changes in the scores file, we reopen the file for fresh content.
+    if (_fileInput.is_open())
+        _fileInput.close();
 
-        std::string line;
-        bool keyGameNameInFile = false;
+    _fileInput.open(_fileName);
 
-        while (std::getline(_fileInput, line)) {
-            lines.push_back(line);
-            if (line == keyGameName) {
-                keyGameNameInFile = true;
-                lines.push_back(scoreLine);
-            }
-        }
+    if (!_fileInput.is_open()) {
+        std::cerr << "Impossible to write to " << _fileName << std::endl;
+        return;
+    }
 
-        if (keyGameNameInFile == false) {
-            lines.push_back(keyGameName);
+    std::string line;
+    bool keyGameNameInFile = false;
+
+    while (std::getline(_fileInput, line)) {
+        lines.push_back(line);
+        if (line == keyGameName) {
+            keyGameNameInFile = true;
             lines.push_back(scoreLine);
         }
-    } else {
+    }
+
+    if (keyGameNameInFile == false || lines.empty()) {
         lines.push_back(keyGameName);
         lines.push_back(scoreLine);
     }
