@@ -1,9 +1,12 @@
 #pragma once
 
+#include "cacarcade/Tile.hpp"
 #include "cacarcade/Utils.hpp"
 #include "games/AGameModule.hpp"
 #include <chrono>
+#include <functional>
 #include <map>
+#include <vector>
 
 namespace arcade {
     class MinesweeperGame : public AGameModule {
@@ -51,24 +54,21 @@ namespace arcade {
                 TileState state;
                 bool isFlag;
                 bool isRevealed;
+                bool isMenu;
                 std::size_t neighborAmount;
             };
 
             BoundedXY _gameSize;
 
-            struct MenuTileInfo {
-                enum class State {
-                    Unused,
-                    ResetButton,
-                    Chrono,
-                    Bombs,
-                } state;
-            };
-
             void createMenuBar();
 
             std::map<const cacarcade::tileCoordinates, TileInfo> _tileInfo;
-            std::map<const cacarcade::tileCoordinates, MenuTileInfo> _menuTiles;
+            std::vector<std::reference_wrapper<cacarcade::Tile>> _chronoMenuTiles;
+            std::vector<std::reference_wrapper<cacarcade::Tile>> _bombMenuTiles;
+            std::optional<std::reference_wrapper<cacarcade::Tile>> _resetMenuTile;
+
+            // Returns true if a menu tile was clicked
+            bool handleMenuTileClicked(cacarcade::tileCoordinates &position);
 
             std::int64_t _bombFlagCount;
 

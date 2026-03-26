@@ -18,7 +18,9 @@
 
 arcade::MinesweeperGame::MinesweeperGame() : AGameModule("minesweeper"),
     _revealedTileScore(100), _bombAmount(10), _gameState(GameState::NotStarted),
-    _tileInfo(), _menuTiles(), _bombFlagCount(0), _gameClock(), _maxTime(60) // TODO: make changeable depending on difficulty
+    _tileInfo(),
+    _chronoMenuTiles(), _bombMenuTiles(), _resetMenuTile(std::nullopt),
+    _bombFlagCount(0), _gameClock(), _maxTime(60) // TODO: make changeable depending on difficulty
 {
     std::size_t width = 9;
     std::size_t height = 9;
@@ -47,6 +49,7 @@ arcade::MinesweeperGame::MinesweeperGame() : AGameModule("minesweeper"),
                 .state = TileState::Normal,
                 .isFlag = false,
                 .isRevealed = false,
+                .isMenu = false,
                 .neighborAmount = 0,
             };
             _tileInfo.insert({{x, y}, info});
@@ -75,39 +78,49 @@ void arcade::MinesweeperGame::createMenuBar()
         };
 
         _container.tiles.insert({{x, y}, tile});
-        _menuTiles.insert({{x, y}, MenuTileInfo {
-            .state = MenuTileInfo::State::Unused,
-        }});
+
+        TileInfo info = {
+            .state = TileState::Normal,
+            .isFlag = false,
+            .isRevealed = false,
+            .isMenu = true,
+            .neighborAmount = 0,
+        };
+        _tileInfo.insert({{x, y}, info});
     }
 
     // Set the first 3 tiles to be chrono
     for (std::size_t x = 0; x < 3; x++) {
-        _menuTiles.insert_or_assign({x, 0}, MenuTileInfo {
-            .state = MenuTileInfo::State::Chrono
-        });
+        try {
+            cacarcade::Tile &tile = _container.tiles.at({x, y});
+            _chronoMenuTiles.push_back(tile);
+        } catch (const std::exception &) {};
     }
 
     // Set the middle "reset / state" button
-    const cacarcade::tileCoordinates resetButtonCoordinates = {4, 0};
-    _container.tiles.insert_or_assign(resetButtonCoordinates, cacarcade::Tile {
+    const cacarcade::tileCoordinates resetButtonCoordinates = {4, y};
+    cacarcade::Tile resetTile = {
         .x = resetButtonCoordinates.first,
         .y = resetButtonCoordinates.second,
         .textureName = "",
         .backgroundColor = cacarcade::Color::Black,
         .text = 'R',
         .textColor = cacarcade::Color::Yellow,
-    });
-    _menuTiles.insert_or_assign(resetButtonCoordinates, MenuTileInfo {
-        .state = MenuTileInfo::State::ResetButton
-    });
+    };
+    _container.tiles.insert_or_assign(resetButtonCoordinates, resetTile);
+    try {
+        cacarcade::Tile &tile = _container.tiles.at(resetButtonCoordinates);
+        _resetMenuTile = std::ref(tile);
+    } catch (const std::exception &) {};
 
+    // Set the last 3 tiles to be flag / bomb count
     const std::size_t start = _container.dimension.first > 3 ? _container.dimension.first - 3 : _container.dimension.first;
     for (std::size_t x = start; x < _container.dimension.first; x++) {
-        _menuTiles.insert_or_assign({x, 0}, MenuTileInfo {
-            .state = MenuTileInfo::State::Bombs
-        });
+        try {
+            cacarcade::Tile &tile = _container.tiles.at({x, y});
+            _bombMenuTiles.push_back(tile);
+        } catch (const std::exception &) {};
     }
-
 }
 
 void arcade::MinesweeperGame::reset()
@@ -117,13 +130,17 @@ void arcade::MinesweeperGame::reset()
     _gameState = GameState::NotStarted;
     for (auto &[_, tile] : _container.tiles) {
         try {
-            _menuTiles.at({tile.x, tile.y});
-            continue;
+            TileInfo &info = _tileInfo.at({tile.x, tile.y});
+
+            if (info.isMenu == true)
+                continue;
         } catch (const std::exception &) {};
         tile.backgroundColor = cacarcade::Color::Black;
         tile.text = '\0';
     }
     for (auto &[_, info] : _tileInfo) {
+        if (info.isMenu == true)
+            continue;
         info.state = TileState::Normal;
         info.isRevealed = false;
         info.isFlag = false;
@@ -402,20 +419,35 @@ void arcade::MinesweeperGame::isTimeOver()
     }
 }
 
+bool arcade::MinesweeperGame::handleMenuTileClicked(cacarcade::tileCoordinates &position)
+{
+    try {
+        TileInfo &info = _tileInfo.at(position);
+
+        if (info.isMenu == true) {
+            // Check if reset button was clicked
+            if (_resetMenuTile.has_value() &&
+                position.first == _resetMenuTile->get().x &&
+                position.second == _resetMenuTile->get().y) {
+                reset();
+            }
+        }
+
+        return info.isMenu;
+    } catch (const std::exception &) {
+        return false;
+    }
+}
+
 void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &event)
 {
     switch (event->getType()) {
         case cacarcade::EventType::TileClicked: {
             const cacarcade::EventMouseButton &mouseButton = event->getMouseButton();
             std::pair<std::size_t, std::size_t> position = event->getTilePosition();
-            try {
-                MenuTileInfo &info = _menuTiles.at(position);
 
-                if (info.state == MenuTileInfo::State::ResetButton)
-                    reset();
-
+            if (handleMenuTileClicked(position) == true)
                 break;
-            } catch (const std::exception &) {}
 
             if (mouseButton == cacarcade::EventMouseButton::Left) {
                 if (_gameState == GameState::NotStarted) {
@@ -489,32 +521,14 @@ void arcade::MinesweeperGame::updateMenuTiles()
     if (_gameState != GameState::Ongoing)
         return;
 
-    // TODO
-    const std::vector<std::reference_wrapper<cacarcade::Tile>> chrono = {
-        {
-            _container.tiles.at({0, 0}),
-            _container.tiles.at({1, 0}),
-            _container.tiles.at({2, 0}),
-        }
-    };
-
     std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
     const std::chrono::duration<double> timeElapsed = currentTime - _gameClock;
     std::string countdown = std::to_string(static_cast<int>(_maxTime.count() - timeElapsed.count()));
 
-    displayTextOnTiles(chrono, countdown);
-
-    // TODO
-    const std::vector<std::reference_wrapper<cacarcade::Tile>> bombs = {
-        {
-            _container.tiles.at({6, 0}),
-            _container.tiles.at({7, 0}),
-            _container.tiles.at({8, 0}),
-        }
-    };
+    displayTextOnTiles(_chronoMenuTiles, countdown);
 
     std::string bombFlagCountStr = std::to_string(_bombFlagCount);
-    displayTextOnTiles(bombs, bombFlagCountStr);
+    displayTextOnTiles(_bombMenuTiles, bombFlagCountStr);
 }
 
 void arcade::MinesweeperGame::update(std::optional<std::unique_ptr<cacarcade::IEvent>> &event)
