@@ -86,7 +86,16 @@ void arcade::MinesweeperGame::createMenuBar()
     }
 
     // Set the middle "reset / state" button
-    _menuTiles.insert_or_assign({6, 0}, MenuTileInfo {
+    const cacarcade::tileCoordinates resetButtonCoordinates = {4, 0};
+    _container.tiles.insert_or_assign(resetButtonCoordinates, cacarcade::Tile {
+        .x = resetButtonCoordinates.first,
+        .y = resetButtonCoordinates.second,
+        .textureName = "",
+        .backgroundColor = cacarcade::Color::Black,
+        .text = 'R',
+        .textColor = cacarcade::Color::Yellow,
+    });
+    _menuTiles.insert_or_assign(resetButtonCoordinates, MenuTileInfo {
         .state = MenuTileInfo::State::ResetButton
     });
 
@@ -105,6 +114,10 @@ void arcade::MinesweeperGame::reset()
 
     _gameState = GameState::NotStarted;
     for (auto &[_, tile] : _container.tiles) {
+        try {
+            _menuTiles.at({tile.x, tile.y});
+            continue;
+        } catch (const std::exception &) {};
         tile.backgroundColor = cacarcade::Color::Black;
         tile.text = '\0';
     }
@@ -391,8 +404,12 @@ void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &ev
             const cacarcade::EventMouseButton &mouseButton = event->getMouseButton();
             std::pair<std::size_t, std::size_t> position = event->getTilePosition();
             try {
-                _menuTiles.at(position);
-                return;
+                MenuTileInfo &info = _menuTiles.at(position);
+
+                if (info.state == MenuTileInfo::State::ResetButton)
+                    reset();
+
+                break;
             } catch (const std::exception &) {}
 
             if (mouseButton == cacarcade::EventMouseButton::Left) {
