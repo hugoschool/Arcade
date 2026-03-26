@@ -18,7 +18,7 @@ arcade::CentipedeGame::CentipedeGame() : AGameModule("centipede"),
     _tileInfo(), PlayerPos({10, 15}), OldPlayerPos(PlayerPos),
     Projectiles(), updateTime(std::chrono::milliseconds(100)), _time(),
     vecCentipedes(), updateTimeCentipede(std::chrono::milliseconds(250)),
-    _timeCentipede(), _width(21), _height(16)
+    _timeCentipede(), _width(21), _height(16), _isPaused(false)
 {
     _container.dimension = std::make_pair(_width, _height);
 
@@ -75,7 +75,7 @@ void arcade::CentipedeGame::placeMushroom()
     std::mt19937 rng(device());
 
     std::uniform_int_distribution<std::mt19937::result_type> width(0, _container.dimension.first - 1);
-    std::uniform_int_distribution<std::mt19937::result_type> height(0, _container.dimension.second - 3);
+    std::uniform_int_distribution<std::mt19937::result_type> height(1, _container.dimension.second - 3);
     std::uniform_int_distribution<std::mt19937::result_type> Box(10, 30);
 
     std::size_t BoxAmount = Box(rng);
@@ -220,6 +220,9 @@ void arcade::CentipedeGame::placeCentipede()
             std::cout << "pipi\n";
         }
     }
+    if (vecCentipedes.empty()) {
+        createCentipede();
+    }
 }
 
 //TODO maybe rework projectiles per tile
@@ -319,6 +322,9 @@ void arcade::CentipedeGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &even
                     if (PlayerPos.second < 15 && canPlayerMove(0, -1))
                         PlayerPos.second += 1;
                     break;
+                case cacarcade::EventKey::Space:
+                    _isPaused = !_isPaused;
+                    break;
                 default:
                     break;
             }
@@ -337,8 +343,10 @@ void arcade::CentipedeGame::update(std::optional<std::unique_ptr<cacarcade::IEve
 {
     if (event.has_value())
         handleEvent(event.value());
-    placeCentipede();
-    updatePlayer();
-    updateTiles();
+    if (!_isPaused) {
+        placeCentipede();
+        updatePlayer();
+        updateTiles();
+    }
 }
 

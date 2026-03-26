@@ -66,6 +66,8 @@ namespace arcade {
             size_t _width;
             size_t _height;
 
+            bool _isPaused;
+
             void placeMushroom();
             void updateTiles();
 
