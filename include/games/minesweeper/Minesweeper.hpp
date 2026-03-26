@@ -70,6 +70,11 @@ namespace arcade {
             std::map<const cacarcade::tileCoordinates, TileInfo> _tileInfo;
             std::map<const cacarcade::tileCoordinates, MenuTileInfo> _menuTiles;
 
+            std::int64_t getFlagsBombCount();
+            void displayTextOnTiles(
+                const std::vector<std::reference_wrapper<cacarcade::Tile>> &tiles,
+                const std::string &text
+            );
             void updateMenuTiles();
 
             std::chrono::steady_clock::time_point _gameClock;

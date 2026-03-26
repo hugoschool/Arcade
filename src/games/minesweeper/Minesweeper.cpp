@@ -438,12 +438,52 @@ void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &ev
     }
 }
 
+std::int64_t arcade::MinesweeperGame::getFlagsBombCount()
+{
+    std::int64_t count = 0;
+
+    for (auto &[_, tile] : _container.tiles) {
+        try {
+            TileInfo &info = _tileInfo.at({tile.x, tile.y});
+            if (info.state == TileState::Bomb)
+                count += 1;
+            if (info.isFlag == true)
+                count -= 1;
+        } catch (const std::exception &) {}
+    }
+    return count;
+}
+
+void arcade::MinesweeperGame::displayTextOnTiles(
+    const std::vector<std::reference_wrapper<cacarcade::Tile>> &tiles,
+    const std::string &text
+)
+{
+    std::size_t textLength = text.length();
+    const std::size_t tilesAmount = tiles.size();
+
+    if (textLength > tilesAmount) {
+        for (int i = tilesAmount - 1; i >= 0; i--) {
+            tiles[i].get().text = 'X';
+        }
+    } else {
+        for (int i = tilesAmount - 1; i >= 0; i--) {
+            if (textLength > 0) {
+                tiles[i].get().text = text[textLength - 1];
+                textLength--;
+            } else {
+                tiles[i].get().text = '0';
+            }
+        }
+    }
+}
+
 void arcade::MinesweeperGame::updateMenuTiles()
 {
     if (_gameState != GameState::Ongoing)
         return;
 
-    const std::array<std::reference_wrapper<cacarcade::Tile>, 3> chrono = {
+    const std::vector<std::reference_wrapper<cacarcade::Tile>> chrono = {
         {
             _container.tiles.at({0, 0}),
             _container.tiles.at({1, 0}),
@@ -455,21 +495,19 @@ void arcade::MinesweeperGame::updateMenuTiles()
     const std::chrono::duration<double> timeElapsed = currentTime - _gameClock;
     std::string countdown = std::to_string(static_cast<int>(_maxTime.count() - timeElapsed.count()));
 
-    std::size_t len = countdown.length();
-    if (len >= 3) {
-        for (int i = 2; i >= 0; i--) {
-            chrono[i].get().text = '9';
+    displayTextOnTiles(chrono, countdown);
+
+    const std::vector<std::reference_wrapper<cacarcade::Tile>> bombs = {
+        {
+            _container.tiles.at({6, 0}),
+            _container.tiles.at({7, 0}),
+            _container.tiles.at({8, 0}),
         }
-    } else {
-        for (int i = 2; i >= 0; i--) {
-            if (len > 0) {
-                chrono[i].get().text = countdown[len - 1];
-                len--;
-            } else {
-                chrono[i].get().text = '0';
-            }
-        }
-    }
+    };
+
+    // TODO:
+    std::string a = std::to_string(getFlagsBombCount());
+    displayTextOnTiles(bombs, a);
 }
 
 void arcade::MinesweeperGame::update(std::optional<std::unique_ptr<cacarcade::IEvent>> &event)
