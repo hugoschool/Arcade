@@ -63,13 +63,19 @@ namespace arcade {
             std::chrono::milliseconds updateTimeCentipede;
             std::chrono::steady_clock::time_point _timeCentipede;
 
+            size_t _width;
+            size_t _height;
+
             void placeMushroom();
             void updateTiles();
+
             void updatePlayer();
             void setEntityPosition(cacarcade::Tile &tile, std::pair<const cacarcade::tileCoordinates, TileInfo> info);
             void addProjectile();
             void updateProjectile();
             void projectileCollisons(std::pair<size_t, size_t>);
+            bool canPlayerMove(int x, int y);
+
             void createCentipede();
             void placeCentipede();
             void updateCentipede();

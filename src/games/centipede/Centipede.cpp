@@ -18,15 +18,12 @@ arcade::CentipedeGame::CentipedeGame() : AGameModule("centipede"),
     _tileInfo(), PlayerPos({10, 15}), OldPlayerPos(PlayerPos),
     Projectiles(), updateTime(std::chrono::milliseconds(100)), _time(),
     vecCentipedes(), updateTimeCentipede(std::chrono::milliseconds(250)),
-    _timeCentipede()
+    _timeCentipede(), _width(21), _height(16)
 {
-    size_t width = 21;
-    size_t height = 16;
+    _container.dimension = std::make_pair(_width, _height);
 
-    _container.dimension = std::make_pair(width, height);
-
-    for (size_t y = 0; y < height; y++) {
-        for (size_t x = 0; x < width; x++) {
+    for (size_t y = 0; y < _height; y++) {
+        for (size_t x = 0; x < _width; x++) {
             cacarcade::Tile tile = {
                 .x = x,
                 .y = y,
@@ -156,11 +153,13 @@ void arcade::CentipedeGame::projectileCollisons(std::pair<size_t, size_t> positi
         } else {
             info.Mushroom = static_cast<MushroomDamage>(dmg);
         }
+        _scoreHandler.addScore(5);
     } else {
         for (auto i = vecCentipedes.begin(); i != vecCentipedes.end(); i++) {
             Centipede &centipede = *i;
             if (centipede.position == position) {
                 vecCentipedes.erase(i);
+                _scoreHandler.addScore(5);
                 break;
             }
         }
@@ -179,20 +178,24 @@ void arcade::CentipedeGame::updateCentipede()
         info.Entity = EntityTiles::None;
         if (info.Mushroom == MushroomDamage::Destroyed)
             info.isEmpty = true;
-        if ((centipede.position.first < 20 && centipede.direction > 0) || (centipede.position.first > 0 && centipede.direction < 0)) {
+        if ((centipede.position.first < _width - 1 && centipede.direction > 0) || (centipede.position.first > 0 && centipede.direction < 0)) {
             TileInfo &NextTile = _tileInfo.at({centipede.position.first + centipede.direction,
             centipede.position.second});
             if (!NextTile.isEmpty && NextTile.Mushroom != MushroomDamage::Destroyed) {
                 centipede.direction *= -1;
-                if (centipede.position.second < 14)
+                if (centipede.position.second < _height - 1)
                         centipede.position.second += 1;
             } else {
                 centipede.position.first += centipede.direction;
             }
         } else {
             centipede.direction *= -1;
-            if (centipede.position.second < 14)
+            if (centipede.position.second < _height - 1)
                 centipede.position.second += 1;
+            else {
+                // chage score to an int instead of a size_t
+                _scoreHandler.addScore(0);
+            }
         }
     }
     _timeCentipede = std::chrono::steady_clock::now();
@@ -278,25 +281,35 @@ void arcade::CentipedeGame::reset()
     AGameModule::reset();
 }
 
+bool arcade::CentipedeGame::canPlayerMove(int x, int y)
+{
+    TileInfo &info  = _tileInfo.at({PlayerPos.first + x, PlayerPos.second + y});
+
+    if (!info.isEmpty) {
+        return false;
+    }
+    return true;
+}
+
 void arcade::CentipedeGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &event)
 {
     switch (event->getType()) {
         case cacarcade::EventType::KeyPressed: {
             switch (event->getKey()) {
                 case cacarcade::EventKey::Q:
-                    if (PlayerPos.first > 0)
+                    if (PlayerPos.first > 0 && canPlayerMove(-1, 0))
                         PlayerPos.first -= 1;
                     break;
                 case cacarcade::EventKey::D:
-                    if (PlayerPos.first < 20)
+                    if (PlayerPos.first < 20 && canPlayerMove(1, 0))
                         PlayerPos.first += 1;
                     break;
                 case cacarcade::EventKey::Z:
-                    if (PlayerPos.second > 13)
+                    if (PlayerPos.second > 13 && canPlayerMove(0, -1))
                         PlayerPos.second -= 1;
                     break;
                 case cacarcade::EventKey::S:
-                    if (PlayerPos.second < 15)
+                    if (PlayerPos.second < 15 && canPlayerMove(0, -1))
                         PlayerPos.second += 1;
                     break;
                 default:
