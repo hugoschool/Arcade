@@ -133,11 +133,11 @@ void arcade::CentipedeGame::updateTiles()
             tile.text = '\0';
             continue;
         } else {
-            if (info.second.Mushroom != MushroomDamage::Destroyed) {
+            if (info.second.Entity != EntityTiles::None) {
+                setEntityPosition(tile, info);
+            } else {
                 tile.textColor = cacarcade::Color::Red;
                 tile.text = '0' + static_cast<char>(info.second.Mushroom) + 1;
-            } else {
-                setEntityPosition(tile, info);
             }
         }
     }
@@ -177,8 +177,8 @@ void arcade::CentipedeGame::updateCentipede()
     for (auto &centipede : vecCentipedes) {
         TileInfo &info = _tileInfo.at(centipede.position);
         info.Entity = EntityTiles::None;
-        info.Mushroom = MushroomDamage::Destroyed;
-        info.isEmpty = true;
+        if (info.Mushroom == MushroomDamage::Destroyed)
+            info.isEmpty = true;
         if ((centipede.position.first < 20 && centipede.direction > 0) || (centipede.position.first > 0 && centipede.direction < 0)) {
             TileInfo &NextTile = _tileInfo.at({centipede.position.first + centipede.direction,
             centipede.position.second});
@@ -205,7 +205,6 @@ void arcade::CentipedeGame::placeCentipede()
         try {
             TileInfo &info = _tileInfo.at(centipede.position);
             info.Entity = EntityTiles::Centipede;
-            info.Mushroom = MushroomDamage::Destroyed;
             info.isEmpty = false;
         } catch (std::exception &e) {
             std::cout << "pipi\n";
