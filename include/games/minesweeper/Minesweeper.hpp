@@ -48,13 +48,13 @@ namespace arcade {
             enum class TileState {
                 Normal,
                 Bomb,
+                Menu,
             };
 
             struct TileInfo {
                 TileState state;
                 bool isFlag;
                 bool isRevealed;
-                bool isMenu;
                 std::size_t neighborAmount;
             };
 

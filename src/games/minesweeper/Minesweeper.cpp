@@ -49,7 +49,6 @@ arcade::MinesweeperGame::MinesweeperGame() : AGameModule("minesweeper"),
                 .state = TileState::Normal,
                 .isFlag = false,
                 .isRevealed = false,
-                .isMenu = false,
                 .neighborAmount = 0,
             };
             _tileInfo.insert({{x, y}, info});
@@ -80,10 +79,9 @@ void arcade::MinesweeperGame::createMenuBar()
         _container.tiles.insert({{x, y}, tile});
 
         TileInfo info = {
-            .state = TileState::Normal,
+            .state = TileState::Menu,
             .isFlag = false,
             .isRevealed = false,
-            .isMenu = true,
             .neighborAmount = 0,
         };
         _tileInfo.insert({{x, y}, info});
@@ -132,14 +130,14 @@ void arcade::MinesweeperGame::reset()
         try {
             TileInfo &info = _tileInfo.at({tile.x, tile.y});
 
-            if (info.isMenu == true)
+            if (info.state == TileState::Menu)
                 continue;
         } catch (const std::exception &) {};
         tile.backgroundColor = cacarcade::Color::Black;
         tile.text = '\0';
     }
     for (auto &[_, info] : _tileInfo) {
-        if (info.isMenu == true)
+        if (info.state == TileState::Menu)
             continue;
         info.state = TileState::Normal;
         info.isRevealed = false;
@@ -424,7 +422,7 @@ bool arcade::MinesweeperGame::handleMenuTileClicked(cacarcade::tileCoordinates &
     try {
         TileInfo &info = _tileInfo.at(position);
 
-        if (info.isMenu == true) {
+        if (info.state == TileState::Menu) {
             // Check if reset button was clicked
             if (_resetMenuTile.has_value() &&
                 position.first == _resetMenuTile->get().x &&
@@ -433,7 +431,7 @@ bool arcade::MinesweeperGame::handleMenuTileClicked(cacarcade::tileCoordinates &
             }
         }
 
-        return info.isMenu;
+        return info.state == TileState::Menu;
     } catch (const std::exception &) {
         return false;
     }
