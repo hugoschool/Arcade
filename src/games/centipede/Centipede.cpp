@@ -79,7 +79,7 @@ void arcade::CentipedeGame::placeMushroom()
 
     std::uniform_int_distribution<std::mt19937::result_type> width(0, _container.dimension.first - 1);
     std::uniform_int_distribution<std::mt19937::result_type> height(0, _container.dimension.second - 3);
-    std::uniform_int_distribution<std::mt19937::result_type> Box(5, 20);
+    std::uniform_int_distribution<std::mt19937::result_type> Box(10, 30);
 
     std::size_t BoxAmount = Box(rng);
 
@@ -191,9 +191,8 @@ void arcade::CentipedeGame::updateCentipede()
             }
         } else {
             centipede.direction *= -1;
-            // centipede.position.first += centipede.direction;
             if (centipede.position.second < 14)
-            centipede.position.second += 1;
+                centipede.position.second += 1;
         }
     }
     _timeCentipede = std::chrono::steady_clock::now();
@@ -269,6 +268,10 @@ void arcade::CentipedeGame::addProjectile()
     this->Projectiles.push_back({PlayerPos.first, PlayerPos.second - 1});
     if (Projectiles.size() == 1)
         _time = std::chrono::steady_clock::now();
+    if (!_tileInfo.at({PlayerPos.first, PlayerPos.second - 1}).isEmpty) {
+        projectileCollisons({PlayerPos.first, PlayerPos.second - 1});
+        Projectiles.pop_back();
+    }
 }
 
 void arcade::CentipedeGame::reset()
@@ -288,6 +291,14 @@ void arcade::CentipedeGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &even
                 case cacarcade::EventKey::D:
                     if (PlayerPos.first < 20)
                         PlayerPos.first += 1;
+                    break;
+                case cacarcade::EventKey::Z:
+                    if (PlayerPos.second > 13)
+                        PlayerPos.second -= 1;
+                    break;
+                case cacarcade::EventKey::S:
+                    if (PlayerPos.second < 15)
+                        PlayerPos.second += 1;
                     break;
                 default:
                     break;
