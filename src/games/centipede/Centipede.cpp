@@ -199,10 +199,10 @@ void arcade::CentipedeGame::updateCentipede()
                     if (centi.position == centipede.position) {
                         vecCentipedes.erase(i);
                         _timeCentipede = std::chrono::steady_clock::now();
+                        _scoreHandler.addScore(-5);
                         return;
                     }
                 }
-                _scoreHandler.addScore(0);
             }
         }
     }
@@ -291,6 +291,32 @@ void arcade::CentipedeGame::addProjectile()
 void arcade::CentipedeGame::reset()
 {
     AGameModule::reset();
+    _container.tiles.clear();
+    _tileInfo.clear();
+    vecCentipedes.clear();
+    for (size_t y = 0; y < _height; y++) {
+        for (size_t x = 0; x < _width; x++) {
+            cacarcade::Tile tile = {
+                .x = x,
+                .y = y,
+                .textureName = "",
+                .backgroundColor = cacarcade::Color::Black,
+                .text = '\0',
+                .textColor = cacarcade::Color::Green,
+            };
+
+            _container.tiles.insert({{x, y}, tile});
+
+            TileInfo info = {
+                .Entity = EntityTiles::None,
+                .Mushroom = MushroomDamage::Destroyed,
+                .isEmpty = true,
+            };
+            _tileInfo.insert({{x, y}, info});
+        }
+    }
+    placeMushroom();
+    createCentipede();
 }
 
 bool arcade::CentipedeGame::canPlayerMove(int x, int y)
@@ -341,6 +367,15 @@ void arcade::CentipedeGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &even
     }
 }
 
+void arcade::CentipedeGame::checkPlayerCollision()
+{
+    TileInfo &info = _tileInfo.at(PlayerPos);
+
+    if (info.Entity == EntityTiles::Centipede) {
+        reset();
+    }
+}
+
 void arcade::CentipedeGame::update(std::optional<std::unique_ptr<cacarcade::IEvent>> &event)
 {
     if (event.has_value())
@@ -348,9 +383,11 @@ void arcade::CentipedeGame::update(std::optional<std::unique_ptr<cacarcade::IEve
     if (!_isPaused) {
         if (centipedeCount > 0) {
             placeCentipede();
+            checkPlayerCollision();
             updatePlayer();
         }
         updateTiles();
     }
+    std::cout << _scoreHandler.getScore() << std::endl;
 }
 

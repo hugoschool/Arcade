@@ -6,7 +6,8 @@
 #include "common/Exception.hpp"
 #include <iostream>
 
-arcade::Arcade::Arcade(const std::string graphicsLibrary) : _graphicsLoader(graphicsLibrary), _gameLoader(std::string("./lib/arcade_centipede.so"))
+arcade::Arcade::Arcade(const std::string graphicsLibrary) : _graphicsLoader(graphicsLibrary),
+    _gameLoader(std::string("./lib/arcade_centipede.so"))
 {
     _display = _graphicsLoader.getInstance(std::string(cacarcade::displayEntrypoint));
     _game = _gameLoader.getInstance(std::string(cacarcade::gameEntrypoint));

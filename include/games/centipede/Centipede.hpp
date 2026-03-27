@@ -78,6 +78,7 @@ namespace arcade {
             void updateProjectile();
             void projectileCollisons(std::pair<size_t, size_t>);
             bool canPlayerMove(int x, int y);
+            void checkPlayerCollision();
 
             void createCentipede();
             void placeCentipede();
