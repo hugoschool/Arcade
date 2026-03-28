@@ -5,6 +5,7 @@
 #include "cacarcade/Tile.hpp"
 #include "cacarcade/Utils.hpp"
 #include "games/AGameModule.hpp"
+#include "games/ScoreHandler.hpp"
 #include <chrono>
 #include <cstddef>
 #include <exception>
@@ -225,6 +226,11 @@ void arcade::CentipedeGame::placeCentipede()
         createCentipede();
         centipedeCount -= 1;
     }
+    if (vecCentipedes.empty() && centipedeCount == 0) {
+        _scoreHandler.saveScore("Type shit");
+        _scoreHandler.resetScore();
+        _isPaused = true;
+    }
 }
 
 //TODO maybe rework projectiles per tile
@@ -290,10 +296,12 @@ void arcade::CentipedeGame::addProjectile()
 
 void arcade::CentipedeGame::reset()
 {
+    _scoreHandler.saveScore("Type shit");
     AGameModule::reset();
     _container.tiles.clear();
     _tileInfo.clear();
     vecCentipedes.clear();
+    centipedeCount = 20;
     for (size_t y = 0; y < _height; y++) {
         for (size_t x = 0; x < _width; x++) {
             cacarcade::Tile tile = {
