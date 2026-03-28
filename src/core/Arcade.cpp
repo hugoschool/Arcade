@@ -5,11 +5,14 @@
 #include "cacarcade/Utils.hpp"
 #include "common/Exception.hpp"
 #include <iostream>
+#include <optional>
 
-arcade::Arcade::Arcade(const std::string graphicsLibrary) : _graphicsLoader(graphicsLibrary), _gameLoader(std::string("./lib/arcade_minesweeper.so"))
+arcade::Arcade::Arcade(const std::string graphicsLibrary) :
+    _displayManager(std::string(cacarcade::displayEntrypoint)),
+    _gameManager(std::string(cacarcade::gameEntrypoint))
 {
-    _display = _graphicsLoader.getInstance(std::string(cacarcade::displayEntrypoint));
-    _game = _gameLoader.getInstance(std::string(cacarcade::gameEntrypoint));
+    _display = _displayManager.getPointer();
+    _game = _gameManager.getPointer();
 }
 
 arcade::Arcade::~Arcade()
@@ -25,6 +28,8 @@ void arcade::Arcade::handleGlobalEvents(std::unique_ptr<cacarcade::IEvent> &even
         case cacarcade::EventType::KeyPressed: {
             if (event->getKey() == cacarcade::EventKey::R)
                 event->setType(cacarcade::EventType::Reset);
+            if (event->getKey() == cacarcade::EventKey::K)
+                event->setType(cacarcade::EventType::NextDisplay);
             break;
         }
         default:
@@ -33,6 +38,23 @@ void arcade::Arcade::handleGlobalEvents(std::unique_ptr<cacarcade::IEvent> &even
 
     if (event->getType() == cacarcade::EventType::Reset) {
         _game->reset();
+    }
+    if (event->getType() == cacarcade::EventType::NextDisplay) {
+        try {
+            _display->close();
+        } catch (const arcade::Exception &e) {
+            std::cerr << e.what() << std::endl;
+            return;
+        }
+
+        _display = _displayManager.getNextInstance();
+
+        try {
+            _display->open();
+        } catch (const arcade::Exception &e) {
+            std::cerr << e.what() << std::endl;
+            return;
+        }
     }
 }
 

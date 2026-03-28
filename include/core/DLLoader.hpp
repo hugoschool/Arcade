@@ -28,6 +28,14 @@ namespace arcade {
                 return _handle;
             }
 
+            bool symbolExists(const std::string symbol)
+            {
+                if (_handle == nullptr)
+                    return false;
+
+                return dlsym(_handle, symbol.c_str()) != nullptr;
+            }
+
             std::shared_ptr<T> getInstance(const std::string functionName)
             {
                 if (_handle == nullptr)
