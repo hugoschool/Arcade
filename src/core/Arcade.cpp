@@ -19,7 +19,7 @@ arcade::Arcade::~Arcade()
 {
 }
 
-void arcade::Arcade::handleGlobalEvents(std::unique_ptr<cacarcade::IEvent> &event, bool &running)
+void arcade::Arcade::changeDisplayEvents(std::unique_ptr<cacarcade::IEvent> &event, bool &running)
 {
     switch (event->getType()) {
         case cacarcade::EventType::Quit:
@@ -35,26 +35,37 @@ void arcade::Arcade::handleGlobalEvents(std::unique_ptr<cacarcade::IEvent> &even
         default:
             break;
     }
+}
 
-    if (event->getType() == cacarcade::EventType::Reset) {
-        _game->reset();
-    }
-    if (event->getType() == cacarcade::EventType::NextDisplay) {
-        try {
-            _display->close();
-        } catch (const arcade::Exception &e) {
-            std::cerr << e.what() << std::endl;
-            return;
+void arcade::Arcade::handleDisplayEvents(std::unique_ptr<cacarcade::IEvent> &event, bool &running)
+{
+    changeDisplayEvents(event, running);
+
+    switch (event->getType()) {
+        case cacarcade::EventType::Reset:
+            _game->reset();
+            break;
+        case cacarcade::EventType::NextDisplay: {
+            try {
+                _display->close();
+            } catch (const arcade::Exception &e) {
+                std::cerr << e.what() << std::endl;
+                return;
+            }
+
+            _display = _displayManager.getNextInstance();
+
+            try {
+                _display->open();
+            } catch (const arcade::Exception &e) {
+                std::cerr << e.what() << std::endl;
+                return;
+            }
+
+            break;
         }
-
-        _display = _displayManager.getNextInstance();
-
-        try {
-            _display->open();
-        } catch (const arcade::Exception &e) {
-            std::cerr << e.what() << std::endl;
-            return;
-        }
+        default:
+            break;
     }
 }
 
@@ -74,7 +85,7 @@ void arcade::Arcade::loop()
     while (running) {
         event = _display->pollEvent();
         if (event.has_value()) {
-            handleGlobalEvents(event.value(), running);
+            handleDisplayEvents(event.value(), running);
         }
 
         if (running == false)
