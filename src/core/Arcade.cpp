@@ -9,7 +9,8 @@
 
 arcade::Arcade::Arcade(const std::string graphicsLibrary) :
     _displayManager(std::string(cacarcade::displayEntrypoint)),
-    _gameManager(std::string(cacarcade::gameEntrypoint))
+    _gameManager(std::string(cacarcade::gameEntrypoint)),
+    _running(true)
 {
     _display = _displayManager.getPointer();
     _game = _gameManager.getPointer();
@@ -19,11 +20,11 @@ arcade::Arcade::~Arcade()
 {
 }
 
-void arcade::Arcade::changeDisplayEvents(std::unique_ptr<cacarcade::IEvent> &event, bool &running)
+void arcade::Arcade::changeDisplayEvents(std::unique_ptr<cacarcade::IEvent> &event)
 {
     switch (event->getType()) {
         case cacarcade::EventType::Quit:
-            running = false;
+            _running = false;
             break;
         case cacarcade::EventType::KeyPressed: {
             if (event->getKey() == cacarcade::EventKey::R)
@@ -37,9 +38,9 @@ void arcade::Arcade::changeDisplayEvents(std::unique_ptr<cacarcade::IEvent> &eve
     }
 }
 
-void arcade::Arcade::handleDisplayEvents(std::unique_ptr<cacarcade::IEvent> &event, bool &running)
+void arcade::Arcade::handleDisplayEvents(std::unique_ptr<cacarcade::IEvent> &event)
 {
-    changeDisplayEvents(event, running);
+    changeDisplayEvents(event);
 
     switch (event->getType()) {
         case cacarcade::EventType::Reset:
@@ -80,15 +81,13 @@ void arcade::Arcade::loop()
 
     std::optional<std::unique_ptr<cacarcade::IEvent>> event;
 
-    bool running = true;
-
-    while (running) {
+    while (_running) {
         event = _display->pollEvent();
         if (event.has_value()) {
-            handleDisplayEvents(event.value(), running);
+            handleDisplayEvents(event.value());
         }
 
-        if (running == false)
+        if (_running == false)
             break;
 
         _game->update(event);
