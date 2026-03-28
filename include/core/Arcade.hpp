@@ -17,8 +17,8 @@ namespace arcade {
         private:
             arcade::DLLoader<cacarcade::IDisplayModule> _graphicsLoader;
             arcade::DLLoader<cacarcade::IGameModule> _gameLoader;
-            std::unique_ptr<cacarcade::IDisplayModule> _display;
-            std::unique_ptr<cacarcade::IGameModule> _game;
+            std::shared_ptr<cacarcade::IDisplayModule> _display;
+            std::shared_ptr<cacarcade::IGameModule> _game;
 
             void handleGlobalEvents(std::unique_ptr<cacarcade::IEvent> &event, bool &running);
     };

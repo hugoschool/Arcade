@@ -28,7 +28,7 @@ namespace arcade {
                 return _handle;
             }
 
-            std::unique_ptr<T> getInstance(const std::string functionName)
+            std::shared_ptr<T> getInstance(const std::string functionName)
             {
                 if (_handle == nullptr)
                     openHandle();
@@ -41,7 +41,7 @@ namespace arcade {
                 if (instance == nullptr)
                     throw arcade::Exception("Impossible to find instance");
 
-                return std::unique_ptr<T>(instance);
+                return std::shared_ptr<T>(instance);
             };
 
             void closeHandle()
@@ -55,7 +55,7 @@ namespace arcade {
             }
 
         private:
-            const std::string _libraryName;
+            std::string _libraryName;
             void *_handle;
     };
 }
