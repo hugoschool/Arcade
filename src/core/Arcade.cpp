@@ -5,34 +5,94 @@
 #include "cacarcade/Utils.hpp"
 #include "common/Exception.hpp"
 #include <iostream>
+#include <optional>
 
-arcade::Arcade::Arcade(const std::string graphicsLibrary) : _graphicsLoader(graphicsLibrary), _gameLoader(std::string("./lib/arcade_minesweeper.so"))
+arcade::Arcade::Arcade(const std::string graphicsLibrary) :
+    _displayManager(std::string(cacarcade::displayEntrypoint), graphicsLibrary),
+    _gameManager(std::string(cacarcade::gameEntrypoint)),
+    _running(true)
 {
-    _display = _graphicsLoader.getInstance(std::string(cacarcade::displayEntrypoint));
-    _game = _gameLoader.getInstance(std::string(cacarcade::gameEntrypoint));
+    _display = _displayManager.getPointer();
+    _game = _gameManager.getPointer();
 }
 
 arcade::Arcade::~Arcade()
 {
 }
 
-void arcade::Arcade::handleGlobalEvents(std::unique_ptr<cacarcade::IEvent> &event, bool &running)
+void arcade::Arcade::changeDisplayEvents(std::unique_ptr<cacarcade::IEvent> &event)
 {
     switch (event->getType()) {
         case cacarcade::EventType::Quit:
-            running = false;
+            _running = false;
             break;
         case cacarcade::EventType::KeyPressed: {
-            if (event->getKey() == cacarcade::EventKey::R)
-                event->setType(cacarcade::EventType::Reset);
+            switch (event->getKey()) {
+                case cacarcade::EventKey::R:
+                    event->setType(cacarcade::EventType::Reset);
+                    break;
+                case cacarcade::EventKey::O:
+                    event->setType(cacarcade::EventType::PrevGame);
+                    break;
+                case cacarcade::EventKey::P:
+                    event->setType(cacarcade::EventType::NextGame);
+                    break;
+                case cacarcade::EventKey::L:
+                    event->setType(cacarcade::EventType::PrevDisplay);
+                    break;
+                case cacarcade::EventKey::M:
+                    event->setType(cacarcade::EventType::NextDisplay);
+                    break;
+                default:
+                    break;
+            }
+
             break;
         }
         default:
             break;
     }
+}
 
-    if (event->getType() == cacarcade::EventType::Reset) {
-        _game->reset();
+void arcade::Arcade::handleDisplayEvents(std::unique_ptr<cacarcade::IEvent> &event)
+{
+    changeDisplayEvents(event);
+
+    switch (event->getType()) {
+        case cacarcade::EventType::Reset:
+            _game->reset();
+            break;
+        case cacarcade::EventType::PrevDisplay:
+        case cacarcade::EventType::NextDisplay: {
+            try {
+                _display->close();
+            } catch (const arcade::Exception &e) {
+                std::cerr << e.what() << std::endl;
+                return;
+            }
+
+            if (event->getType() == cacarcade::EventType::PrevDisplay)
+                _display = _displayManager.getPreviousInstance();
+            else if (event->getType() == cacarcade::EventType::NextDisplay)
+                _display = _displayManager.getNextInstance();
+
+            try {
+                _display->open();
+            } catch (const arcade::Exception &e) {
+                std::cerr << e.what() << std::endl;
+                return;
+            }
+
+            break;
+        }
+        case cacarcade::EventType::PrevGame:
+            _game = _gameManager.getPreviousInstance();
+            break;
+        case cacarcade::EventType::NextGame:
+            _game = _gameManager.getNextInstance();
+            break;
+        default:
+            break;
     }
 }
 
@@ -47,15 +107,13 @@ void arcade::Arcade::loop()
 
     std::optional<std::unique_ptr<cacarcade::IEvent>> event;
 
-    bool running = true;
-
-    while (running) {
+    while (_running) {
         event = _display->pollEvent();
         if (event.has_value()) {
-            handleGlobalEvents(event.value(), running);
+            handleDisplayEvents(event.value());
         }
 
-        if (running == false)
+        if (_running == false)
             break;
 
         _game->update(event);

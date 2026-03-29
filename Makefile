@@ -10,6 +10,10 @@ ifeq ($(ENV), dev)
 	LDLIBS	+=	-fsanitize=address
 endif
 
+ifeq ($(ENV), dev2)
+	CXXFLAGS	+=	-g3
+endif
+
 # Make all calls to other makefiles inherit those variables
 export BASE_DIR
 export LIB_PATH
