@@ -18,6 +18,24 @@ namespace arcade {
                 _libraries(), _index(0)
             {
                 getAllLibraries();
+
+                // Make sure the initial library is in the vector
+                if (!_initialLibrary.empty()) {
+                    const std::string initialLibraryFilename = std::filesystem::path(_initialLibrary).filename();
+                    bool found = false;
+
+                    for (const std::string &lib : _libraries) {
+                        const std::string filename = std::filesystem::path(lib).filename();
+                        if (filename == initialLibraryFilename) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (found == false)
+                        throw arcade::Exception("Couldn't find " + initialLibraryFilename + " in the libraries");
+                }
+
                 modifyPointer();
             }
 
