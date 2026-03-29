@@ -72,13 +72,13 @@ namespace arcade {
 
                     DLLoader<T> loader(libraryName);
 
-                    loader.openHandle();
-                    if (loader.symbolExists(_entrypoint) == true) {
-                        _libraries.push_back(libraryName);
-                    }
-
-                    if (!_loader.has_value()) {
-                        _loader = loader;
+                    try {
+                        loader.openHandle();
+                        if (loader.symbolExists(_entrypoint) == true) {
+                            _libraries.push_back(libraryName);
+                        }
+                    } catch (const std::exception &) {
+                        continue;
                     }
                 }
             }
