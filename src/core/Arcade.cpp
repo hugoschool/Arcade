@@ -29,7 +29,9 @@ void arcade::Arcade::changeDisplayEvents(std::unique_ptr<cacarcade::IEvent> &eve
         case cacarcade::EventType::KeyPressed: {
             if (event->getKey() == cacarcade::EventKey::R)
                 event->setType(cacarcade::EventType::Reset);
-            if (event->getKey() == cacarcade::EventKey::K)
+            if (event->getKey() == cacarcade::EventKey::L)
+                event->setType(cacarcade::EventType::PrevDisplay);
+            if (event->getKey() == cacarcade::EventKey::M)
                 event->setType(cacarcade::EventType::NextDisplay);
             break;
         }
@@ -46,6 +48,7 @@ void arcade::Arcade::handleDisplayEvents(std::unique_ptr<cacarcade::IEvent> &eve
         case cacarcade::EventType::Reset:
             _game->reset();
             break;
+        case cacarcade::EventType::PrevDisplay:
         case cacarcade::EventType::NextDisplay: {
             try {
                 _display->close();
@@ -54,7 +57,10 @@ void arcade::Arcade::handleDisplayEvents(std::unique_ptr<cacarcade::IEvent> &eve
                 return;
             }
 
-            _display = _displayManager.getNextInstance();
+            if (event->getType() == cacarcade::EventType::PrevDisplay)
+                _display = _displayManager.getPreviousInstance();
+            else if (event->getType() == cacarcade::EventType::NextDisplay)
+                _display = _displayManager.getNextInstance();
 
             try {
                 _display->open();
