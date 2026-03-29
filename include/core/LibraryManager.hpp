@@ -12,7 +12,8 @@ namespace arcade {
         public:
             LibraryManager() = delete;
 
-            LibraryManager(const std::string entrypoint) : _entrypoint(entrypoint),
+            LibraryManager(const std::string entrypoint, const std::string initialLibrary = "") :
+                _entrypoint(entrypoint), _initialLibrary(initialLibrary),
                 _loader(std::nullopt), _ptr(nullptr),
                 _libraries(), _index(0)
             {
@@ -46,6 +47,8 @@ namespace arcade {
 
         private:
             const std::string _entrypoint;
+            const std::string _initialLibrary;
+
             std::optional<DLLoader<T>> _loader;
             std::shared_ptr<T> _ptr;
 
@@ -68,14 +71,19 @@ namespace arcade {
                 const std::string LIBRARY_PATH = "./lib";
 
                 for (const std::filesystem::directory_entry &entry : std::filesystem::directory_iterator(LIBRARY_PATH)) {
-                    const std::string libraryName = entry.path().string();
+                    const std::filesystem::path libraryPath = entry.path();
+                    const std::string libraryName = libraryPath.string();
 
                     DLLoader<T> loader(libraryName);
 
                     try {
                         loader.openHandle();
                         if (loader.symbolExists(_entrypoint) == true) {
-                            _libraries.push_back(libraryName);
+                            if (!_initialLibrary.empty() &&
+                                libraryPath.filename() == std::filesystem::path(_initialLibrary).filename())
+                                _libraries.insert(_libraries.begin(), libraryName);
+                            else
+                                _libraries.push_back(libraryName);
                         }
                     } catch (const std::exception &) {
                         continue;

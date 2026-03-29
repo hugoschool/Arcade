@@ -8,7 +8,7 @@
 #include <optional>
 
 arcade::Arcade::Arcade(const std::string graphicsLibrary) :
-    _displayManager(std::string(cacarcade::displayEntrypoint)),
+    _displayManager(std::string(cacarcade::displayEntrypoint), graphicsLibrary),
     _gameManager(std::string(cacarcade::gameEntrypoint)),
     _running(true)
 {
