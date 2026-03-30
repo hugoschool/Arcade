@@ -118,7 +118,6 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SDL2Display::pollEvent
     SDL_Event event;
 
     while (SDL_PollEvent(&event) != 0) {
-        // return std::nullopt;
 
         switch (event.type) {
             case SDL_QUIT:

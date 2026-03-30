@@ -4,7 +4,6 @@
 #include "games/AGameModule.hpp"
 #include <chrono>
 #include <cstddef>
-#include <cstdint>
 #include <utility>
 #include <vector>
 
@@ -40,8 +39,8 @@ namespace arcade {
             };
 
             struct TileInfo {
-                EntityTiles Entity;
-                MushroomDamage Mushroom;
+                EntityTiles entity;
+                MushroomDamage mushroom;
                 bool isEmpty;
             };
             std::map<const cacarcade::tileCoordinates, TileInfo> _tileInfo;
@@ -53,15 +52,15 @@ namespace arcade {
                 std::pair<size_t, size_t> position;
             };
 
-            std::pair<size_t, size_t> PlayerPos;
-            std::pair<size_t, size_t> OldPlayerPos;
+            std::pair<size_t, size_t> _playerPos;
+            std::pair<size_t, size_t> _oldPlayerPos;
 
-            std::vector<std::pair<size_t, size_t>> Projectiles;
-            std::chrono::milliseconds updateTime;
+            std::vector<std::pair<size_t, size_t>> _projectiles;
+            std::chrono::milliseconds _updateTime;
             std::chrono::steady_clock::time_point _time;
 
-            std::vector<Centipede> vecCentipedes;
-            std::chrono::milliseconds updateTimeCentipede;
+            std::vector<Centipede> _vecCentipedes;
+            std::chrono::milliseconds _updateTimeCentipede;
             std::chrono::steady_clock::time_point _timeCentipede;
             int centipedeCount;
 
@@ -74,10 +73,10 @@ namespace arcade {
             void updateTiles();
 
             void updatePlayer();
-            void setEntityPosition(cacarcade::Tile &tile, std::pair<const cacarcade::tileCoordinates, TileInfo> info);
+            void setEntityContent(cacarcade::Tile &tile, std::pair<const cacarcade::tileCoordinates, TileInfo> info);
             void addProjectile();
             void updateProjectile();
-            void projectileCollisons(std::pair<size_t, size_t>);
+            void projectileCollisons(std::pair<size_t, size_t>&);
             bool canPlayerMove(int x, int y);
             void checkPlayerCollision();
 
