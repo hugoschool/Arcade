@@ -135,7 +135,7 @@ void arcade::NCURSESDisplay::displayTiles(cacarcade::TileContainer container)
         if (tile.text != '\0') {
             mvwprintw(_window, x + 1, y + 1, "%c", tile.text);
         } else {
-            mvwprintw(_window, x + 1, y + 1, "_");
+            mvwprintw(_window, x + 1, y + 1, " ");
         }
         wattroff(_window, COLOR_PAIR(pair));
     }
