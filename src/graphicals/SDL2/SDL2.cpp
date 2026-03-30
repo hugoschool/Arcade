@@ -117,19 +117,19 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SDL2Display::pollEvent
 {
     SDL_Event event;
 
-    if (SDL_PollEvent(&event) == 0)
-        return std::nullopt;
+    while (SDL_PollEvent(&event) != 0) {
 
-    switch (event.type) {
-        case SDL_QUIT:
-            return std::make_unique<arcade::QuitEvent>();
-        case SDL_MOUSEBUTTONDOWN:
-            return std::make_unique<arcade::TileClickedEvent>(
-                findClosestTile(event.button.x, event.button.y),
-                getMouseButton(event.button.button)
-            );
-        case SDL_KEYDOWN:
-            return std::make_unique<arcade::KeyPressedEvent>(getKey(event.key.keysym.sym));
+        switch (event.type) {
+            case SDL_QUIT:
+                return std::make_unique<arcade::QuitEvent>();
+            case SDL_MOUSEBUTTONDOWN:
+                return std::make_unique<arcade::TileClickedEvent>(
+                    findClosestTile(event.button.x, event.button.y),
+                    getMouseButton(event.button.button)
+                );
+            case SDL_KEYDOWN:
+                return std::make_unique<arcade::KeyPressedEvent>(getKey(event.key.keysym.sym));
+        }
     }
 
     return std::nullopt;

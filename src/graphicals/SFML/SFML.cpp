@@ -10,6 +10,7 @@
 #include "events/TileClickedEvent.hpp"
 #include "graphicals/ADisplayModule.hpp"
 #include <SFML/Graphics/Color.hpp>
+#include <SFML/Window/Keyboard.hpp>
 #include <exception>
 #include <memory>
 #include <optional>
@@ -64,6 +65,8 @@ cacarcade::EventKey arcade::SFMLDisplay::getKey(const sf::Keyboard::Key key)
             return cacarcade::EventKey::Left;
         case sf::Keyboard::Key::Right:
             return cacarcade::EventKey::Right;
+        case sf::Keyboard::Key::Space:
+            return cacarcade::EventKey::Space;
         default:
             return cacarcade::EventKey::None;
     }
@@ -129,7 +132,7 @@ void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleSh
 
     tileRect.setFillColor(backgroundColor);
     tileRect.setOutlineColor(textColor);
-    tileRect.setOutlineThickness(2);
+    tileRect.setOutlineThickness(_outlineThickness);
 
     _window.draw(tileRect);
 
