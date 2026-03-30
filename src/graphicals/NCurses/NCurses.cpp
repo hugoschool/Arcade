@@ -16,8 +16,8 @@
 #include <optional>
 #include <utility>
 
-arcade::NCursesDisplay::NCursesDisplay() : arcade::ADisplayModule(), _window(nullptr), _oldContainer(),
-    _ContainerChanged(true), _colors(), _colorAmount(8), _pairs(), pairAmount(1)
+arcade::NCursesDisplay::NCursesDisplay() : arcade::ADisplayModule(), _window(nullptr), _oldDimension(),
+    _colors(), _colorAmount(8), _pairs(), pairAmount(1)
 {
     initscr();
     cbreak();
@@ -33,14 +33,14 @@ arcade::NCursesDisplay::~NCursesDisplay()
 
 void arcade::NCursesDisplay::open()
 {
+    wclear(stdscr);
 }
 
 void arcade::NCursesDisplay::clear()
 {
     refresh();
     wrefresh(_window);
-    if (_ContainerChanged)
-        werase(_window);
+    werase(_window);
     erase();
 }
 
@@ -63,10 +63,31 @@ cacarcade::EventKey arcade::NCursesDisplay::getKey(int key)
     return cacarcade::EventKey::Space;
 }
 
+std::optional<std::unique_ptr<arcade::TileClickedEvent>> arcade::NCursesDisplay::getMouse()
+{
+    MEVENT event;
+
+    if (getmouse(&event) == OK) {
+        std::pair<size_t, size_t> position = {event.x - 1, event.y - 1};
+        if (position > _oldDimension) {
+            return std::nullopt;
+        }
+        cacarcade::EventMouseButton mouse;
+        if (event.bstate == BUTTON1_CLICKED)
+            mouse = cacarcade::EventMouseButton::Left;
+        if (event.bstate == BUTTON3_CLICKED)
+            mouse = cacarcade::EventMouseButton::Right;
+        return std::make_unique<arcade::TileClickedEvent>(
+            std::move(position),
+            std::move(mouse)
+        );
+    }
+    return std::nullopt;
+}
+
 std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::NCursesDisplay::pollEvent()
 {
     int key = wgetch(_window);
-    MEVENT event;
     while (key != ERR) {
         if (key == ERR)
             return std::nullopt;
@@ -74,18 +95,7 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::NCursesDisplay::pollEv
             return std::make_unique<arcade::KeyPressedEvent>(getKey(key));
         }
         if (key == KEY_MOUSE) {
-            if (getmouse(&event) == OK) {
-                std::pair<size_t, size_t> position = {event.x - 1, event.y - 1};
-                cacarcade::EventMouseButton mouse;
-                if (event.bstate == BUTTON1_CLICKED)
-                    mouse = cacarcade::EventMouseButton::Left;
-                if (event.bstate == BUTTON3_CLICKED)
-                    mouse = cacarcade::EventMouseButton::Right;
-                return std::make_unique<arcade::TileClickedEvent>(
-                    std::move(position),
-                    std::move(mouse)
-                );
-            }
+            return getMouse();
         }
 
     }
@@ -94,7 +104,13 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::NCursesDisplay::pollEv
 
 void arcade::NCursesDisplay::setWindowsSize(std::pair<size_t, size_t> size)
 {
-    if (_window == nullptr) {
+    if (_window == nullptr || size != _oldDimension) {
+        _oldDimension = size;
+        if (_window != nullptr) {
+            wclear(_window);
+            delwin(_window);
+            wclear(stdscr);
+        }
         _window = subwin(stdscr, size.second + 2, size.first + 2, 0, 0);
         nodelay(_window, true);
         mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);

@@ -4,6 +4,7 @@
 #include "cacarcade/EventKey.hpp"
 #include "cacarcade/IEvent.hpp"
 #include "cacarcade/TileContainer.hpp"
+#include "events/TileClickedEvent.hpp"
 #include "graphicals/ADisplayModule.hpp"
 #include <cstddef>
 #include <map>
@@ -32,9 +33,9 @@ namespace arcade {
 
             cacarcade::EventKey getKey(int key);
             void setWindowsSize(std::pair<size_t, size_t>);
+            std::optional<std::unique_ptr<arcade::TileClickedEvent>> getMouse();
 
-            cacarcade::TileContainer _oldContainer;
-            bool _ContainerChanged;
+            std::pair<size_t, size_t> _oldDimension;
 
             std::map<std::tuple<short, short, short>, short> _colors;
             short _colorAmount;
