@@ -9,8 +9,8 @@ SFML_SRC	:= 	$(COMMON_SRC) \
 				SFML/SFML.cpp
 
 NCURSES_SRC	:=	$(COMMON_SRC) \
-				NCURSES/entrypoint.cpp \
-				NCURSES/NCURSES.cpp
+				NCurses/entrypoint.cpp \
+				NCurses/NCurses.cpp
 
 SDL2_OBJ	:=	$(SDL2_SRC:.cpp=.o)
 SDL2_BIN	:=	$(LIB_PATH)/arcade_sdl2.so
@@ -31,7 +31,7 @@ $(SDL2_BIN):	$(SDL2_OBJ)
 $(SFML_BIN):	LDLIBS	+=	-lsfml-system -lsfml-graphics -lsfml-window
 $(SFML_BIN):	$(SFML_OBJ)
 
-$(NCURSES_BIN):	LDLIBS += 	-lncurses
+$(NCURSES_BIN):	LDLIBS	+= 	-lncurses
 $(NCURSES_BIN):	$(NCURSES_OBJ)
 
 clean:

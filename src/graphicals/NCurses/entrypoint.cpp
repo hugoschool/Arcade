@@ -1,7 +1,7 @@
 #include "cacarcade/IDisplayModule.hpp"
-#include "graphicals/NCURSES/NCURSES.hpp"
+#include "graphicals/NCurses/NCurses.hpp"
 
 extern "C" cacarcade::IDisplayModule *displayEntrypoint()
 {
-    return new arcade::NCURSESDisplay;
+    return new arcade::NCursesDisplay;
 }

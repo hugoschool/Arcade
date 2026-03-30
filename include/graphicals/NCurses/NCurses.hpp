@@ -19,10 +19,10 @@
 #define BACKGROUND_COLOR2 14
 
 namespace arcade {
-    class NCURSESDisplay : public arcade::ADisplayModule {
+    class NCursesDisplay : public arcade::ADisplayModule {
         public:
-            NCURSESDisplay();
-            ~NCURSESDisplay();
+            NCursesDisplay();
+            ~NCursesDisplay();
 
             void open() override;
             void close() override;

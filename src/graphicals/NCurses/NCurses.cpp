@@ -1,4 +1,4 @@
-#include "graphicals/NCURSES/NCURSES.hpp"
+#include "graphicals/NCurses/NCurses.hpp"
 #include "cacarcade/Color.hpp"
 #include "cacarcade/EventKey.hpp"
 #include "cacarcade/EventMouseButton.hpp"
@@ -16,7 +16,7 @@
 #include <optional>
 #include <utility>
 
-arcade::NCURSESDisplay::NCURSESDisplay() : arcade::ADisplayModule(), _window(nullptr), _oldContainer(),
+arcade::NCursesDisplay::NCursesDisplay() : arcade::ADisplayModule(), _window(nullptr), _oldContainer(),
     _ContainerChanged(true), _colors(), _colorAmount(8), _pairs(), pairAmount(1)
 {
     initscr();
@@ -27,15 +27,15 @@ arcade::NCURSESDisplay::NCURSESDisplay() : arcade::ADisplayModule(), _window(nul
     nodelay(stdscr, TRUE);
 }
 
-arcade::NCURSESDisplay::~NCURSESDisplay()
+arcade::NCursesDisplay::~NCursesDisplay()
 {
 }
 
-void arcade::NCURSESDisplay::open()
+void arcade::NCursesDisplay::open()
 {
 }
 
-void arcade::NCURSESDisplay::clear()
+void arcade::NCursesDisplay::clear()
 {
     refresh();
     wrefresh(_window);
@@ -45,7 +45,7 @@ void arcade::NCURSESDisplay::clear()
     return;
 }
 
-void arcade::NCURSESDisplay::close()
+void arcade::NCursesDisplay::close()
 {
     refresh();
     wrefresh(_window);
@@ -54,12 +54,12 @@ void arcade::NCURSESDisplay::close()
     endwin();
 }
 
-cacarcade::EventKey arcade::NCURSESDisplay::getKey(char key)
+cacarcade::EventKey arcade::NCursesDisplay::getKey(char key)
 {
     return static_cast<cacarcade::EventKey>(key - 'a' + 1);
 }
 
-std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::NCURSESDisplay::pollEvent()
+std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::NCursesDisplay::pollEvent()
 {
     int key = wgetch(_window);
     MEVENT event;
@@ -88,7 +88,7 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::NCURSESDisplay::pollEv
     return std::nullopt;
 }
 
-void arcade::NCURSESDisplay::setWindowsSize(std::pair<size_t, size_t> size)
+void arcade::NCursesDisplay::setWindowsSize(std::pair<size_t, size_t> size)
 {
     if (_window == nullptr) {
         _window = subwin(stdscr, size.second + 2, size.first + 2, 0, 0);
@@ -98,7 +98,7 @@ void arcade::NCURSESDisplay::setWindowsSize(std::pair<size_t, size_t> size)
     }
 }
 
-void arcade::NCURSESDisplay::addColor(cacarcade::ColorCode color)
+void arcade::NCursesDisplay::addColor(cacarcade::ColorCode color)
 {
     try {
         _colors.at({color.r, color.g, color.b});
@@ -109,7 +109,7 @@ void arcade::NCURSESDisplay::addColor(cacarcade::ColorCode color)
     }
 }
 
-short arcade::NCURSESDisplay::addPair(cacarcade::ColorCode fg, cacarcade::ColorCode bg)
+short arcade::NCursesDisplay::addPair(cacarcade::ColorCode fg, cacarcade::ColorCode bg)
 {
     addColor(fg);
     addColor(bg);
@@ -123,7 +123,7 @@ short arcade::NCURSESDisplay::addPair(cacarcade::ColorCode fg, cacarcade::ColorC
     }
 }
 
-void arcade::NCURSESDisplay::displayTiles(cacarcade::TileContainer container)
+void arcade::NCursesDisplay::displayTiles(cacarcade::TileContainer container)
 {
     setWindowsSize(container.dimension);
     for (auto &[_, tile] : container.tiles) {
