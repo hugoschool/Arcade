@@ -4,7 +4,6 @@
 #include "cacarcade/EventMouseButton.hpp"
 #include "cacarcade/IEvent.hpp"
 #include "cacarcade/TileContainer.hpp"
-#include "common/Exception.hpp"
 #include "events/KeyPressedEvent.hpp"
 #include "events/TileClickedEvent.hpp"
 #include "graphicals/ADisplayModule.hpp"
@@ -12,11 +11,9 @@
 #include <cstddef>
 #include <cstdio>
 #include <exception>
-#include <iostream>
 #include <memory>
 #include <ncurses.h>
 #include <optional>
-#include <ostream>
 #include <utility>
 
 arcade::NCURSESDisplay::NCURSESDisplay() : arcade::ADisplayModule(), _window(nullptr), _oldContainer(),
