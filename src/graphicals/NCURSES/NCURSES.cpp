@@ -45,7 +45,6 @@ void arcade::NCURSESDisplay::clear()
     if (_ContainerChanged)
         werase(_window);
     erase();
-    std::cerr << "refreshed" << std::endl;
     return;
 }
 
@@ -79,7 +78,7 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::NCURSESDisplay::pollEv
                 cacarcade::EventMouseButton mouse;
                 if (event.bstate == BUTTON1_CLICKED)
                     mouse = cacarcade::EventMouseButton::Left;
-                if (event.bstate == BUTTON2_CLICKED)
+                if (event.bstate == BUTTON3_CLICKED)
                     mouse = cacarcade::EventMouseButton::Right;
                 return std::make_unique<arcade::TileClickedEvent>(
                     std::move(position),
