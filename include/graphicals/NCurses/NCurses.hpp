@@ -13,11 +13,6 @@
 #include <tuple>
 #include <utility>
 
-#define FOREGROUND_COLOR 67
-#define BACKGROUND_COLOR 41
-#define FOREGROUND_COLOR2 76
-#define BACKGROUND_COLOR2 14
-
 namespace arcade {
     class NCursesDisplay : public arcade::ADisplayModule {
         public:
@@ -35,7 +30,7 @@ namespace arcade {
 
             WINDOW *_window;
 
-            cacarcade::EventKey getKey(char key);
+            cacarcade::EventKey getKey(int key);
             void setWindowsSize(std::pair<size_t, size_t>);
 
             cacarcade::TileContainer _oldContainer;

@@ -42,7 +42,6 @@ void arcade::NCursesDisplay::clear()
     if (_ContainerChanged)
         werase(_window);
     erase();
-    return;
 }
 
 void arcade::NCursesDisplay::close()
@@ -54,9 +53,14 @@ void arcade::NCursesDisplay::close()
     endwin();
 }
 
-cacarcade::EventKey arcade::NCursesDisplay::getKey(char key)
+cacarcade::EventKey arcade::NCursesDisplay::getKey(int key)
 {
-    return static_cast<cacarcade::EventKey>(key - 'a' + 1);
+    if (std::isalpha(key)) {
+        return static_cast<cacarcade::EventKey>(key - 'a' + 1);
+    } else if (std::isdigit(key)) {
+        return static_cast<cacarcade::EventKey>(key - '1' + 27);
+    }
+    return cacarcade::EventKey::Space;
 }
 
 std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::NCursesDisplay::pollEvent()
@@ -66,7 +70,7 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::NCursesDisplay::pollEv
     while (key != ERR) {
         if (key == ERR)
             return std::nullopt;
-        if (std::isalpha(key)) {
+        if (std::isalnum(key)) {
             return std::make_unique<arcade::KeyPressedEvent>(getKey(key));
         }
         if (key == KEY_MOUSE) {
