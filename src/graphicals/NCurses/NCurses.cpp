@@ -113,7 +113,7 @@ void arcade::NCursesDisplay::setWindowsSize(std::pair<size_t, size_t> size)
         }
         _window = subwin(stdscr, size.second + 2, size.first + 2, 0, 0);
         nodelay(_window, true);
-        mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
+        mousemask(BUTTON1_CLICKED | BUTTON3_CLICKED | REPORT_MOUSE_POSITION, NULL);
         keypad(_window, true);
     }
 }
