@@ -15,9 +15,6 @@
 #include <memory>
 #include <optional>
 
-#define FOREGROUND_COLOR 67
-#define BACKEGROUND_COLOR 41
-
 arcade::SFMLDisplay::SFMLDisplay() : arcade::ADisplayModule(),
     _window(), _font(), _outlineThickness(1)
 {
