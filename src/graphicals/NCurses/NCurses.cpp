@@ -62,7 +62,7 @@ cacarcade::EventKey arcade::NCursesDisplay::getKey(int key)
     } else if (key == ' ') {
         return cacarcade::EventKey::Space;
     }
-    return cacarcade::EventKey::Space;
+    return cacarcade::EventKey::None;
 }
 
 std::optional<std::unique_ptr<arcade::TileClickedEvent>> arcade::NCursesDisplay::getMouse()
@@ -91,8 +91,6 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::NCursesDisplay::pollEv
 {
     int key = wgetch(_window);
     while (key != ERR) {
-        if (key == ERR)
-            return std::nullopt;
         if (std::isalnum(key) || key == ' ') {
             return std::make_unique<arcade::KeyPressedEvent>(getKey(key));
         }
