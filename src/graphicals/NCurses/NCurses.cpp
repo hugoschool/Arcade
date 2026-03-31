@@ -75,9 +75,9 @@ std::optional<std::unique_ptr<arcade::TileClickedEvent>> arcade::NCursesDisplay:
             return std::nullopt;
         }
         cacarcade::EventMouseButton mouse;
-        if (event.bstate == BUTTON1_RELEASED)
+        if (event.bstate & BUTTON1_CLICKED)
             mouse = cacarcade::EventMouseButton::Left;
-        if (event.bstate == BUTTON3_RELEASED)
+        if (event.bstate & BUTTON3_CLICKED)
             mouse = cacarcade::EventMouseButton::Right;
         return std::make_unique<arcade::TileClickedEvent>(
             std::move(position),
@@ -115,7 +115,7 @@ void arcade::NCursesDisplay::setWindowsSize(std::pair<size_t, size_t> size)
         }
         _window = subwin(stdscr, size.second + 2, size.first + 2, 0, 0);
         nodelay(_window, true);
-        mousemask(BUTTON1_RELEASED | BUTTON3_RELEASED | REPORT_MOUSE_POSITION, NULL);
+        mousemask(ALL_MOUSE_EVENTS, NULL);
         keypad(_window, true);
     }
 }
