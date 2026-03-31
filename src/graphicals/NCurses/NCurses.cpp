@@ -99,7 +99,7 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::NCursesDisplay::pollEv
         if (key == KEY_MOUSE) {
             return getMouse();
         }
-
+        key = wgetch(_window);
     }
     return std::nullopt;
 }
