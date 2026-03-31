@@ -73,14 +73,20 @@ std::optional<std::unique_ptr<arcade::TileClickedEvent>> arcade::NCursesDisplay:
         if (position > _oldDimension) {
             return std::nullopt;
         }
-        cacarcade::EventMouseButton mouse;
-        if (event.bstate & BUTTON1_CLICKED)
+
+        std::optional<cacarcade::EventMouseButton> mouse;
+
+        if (event.bstate & BUTTON1_PRESSED)
             mouse = cacarcade::EventMouseButton::Left;
-        if (event.bstate & BUTTON3_CLICKED)
+        if (event.bstate & BUTTON3_PRESSED)
             mouse = cacarcade::EventMouseButton::Right;
+
+        if (!mouse.has_value())
+            return std::nullopt;
+
         return std::make_unique<arcade::TileClickedEvent>(
             std::move(position),
-            std::move(mouse)
+            std::move(mouse.value())
         );
     }
     return std::nullopt;
