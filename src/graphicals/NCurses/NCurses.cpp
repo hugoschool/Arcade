@@ -24,7 +24,6 @@ arcade::NCursesDisplay::NCursesDisplay() : arcade::ADisplayModule(), _window(nul
     noecho();
     curs_set(0);
     keypad(stdscr, TRUE);
-    nodelay(stdscr, TRUE);
 }
 
 arcade::NCursesDisplay::~NCursesDisplay()
@@ -112,10 +111,10 @@ void arcade::NCursesDisplay::setWindowsSize(std::pair<size_t, size_t> size)
             wclear(stdscr);
         }
         _window = subwin(stdscr, size.second + 2, size.first + 2, 0, 0);
-        nodelay(_window, true);
+        nodelay(_window, TRUE);
         mousemask(ALL_MOUSE_EVENTS, NULL);
         mouseinterval(0);
-        keypad(_window, true);
+        keypad(_window, TRUE);
     }
 }
 
@@ -161,5 +160,10 @@ void arcade::NCursesDisplay::displayTiles(cacarcade::TileContainer container)
         wattroff(_window, COLOR_PAIR(pair));
     }
     box(_window, 0, 0);
+
+    // This is to set the framerate of the NCurses
+    // 1000 / 59 ~= 17
+    // NCurses is therefore running at 59 FPS.
+    napms(17);
     return;
 }
