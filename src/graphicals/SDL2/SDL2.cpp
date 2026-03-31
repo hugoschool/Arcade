@@ -99,6 +99,8 @@ cacarcade::EventKey arcade::SDL2Display::getKey(const SDL_Keycode keycode)
             return cacarcade::EventKey::Left;
         case SDLK_RIGHT:
             return cacarcade::EventKey::Right;
+        case SDLK_SPACE:
+            return cacarcade::EventKey::Space;
         default:
             return cacarcade::EventKey::None;
     }
