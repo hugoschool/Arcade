@@ -59,6 +59,8 @@ cacarcade::EventKey arcade::NCursesDisplay::getKey(int key)
         return static_cast<cacarcade::EventKey>(key - 'a' + 1);
     } else if (std::isdigit(key)) {
         return static_cast<cacarcade::EventKey>(key - '1' + 27);
+    } else if (key == ' ') {
+        return cacarcade::EventKey::Space;
     }
     return cacarcade::EventKey::Space;
 }
@@ -73,9 +75,9 @@ std::optional<std::unique_ptr<arcade::TileClickedEvent>> arcade::NCursesDisplay:
             return std::nullopt;
         }
         cacarcade::EventMouseButton mouse;
-        if (event.bstate == BUTTON1_CLICKED)
+        if (event.bstate == BUTTON1_RELEASED)
             mouse = cacarcade::EventMouseButton::Left;
-        if (event.bstate == BUTTON3_CLICKED)
+        if (event.bstate == BUTTON3_RELEASED)
             mouse = cacarcade::EventMouseButton::Right;
         return std::make_unique<arcade::TileClickedEvent>(
             std::move(position),
@@ -91,7 +93,7 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::NCursesDisplay::pollEv
     while (key != ERR) {
         if (key == ERR)
             return std::nullopt;
-        if (std::isalnum(key)) {
+        if (std::isalnum(key) || key == ' ') {
             return std::make_unique<arcade::KeyPressedEvent>(getKey(key));
         }
         if (key == KEY_MOUSE) {
@@ -113,7 +115,7 @@ void arcade::NCursesDisplay::setWindowsSize(std::pair<size_t, size_t> size)
         }
         _window = subwin(stdscr, size.second + 2, size.first + 2, 0, 0);
         nodelay(_window, true);
-        mousemask(BUTTON1_CLICKED | BUTTON3_CLICKED | REPORT_MOUSE_POSITION, NULL);
+        mousemask(BUTTON1_RELEASED | BUTTON3_RELEASED | REPORT_MOUSE_POSITION, NULL);
         keypad(_window, true);
     }
 }
