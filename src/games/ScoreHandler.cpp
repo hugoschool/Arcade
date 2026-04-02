@@ -147,9 +147,15 @@ void arcade::ScoreHandler::saveScore(const std::string playerName)
         fullStringToWrite += line + '\n';
     }
 
-    std::ofstream _fileOutput(_fileName);
-    _fileOutput << fullStringToWrite;
-    _fileOutput.close();
+    std::ofstream fileOutput(_fileName);
+
+    if (!fileOutput.is_open()) {
+        std::cerr << "Impossible to write to " << _fileName << std::endl;
+        return;
+    }
+
+    fileOutput << fullStringToWrite;
+    fileOutput.close();
 
     _isSaved = true;
 }
