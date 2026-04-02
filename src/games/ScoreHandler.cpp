@@ -122,20 +122,19 @@ void arcade::ScoreHandler::saveScore(const std::string playerName)
 
     _fileInput.open(_fileName);
 
-    if (!_fileInput.is_open()) {
-        std::cerr << "Impossible to write to " << _fileName << std::endl;
-        return;
-    }
-
-    std::string line;
     bool keyGameNameInFile = false;
 
-    while (std::getline(_fileInput, line)) {
-        lines.push_back(line);
-        if (line == keyGameName) {
-            keyGameNameInFile = true;
-            lines.push_back(scoreLine);
+    if (_fileInput.is_open()) {
+        std::string line;
+
+        while (std::getline(_fileInput, line)) {
+            lines.push_back(line);
+            if (line == keyGameName) {
+                keyGameNameInFile = true;
+                lines.push_back(scoreLine);
+            }
         }
+
     }
 
     if (keyGameNameInFile == false || lines.empty()) {
