@@ -152,10 +152,10 @@ short arcade::NCursesDisplay::addPair(cacarcade::ColorCode fg, cacarcade::ColorC
 void arcade::NCursesDisplay::displayTiles(cacarcade::TileContainer container)
 {
     setWindowsSize(container.dimension);
+    start_color();
     for (auto &[_, tile] : container.tiles) {
         int x = tile.y;
         int y = tile.x;
-        start_color();
         short pair = addPair(tile.textColor, tile.backgroundColor);
         wattron(_window, COLOR_PAIR(pair));
         if (tile.text != '\0') {
