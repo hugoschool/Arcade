@@ -403,10 +403,10 @@ void arcade::CentipedeGame::update(std::optional<std::unique_ptr<cacarcade::IEve
     if (event.has_value()) {
         handleEvent(event.value());
     } else {
-        std::unique_ptr<cacarcade::IEvent> temp = std::make_unique<arcade::AEvent>(cacarcade::EventType::DisplayText);
-        temp->setTextContent(addTextContent());
-        event = std::move(temp);
+        std::unique_ptr<cacarcade::IEvent> newEvent = std::make_unique<arcade::AEvent>(cacarcade::EventType::DisplayText);
+        event = std::move(newEvent);
     }
+    event->get()->setTextContent(addTextContent());
 
     if (!_isPaused) {
         if (centipedeCount > 0) {

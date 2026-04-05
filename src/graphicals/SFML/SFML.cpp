@@ -3,11 +3,9 @@
 #include "cacarcade/DisplayTextContent.hpp"
 #include "cacarcade/EventKey.hpp"
 #include "cacarcade/EventMouseButton.hpp"
-#include "cacarcade/EventType.hpp"
 #include "cacarcade/Tile.hpp"
 #include "cacarcade/TileContainer.hpp"
 #include "common/Exception.hpp"
-#include "events/AEvent.hpp"
 #include "events/KeyPressedEvent.hpp"
 #include "events/QuitEvent.hpp"
 #include "events/TileClickedEvent.hpp"
@@ -18,10 +16,8 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <cstddef>
 #include <exception>
-#include <iostream>
 #include <memory>
 #include <optional>
-#include <ostream>
 
 arcade::SFMLDisplay::SFMLDisplay() : arcade::ADisplayModule(),
     _window(), _font(), _outlineThickness(1)

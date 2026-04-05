@@ -1,4 +1,5 @@
 #include "core/Arcade.hpp"
+#include "cacarcade/DisplayTextContent.hpp"
 #include "cacarcade/EventKey.hpp"
 #include "cacarcade/EventType.hpp"
 #include "cacarcade/IEvent.hpp"
@@ -104,8 +105,14 @@ void arcade::Arcade::loop()
         _game->update(event);
 
         _display->clear();
-        if (event.has_value())
-            _display->displayText(event->get()->getTextContent());
+        if (event.has_value()) {
+            while (true) {
+                cacarcade::DisplayTextContent text = event->get()->getTextContent();
+                if (text.text.empty())
+                    break;
+                _display->displayText(text);
+            }
+        }
         _display->displayTiles(_game->getTiles());
     }
 }

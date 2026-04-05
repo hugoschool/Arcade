@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cacarcade/Color.hpp"
 #include "cacarcade/DisplayTextContent.hpp"
 #include "cacarcade/EventKey.hpp"
 #include "cacarcade/EventMouseButton.hpp"
@@ -58,8 +59,11 @@ namespace arcade {
 
             cacarcade::DisplayTextContent getTextContent() override
             {
-                cacarcade::DisplayTextContent text = _contents.at(_contents.size() - 1);
-                _contents.pop_back();
+                cacarcade::DisplayTextContent text = {"", {0, 0}, 0, cacarcade::Color::Black};
+                if (_contents.size() > 0) {
+                    text = _contents.at(_contents.size() - 1);
+                    _contents.pop_back();
+                }
                 return text;
             }
 

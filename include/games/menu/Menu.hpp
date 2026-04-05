@@ -1,9 +1,13 @@
 #pragma once
-
+#include "cacarcade/DisplayTextContent.hpp"
 #include "cacarcade/IEvent.hpp"
 #include "games/AGameModule.hpp"
+#include <cstddef>
 #include <memory>
 #include <optional>
+#include <string>
+#include <vector>
+
 namespace arcade {
     class Menu : public AGameModule {
         public:
@@ -17,5 +21,16 @@ namespace arcade {
             void reset() override;
 
         private:
-    };
+            std::vector<std::string> _games;
+            std::vector<std::string> _displays;
+            size_t _gamesAmount;
+            size_t _displayAmount;
+
+            std::vector<std::string> _playerNames;
+
+            cacarcade::DisplayTextContent addGamesContent();
+            cacarcade::DisplayTextContent addDisplayContent();
+            cacarcade::DisplayTextContent addTitleContent();
+            cacarcade::DisplayTextContent addPlayersContent();
+        };
 }
