@@ -1,15 +1,20 @@
 #include "games/centipede/Centipede.hpp"
 #include "cacarcade/Color.hpp"
+#include "cacarcade/DisplayTextContent.hpp"
 #include "cacarcade/EventKey.hpp"
 #include "cacarcade/EventType.hpp"
+#include "cacarcade/IEvent.hpp"
 #include "cacarcade/Tile.hpp"
 #include "cacarcade/Utils.hpp"
+#include "events/AEvent.hpp"
 #include "games/AGameModule.hpp"
 #include "games/ScoreHandler.hpp"
 #include <chrono>
 #include <cstddef>
 #include <exception>
 #include <iostream>
+#include <memory>
+#include <optional>
 #include <ostream>
 #include <random>
 #include <stdexcept>
@@ -383,10 +388,26 @@ void arcade::CentipedeGame::checkPlayerCollision()
     }
 }
 
+cacarcade::DisplayTextContent arcade::CentipedeGame::addTextContent()
+{
+    cacarcade::DisplayTextContent text;
+    text.color = cacarcade::Color::White;
+    text.coordinates = {1500, 0};
+    text.size = 15;
+    text.text = "TEST";
+    return text;
+}
+
 void arcade::CentipedeGame::update(std::optional<std::unique_ptr<cacarcade::IEvent>> &event)
 {
-    if (event.has_value())
+    if (event.has_value()) {
         handleEvent(event.value());
+    } else {
+        std::unique_ptr<cacarcade::IEvent> temp = std::make_unique<arcade::AEvent>(cacarcade::EventType::DisplayText);
+        temp->setTextContent(addTextContent());
+        event = std::move(temp);
+    }
+
     if (!_isPaused) {
         if (centipedeCount > 0) {
             placeCentipede();
