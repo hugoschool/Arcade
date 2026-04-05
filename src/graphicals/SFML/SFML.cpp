@@ -1,19 +1,27 @@
 #include "graphicals/SFML/SFML.hpp"
 #include "cacarcade/Color.hpp"
+#include "cacarcade/DisplayTextContent.hpp"
 #include "cacarcade/EventKey.hpp"
 #include "cacarcade/EventMouseButton.hpp"
+#include "cacarcade/EventType.hpp"
 #include "cacarcade/Tile.hpp"
 #include "cacarcade/TileContainer.hpp"
 #include "common/Exception.hpp"
+#include "events/AEvent.hpp"
 #include "events/KeyPressedEvent.hpp"
 #include "events/QuitEvent.hpp"
 #include "events/TileClickedEvent.hpp"
 #include "graphicals/ADisplayModule.hpp"
 #include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Keyboard.hpp>
+#include <cstddef>
 #include <exception>
+#include <iostream>
 #include <memory>
 #include <optional>
+#include <ostream>
 
 arcade::SFMLDisplay::SFMLDisplay() : arcade::ADisplayModule(),
     _window(), _font(), _outlineThickness(1)
@@ -43,7 +51,7 @@ void arcade::SFMLDisplay::close()
 
 void arcade::SFMLDisplay::clear()
 {
-    _window.clear(sf::Color::White);
+    _window.clear(sf::Color::Black);
 }
 
 cacarcade::EventKey arcade::SFMLDisplay::getKey(const sf::Keyboard::Key key)
@@ -103,6 +111,8 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SFMLDisplay::pollEvent
             return std::make_unique<arcade::KeyPressedEvent>(getKey(keyPressed->code));
         }
     }
+    // AEvent test(cacarcade::DisplayTextContent);
+    // test
     return std::nullopt;
 }
 
@@ -158,6 +168,28 @@ void arcade::SFMLDisplay::displayTileTexture(cacarcade::Tile &tile, sf::Rectangl
 
     tileRect.setTexture(&texture);
     _window.draw(tileRect);
+}
+
+void arcade::SFMLDisplay::displayText(cacarcade::DisplayTextContent text)
+{
+    size_t len = text.size * (text.text.length() + 2);
+    sf::RectangleShape rec(sf::Vector2f(len, text.size + 10));
+    rec.setPosition(sf::Vector2f(text.coordinates.first, text.coordinates.second));
+    rec.setOutlineThickness(_outlineThickness);
+    rec.setOutlineColor(getColor(text.color));
+    rec.setFillColor(sf::Color::Black);
+    sf::Text str(_font, text.text);
+
+    sf::Vector2f pos = rec.getPosition();
+    pos.x += rec.getSize().x / 4;
+    pos.y -= rec.getSize().y / 20;
+    str.setPosition(pos);
+
+    str.setFillColor(getColor(text.color));
+    str.setCharacterSize(text.size);
+
+    _window.draw(rec);
+    _window.draw(str);
 }
 
 void arcade::SFMLDisplay::displayTiles(cacarcade::TileContainer container)

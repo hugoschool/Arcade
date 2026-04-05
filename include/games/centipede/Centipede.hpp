@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cacarcade/IEvent.hpp"
 #include "cacarcade/Utils.hpp"
 #include "games/AGameModule.hpp"
 #include <chrono>
@@ -79,6 +80,7 @@ namespace arcade {
             void projectileCollisons(std::pair<size_t, size_t>&);
             bool canPlayerMove(int x, int y);
             void checkPlayerCollision();
+            cacarcade::DisplayTextContent addTextContent();
 
             void createCentipede();
             void placeCentipede();

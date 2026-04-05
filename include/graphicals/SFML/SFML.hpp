@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cacarcade/Color.hpp"
+#include "cacarcade/DisplayTextContent.hpp"
 #include "graphicals/ADisplayModule.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
@@ -21,6 +22,7 @@ namespace arcade {
 
             std::optional<std::unique_ptr<cacarcade::IEvent>> pollEvent() override;
             void displayTiles(cacarcade::TileContainer tiles) override;
+            void displayText(cacarcade::DisplayTextContent text) override;
 
         private:
             sf::RenderWindow _window;

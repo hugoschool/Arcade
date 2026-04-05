@@ -1,10 +1,12 @@
 #pragma once
 
+#include "cacarcade/DisplayTextContent.hpp"
 #include "cacarcade/EventKey.hpp"
 #include "cacarcade/EventMouseButton.hpp"
 #include "cacarcade/EventType.hpp"
 #include "cacarcade/IEvent.hpp"
 #include <utility>
+#include <vector>
 
 namespace arcade {
     class AEvent : public cacarcade::IEvent {
@@ -56,14 +58,18 @@ namespace arcade {
 
             cacarcade::DisplayTextContent getTextContent() override
             {
-                return {};
+                cacarcade::DisplayTextContent text = _contents.at(_contents.size() - 1);
+                _contents.pop_back();
+                return text;
             }
 
-            void setTextContent(cacarcade::DisplayTextContent) override
+            void setTextContent(cacarcade::DisplayTextContent content) override
             {
+                _contents.push_back(content);
             }
 
         private:
             cacarcade::EventType _type;
+            std::vector<cacarcade::DisplayTextContent> _contents;
     };
 }

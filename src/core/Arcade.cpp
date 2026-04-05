@@ -119,6 +119,8 @@ void arcade::Arcade::loop()
         _game->update(event);
 
         _display->clear();
+        if (event.has_value())
+            _display->displayText(event->get()->getTextContent());
         _display->displayTiles(_game->getTiles());
     }
 
