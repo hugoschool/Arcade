@@ -12,6 +12,7 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <exception>
+#include <iostream>
 #include <memory>
 #include <optional>
 
@@ -26,11 +27,13 @@ arcade::SFMLDisplay::~SFMLDisplay()
 void arcade::SFMLDisplay::open()
 {
     try {
-        sf::VideoMode videoMode(sf::Vector2u(_screenWidth, _screenHeight));
+        sf::VideoMode videoMode(_screenWidth, _screenHeight);
 
-        _window = sf::RenderWindow(videoMode, "Arcade");
+        _window.create(videoMode, "Arcade");
         _window.setFramerateLimit(60);
-        _font = sf::Font("/usr/share/fonts/gnu-free/FreeSans.otf");
+        _font = sf::Font();
+        if (!_font.loadFromFile("/usr/share/fonts/gnu-free/FreeSans.otf"))
+            throw arcade::Exception("Font wasn't loaded correctly.");
     } catch (std::exception &e) {
         throw arcade::Exception("Something went wrong with the creation of the window.");
     }
@@ -83,35 +86,42 @@ cacarcade::EventMouseButton arcade::SFMLDisplay::getMouseButton(sf::Mouse::Butto
 
 std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SFMLDisplay::pollEvent()
 {
-    while (const std::optional event = _window.pollEvent()) {
-        if (event->is<sf::Event::Closed>()) {
+    sf::Event event;
+
+    while (_window.pollEvent(event)) {
+        if (event.type == sf::Event::Closed) {
             return std::make_unique<arcade::QuitEvent>();
         }
 
-        if (event->is<sf::Event::MouseButtonPressed>()) {
-            const sf::Event::MouseButtonPressed *mouseEvent = event->getIf<sf::Event::MouseButtonPressed>();
+        if (event.type == sf::Event::MouseButtonPressed) {
+            sf::Event::MouseButtonEvent mouseEvent = event.mouseButton;
 
             return std::make_unique<arcade::TileClickedEvent>(
-                findClosestTile(mouseEvent->position.x, mouseEvent->position.y),
-                getMouseButton(mouseEvent->button)
+                findClosestTile(mouseEvent.x, mouseEvent.y),
+                getMouseButton(mouseEvent.button)
             );
         }
 
-        if (event->is<sf::Event::KeyPressed>()) {
-            const sf::Event::KeyPressed *keyPressed = event->getIf<sf::Event::KeyPressed>();
+        if (event.type == sf::Event::KeyPressed) {
+            const sf::Event::KeyEvent keyPressed = event.key;
 
-            return std::make_unique<arcade::KeyPressedEvent>(getKey(keyPressed->code));
+            return std::make_unique<arcade::KeyPressedEvent>(getKey(keyPressed.code));
         }
     }
     return std::nullopt;
 }
 
-std::weak_ptr<sf::Texture> arcade::SFMLDisplay::createTexture(std::string &textureName)
+std::optional<std::weak_ptr<sf::Texture>> arcade::SFMLDisplay::createTexture(std::string &textureName)
 {
     try {
         return std::weak_ptr<sf::Texture>(_textureMap.at(textureName));
     } catch (const std::out_of_range &) {
-        std::shared_ptr<sf::Texture> texture = std::make_shared<sf::Texture>(textureName);
+        std::shared_ptr<sf::Texture> texture = std::make_shared<sf::Texture>();
+
+        if (!texture->loadFromFile(textureName)) {
+            std::cerr << "An error occured with the creation of the " << textureName << " texture." << std::endl;
+            return std::nullopt;
+        }
 
         texture->setSmooth(true);
         _textureMap.insert({textureName, texture});
@@ -137,7 +147,7 @@ void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleSh
     _window.draw(tileRect);
 
     if (tile.text != '\0') {
-        sf::Text text(_font, tile.text);
+        sf::Text text(tile.text, _font);
 
         sf::Vector2f pos = tileRect.getPosition();
         pos.x += tileRect.getSize().x / 4;
@@ -153,8 +163,13 @@ void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleSh
 
 void arcade::SFMLDisplay::displayTileTexture(cacarcade::Tile &tile, sf::RectangleShape &tileRect)
 {
-    std::weak_ptr<sf::Texture> ptr = createTexture(tile.textureName);
-    sf::Texture texture = *ptr.lock();
+    std::optional<std::weak_ptr<sf::Texture>> ptr = createTexture(tile.textureName);
+    if (!ptr.has_value()) {
+        displayTileText(tile, tileRect);
+        return;
+    }
+
+    sf::Texture texture = *(ptr.value()).lock();
 
     tileRect.setTexture(&texture);
     _window.draw(tileRect);
