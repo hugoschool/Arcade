@@ -5,8 +5,8 @@ on:
 
 env:
   CORE_BINARY: arcade
-  GAME_BINARIES: lib/arcade_minesweeper.so
-  GRAPHICAL_BINARIES: lib/arcade_sdl2.so
+  GAME_BINARIES: lib/arcade_minesweeper.so lib/arcade_centipede.so
+  GRAPHICAL_BINARIES: lib/arcade_sdl2.so lib/arcade_sfml.so lib/arcade_ncurses.so
 
 jobs:
   build_core:
