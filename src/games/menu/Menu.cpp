@@ -13,7 +13,8 @@
 #include <string>
 #include <utility>
 
-arcade::Menu::Menu() : AGameModule("Menu"), _games(), _displays()
+arcade::Menu::Menu() : AGameModule("Menu"), _games(), _displays(),
+    _gamesAmount(), _displayAmount(), _gamesLen(0), _displayLen(0)
 {
     _container.dimension = std::make_pair(0, 0);
     std::string path = "./lib";
@@ -71,8 +72,12 @@ cacarcade::DisplayTextContent arcade::Menu::addGamesContent()
 {
     cacarcade::DisplayTextContent text;
 
+    for (auto name : _games) {
+        if (name.length() > _gamesLen)
+            _gamesLen = name.length();
+    }
     text.text = _games.at(_gamesAmount % (_games.size()));
-    text.size = 20;
+    text.size = _gamesLen;
     text.color = cacarcade::Color::Yellow;
     text.coordinates = {5 , 150};
     return text;
@@ -82,8 +87,13 @@ cacarcade::DisplayTextContent arcade::Menu::addDisplayContent()
 {
     cacarcade::DisplayTextContent text;
 
+    for (auto name : _displays) {
+        if (name.length() > _displayLen)
+            _displayLen = name.length();
+    }
+
     text.text = _displays.at(_displayAmount % (_displays.size()));
-    text.size = 20;
+    text.size = _displayLen;
     text.color = cacarcade::Color::Blue;
     text.coordinates = {5 , 300};
     return text;
@@ -94,7 +104,7 @@ cacarcade::DisplayTextContent arcade::Menu::addTitleContent()
     cacarcade::DisplayTextContent text;
 
     text.text = "Arcade by Hugoat & Freakyban";
-    text.size = 20;
+    text.size = text.text.length();
     text.color = cacarcade::Color::White;
     text.coordinates = {650 , 10};
     return text;

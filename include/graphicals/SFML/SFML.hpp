@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <map>
 #include <memory>
+#include <utility>
 
 namespace arcade {
     class SFMLDisplay : public arcade::ADisplayModule {
@@ -38,5 +39,9 @@ namespace arcade {
 
             void displayTileText(cacarcade::Tile &tile, sf::RectangleShape &tileRect);
             void displayTileTexture(cacarcade::Tile &tile, sf::RectangleShape &tileRect);
+
+            size_t _offsetX;
+            size_t _offsetY;
+            void updateOffset(std::pair<size_t, size_t>, size_t len);
     };
 }

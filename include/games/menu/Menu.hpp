@@ -25,6 +25,8 @@ namespace arcade {
             std::vector<std::string> _displays;
             size_t _gamesAmount;
             size_t _displayAmount;
+            size_t _gamesLen;
+            size_t _displayLen;
 
             std::vector<std::string> _playerNames;
 

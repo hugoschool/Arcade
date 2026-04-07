@@ -392,9 +392,9 @@ cacarcade::DisplayTextContent arcade::CentipedeGame::addTextContent()
 {
     cacarcade::DisplayTextContent text;
     text.color = cacarcade::Color::White;
-    text.coordinates = {1500, 0};
+    text.coordinates = {800, 0};
     text.size = 15;
-    text.text = "TEST";
+    text.text = "Type Shit";
     return text;
 }
 

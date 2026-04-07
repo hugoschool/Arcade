@@ -16,11 +16,14 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <cstddef>
 #include <exception>
+#include <iostream>
 #include <memory>
 #include <optional>
+#include <ostream>
+#include <utility>
 
 arcade::SFMLDisplay::SFMLDisplay() : arcade::ADisplayModule(),
-    _window(), _font(), _outlineThickness(1)
+    _window(), _font(), _outlineThickness(1), _offsetX(0), _offsetY(0)
 {
     try {
         sf::VideoMode videoMode(sf::Vector2u(_screenWidth, _screenHeight));
@@ -159,10 +162,20 @@ void arcade::SFMLDisplay::displayTileTexture(cacarcade::Tile &tile, sf::Rectangl
     _window.draw(tileRect);
 }
 
+void arcade::SFMLDisplay::updateOffset(std::pair<size_t, size_t> pos, size_t len)
+{
+    if (pos.first < 10) {
+        _offsetX = (len * _fontSize) + 20;
+    }
+    if (pos.second <= 10) {
+        _offsetY = _fontSize + 20;
+    }
+}
+
 void arcade::SFMLDisplay::displayText(cacarcade::DisplayTextContent text)
 {
-    size_t len = text.size * (text.text.length() + 2);
-    sf::RectangleShape rec(sf::Vector2f(len, text.size + 10));
+    size_t len = _fontSize * (text.size);
+    sf::RectangleShape rec(sf::Vector2f(len, _fontSize + 10));
     rec.setPosition(sf::Vector2f(text.coordinates.first, text.coordinates.second));
     rec.setOutlineThickness(_outlineThickness);
     rec.setOutlineColor(getColor(text.color));
@@ -175,8 +188,9 @@ void arcade::SFMLDisplay::displayText(cacarcade::DisplayTextContent text)
     str.setPosition(pos);
 
     str.setFillColor(getColor(text.color));
-    str.setCharacterSize(text.size);
+    str.setCharacterSize(_fontSize);
 
+    updateOffset(text.coordinates, text.size);
     _window.draw(rec);
     _window.draw(str);
 }
@@ -186,9 +200,8 @@ void arcade::SFMLDisplay::displayTiles(cacarcade::TileContainer container)
     setTileDimensions(container.dimension);
 
     for (auto &[_, tile] : container.tiles) {
-        int x = tile.x * _tileSize;
-        int y = tile.y * _tileSize;
-
+        int x = tile.x * _tileSize + _offsetX;
+        int y = tile.y * _tileSize + _offsetY;
         sf::RectangleShape rec(sf::Vector2f(_tileSize - (_outlineThickness * 2), _tileSize - (_outlineThickness * 2)));
         rec.setPosition(sf::Vector2f(x, y));
 
