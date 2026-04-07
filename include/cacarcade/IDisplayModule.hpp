@@ -11,8 +11,6 @@ namespace cacarcade {
         public:
             virtual ~IDisplayModule() = default;
 
-            virtual void open() = 0;
-            virtual void close() = 0;
             virtual void clear() = 0;
 
             virtual std::optional<std::unique_ptr<cacarcade::IEvent>> pollEvent() = 0;

@@ -18,13 +18,6 @@
 arcade::SFMLDisplay::SFMLDisplay() : arcade::ADisplayModule(),
     _window(), _font(), _outlineThickness(1)
 {
-}
-
-arcade::SFMLDisplay::~SFMLDisplay()
-{}
-
-void arcade::SFMLDisplay::open()
-{
     try {
         sf::VideoMode videoMode(sf::Vector2u(_screenWidth, _screenHeight));
 
@@ -36,7 +29,7 @@ void arcade::SFMLDisplay::open()
     }
 }
 
-void arcade::SFMLDisplay::close()
+arcade::SFMLDisplay::~SFMLDisplay()
 {
     _window.close();
 }

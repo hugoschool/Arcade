@@ -15,8 +15,6 @@ namespace arcade {
             SFMLDisplay();
             ~SFMLDisplay();
 
-            void open() override;
-            void close() override;
             void clear() override;
 
             std::optional<std::unique_ptr<cacarcade::IEvent>> pollEvent() override;

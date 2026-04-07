@@ -13,8 +13,6 @@ namespace arcade {
             SDL2Display();
             ~SDL2Display();
 
-            void open() override;
-            void close() override;
             void clear() override;
 
             std::optional<std::unique_ptr<cacarcade::IEvent>> pollEvent() override;

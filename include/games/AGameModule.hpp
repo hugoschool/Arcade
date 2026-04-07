@@ -16,10 +16,13 @@ namespace arcade {
             std::optional<std::unique_ptr<cacarcade::IEvent>> pollEvent() override;
 
             virtual void reset() override;
+            void setPlayerName(std::string) override;
 
         protected:
             cacarcade::TileContainer _container;
             arcade::ScoreHandler _scoreHandler;
+
+            std::string _playerName;
 
             std::queue<std::unique_ptr<cacarcade::IEvent>> _eventQueue;
 

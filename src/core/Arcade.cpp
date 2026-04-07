@@ -3,8 +3,6 @@
 #include "cacarcade/EventType.hpp"
 #include "cacarcade/IEvent.hpp"
 #include "cacarcade/Utils.hpp"
-#include "common/Exception.hpp"
-#include <iostream>
 #include <optional>
 
 arcade::Arcade::Arcade(const std::string graphicsLibrary) :
@@ -64,32 +62,20 @@ void arcade::Arcade::handleDisplayEvents(std::unique_ptr<cacarcade::IEvent> &eve
             break;
         case cacarcade::EventType::PrevDisplay:
         case cacarcade::EventType::NextDisplay: {
-            try {
-                _display->close();
-            } catch (const arcade::Exception &e) {
-                std::cerr << e.what() << std::endl;
-                return;
-            }
-
+            _display.reset();
             if (event->getType() == cacarcade::EventType::PrevDisplay)
                 _display = _displayManager.getPreviousInstance();
             else if (event->getType() == cacarcade::EventType::NextDisplay)
                 _display = _displayManager.getNextInstance();
-
-            try {
-                _display->open();
-            } catch (const arcade::Exception &e) {
-                std::cerr << e.what() << std::endl;
-                return;
-            }
-
             break;
         }
         case cacarcade::EventType::PrevGame:
-            _game = _gameManager.getPreviousInstance();
-            break;
         case cacarcade::EventType::NextGame:
-            _game = _gameManager.getNextInstance();
+            _game.reset();
+            if (event->getType() == cacarcade::EventType::PrevGame)
+                _game = _gameManager.getPreviousInstance();
+            else if (event->getType() == cacarcade::EventType::NextGame)
+                _game = _gameManager.getNextInstance();
             break;
         default:
             break;
@@ -98,13 +84,6 @@ void arcade::Arcade::handleDisplayEvents(std::unique_ptr<cacarcade::IEvent> &eve
 
 void arcade::Arcade::loop()
 {
-    try {
-        _display->open();
-    } catch (const arcade::Exception &e) {
-        std::cerr << e.what() << std::endl;
-        return;
-    }
-
     std::optional<std::unique_ptr<cacarcade::IEvent>> event;
 
     while (_running) {
@@ -120,12 +99,5 @@ void arcade::Arcade::loop()
 
         _display->clear();
         _display->displayTiles(_game->getTiles());
-    }
-
-    try {
-        _display->close();
-    } catch (const arcade::Exception &e) {
-        std::cerr << e.what() << std::endl;
-        return;
     }
 }

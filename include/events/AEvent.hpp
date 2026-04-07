@@ -63,6 +63,33 @@ namespace arcade {
             {
             }
 
+            std::string getGameLibrary() override
+            {
+                return "";
+            }
+
+            void setGameLibrary(std::string) override
+            {
+            }
+
+            std::string getDisplayLibrary() override
+            {
+                return "";
+            }
+
+            void setDisplayLibrary(std::string) override
+            {
+            }
+
+            std::string getPlayerName() override
+            {
+                return "";
+            }
+
+            void setPlayerName(std::string) override
+            {
+            }
+
         private:
             cacarcade::EventType _type;
     };

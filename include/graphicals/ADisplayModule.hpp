@@ -11,8 +11,6 @@ namespace arcade {
             ADisplayModule();
             ~ADisplayModule();
 
-            virtual void open() override;
-            virtual void close() override;
             virtual void clear() override;
 
             virtual std::optional<std::unique_ptr<cacarcade::IEvent>> pollEvent() override;
