@@ -261,8 +261,7 @@ void arcade::MinesweeperGame::saveScore()
 
     if (_scoreHandler.getSavedState() == false) {
         removeTimeFromScore();
-        // TODO: remove this
-        _scoreHandler.saveScore("Temporary");
+        _scoreHandler.saveScore(_playerName);
     }
 }
 

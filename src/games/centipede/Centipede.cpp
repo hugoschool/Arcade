@@ -225,7 +225,7 @@ void arcade::CentipedeGame::placeCentipede()
         centipedeCount -= 1;
     }
     if (_vecCentipedes.empty() && centipedeCount == 0) {
-        _scoreHandler.saveScore("Type shit");
+        _scoreHandler.saveScore(_playerName);
         _scoreHandler.resetScore();
         _isPaused = true;
     }
@@ -295,7 +295,7 @@ void arcade::CentipedeGame::addProjectile()
 
 void arcade::CentipedeGame::reset()
 {
-    _scoreHandler.saveScore("Type shit");
+    _scoreHandler.saveScore(_playerName);
     AGameModule::reset();
     _container.tiles.clear();
     _tileInfo.clear();
