@@ -497,6 +497,9 @@ void arcade::MinesweeperGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &ev
                     _gameClock = std::chrono::steady_clock::now();
                 }
 
+                if (_gameState != GameState::Ongoing)
+                    break;
+
                 revealAllZeroesOnTile(position);
                 revealTile(position);
 
