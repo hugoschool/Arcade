@@ -70,10 +70,12 @@ void arcade::Arcade::handleDisplayEvents(std::unique_ptr<cacarcade::IEvent> &eve
             break;
         }
         case cacarcade::EventType::PrevGame:
-            _game = _gameManager.getPreviousInstance();
-            break;
         case cacarcade::EventType::NextGame:
-            _game = _gameManager.getNextInstance();
+            _game.reset();
+            if (event->getType() == cacarcade::EventType::PrevGame)
+                _game = _gameManager.getPreviousInstance();
+            else if (event->getType() == cacarcade::EventType::NextGame)
+                _game = _gameManager.getNextInstance();
             break;
         default:
             break;
