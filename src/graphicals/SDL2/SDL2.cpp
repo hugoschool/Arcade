@@ -23,10 +23,10 @@ arcade::SDL2Display::SDL2Display() : arcade::ADisplayModule(), _window(nullptr),
     // It somehow fixed itself for me, but I'm leaving this here in case it returns in the future.
     // SDL_SetHint(SDL_HINT_VIDEODRIVER, "x11");
 
-    if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
+    if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
         throw arcade::Exception(std::string("Impossible to initialize SDL: ") + SDL_GetError());
 
-    if (TTF_Init() < 0)
+    if (TTF_Init() != 0)
         throw arcade::Exception(std::string("Impossible to initialize SDL Text (TTF): ") + TTF_GetError());
 
     _window = SDL_CreateWindow(
@@ -53,17 +53,24 @@ arcade::SDL2Display::SDL2Display() : arcade::ADisplayModule(), _window(nullptr),
 
 arcade::SDL2Display::~SDL2Display()
 {
-    if (_window == nullptr || _renderer == nullptr)
-        std::cerr << "Window or renderer is not opened" << std::endl;;
+    if (_window == nullptr || _renderer == nullptr || _font == nullptr) {
+        std::cerr << "Window, renderer or font is not opened" << std::endl;
+        return;
+    }
 
     for (auto &[_, texture] : _textureMap) {
         SDL_DestroyTexture(texture);
     }
 
-    SDL_DestroyRenderer(_renderer);
-    SDL_DestroyWindow(_window);
+    if (_renderer != nullptr)
+        SDL_DestroyRenderer(_renderer);
+
+    if (_window != nullptr)
+        SDL_DestroyWindow(_window);
+
     if (_font != nullptr)
         TTF_CloseFont(_font);
+
     TTF_Quit();
     SDL_Quit();
 }
