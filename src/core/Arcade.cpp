@@ -4,11 +4,13 @@
 #include "cacarcade/EventType.hpp"
 #include "cacarcade/IEvent.hpp"
 #include "cacarcade/Utils.hpp"
+#include <iostream>
 #include <optional>
+#include <ostream>
 
 arcade::Arcade::Arcade(const std::string graphicsLibrary) :
     _displayManager(std::string(cacarcade::displayEntrypoint), graphicsLibrary),
-    _gameManager(std::string(cacarcade::gameEntrypoint)),
+    _gameManager(std::string(cacarcade::gameEntrypoint), "lib/arcade_menu.so"),
     _playerName("NON"), _running(true)
 {
     _display = _displayManager.getPointer();
@@ -91,6 +93,11 @@ void arcade::Arcade::handleDisplayEvents(std::unique_ptr<cacarcade::IEvent> &eve
                     break;
                 _display->displayText(text);
             }
+            break;
+        }
+        case cacarcade::EventType::LaunchFromMenu: {
+            _game = _gameManager.selectNewInstance(event->getGameLibrary());
+            _display = _displayManager.selectNewInstance(event->getDisplayLibrary());
             break;
         }
         default:

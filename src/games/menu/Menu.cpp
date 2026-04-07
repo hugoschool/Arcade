@@ -7,9 +7,12 @@
 #include "cacarcade/IGameModule.hpp"
 #include "core/DLLoader.hpp"
 #include "events/AEvent.hpp"
+#include "events/LaunchFromMenuEvent.hpp"
 #include "games/AGameModule.hpp"
 #include <filesystem>
+#include <iostream>
 #include <memory>
+#include <ostream>
 #include <string>
 #include <utility>
 
@@ -58,6 +61,11 @@ void arcade::Menu::handleEvent(std::unique_ptr<cacarcade::IEvent> &event)
                     _displayAmount++;
                     break;
                 case cacarcade::EventKey::Space: {
+                    std::unique_ptr<cacarcade::IEvent> newEvent = std::make_unique<arcade::LaunchFromMenuEvent>();
+                    newEvent->setGameLibrary(_games.at(_gamesAmount % (_games.size())));
+                    newEvent->setDisplayLibrary(_displays.at(_displayAmount % (_displays.size())));
+                    newEvent->setPlayerName("Tasty Crousty");
+                    _eventQueue.push(std::move(newEvent));
                     break;
                 }
                 default:
