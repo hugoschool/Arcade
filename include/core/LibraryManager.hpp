@@ -75,7 +75,7 @@ namespace arcade {
 
             void modifyPointer()
             {
-                _ptr = nullptr;
+                _ptr.reset();
 
                 _loader = DLLoader<T>(_libraries[_index % _libraries.size()]);
 

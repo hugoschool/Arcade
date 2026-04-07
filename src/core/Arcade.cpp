@@ -3,8 +3,6 @@
 #include "cacarcade/EventType.hpp"
 #include "cacarcade/IEvent.hpp"
 #include "cacarcade/Utils.hpp"
-#include "common/Exception.hpp"
-#include <iostream>
 #include <optional>
 
 arcade::Arcade::Arcade(const std::string graphicsLibrary) :
@@ -64,6 +62,7 @@ void arcade::Arcade::handleDisplayEvents(std::unique_ptr<cacarcade::IEvent> &eve
             break;
         case cacarcade::EventType::PrevDisplay:
         case cacarcade::EventType::NextDisplay: {
+            _display.reset();
             if (event->getType() == cacarcade::EventType::PrevDisplay)
                 _display = _displayManager.getPreviousInstance();
             else if (event->getType() == cacarcade::EventType::NextDisplay)
