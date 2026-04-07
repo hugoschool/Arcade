@@ -1,7 +1,7 @@
 #include "games/AGameModule.hpp"
 #include "cacarcade/IEvent.hpp"
 
-arcade::AGameModule::AGameModule(const std::string name) : _container(), _scoreHandler(name)
+arcade::AGameModule::AGameModule(const std::string name) : _container(), _scoreHandler(name), _playerName()
 {
 }
 
@@ -33,4 +33,9 @@ void arcade::AGameModule::reset()
 {
     _scoreHandler.resetScore();
     _scoreHandler.resetSavedState();
+}
+
+void arcade::AGameModule::setPlayerName(std::string playerName)
+{
+    _playerName = playerName;
 }
