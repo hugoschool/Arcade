@@ -26,5 +26,23 @@ namespace cacarcade {
 
             virtual cacarcade::DisplayTextContent getTextContent() = 0;
             virtual void setTextContent(cacarcade::DisplayTextContent) = 0;
+
+            // Menu specific functions
+            //
+            // All of these strings must be set by the menu before the LaunchFromMenu event is sent.
+            // If it is sent with one of these empty, it is your menu's fault.
+            //
+            // For the libraries:
+            // These string must also contain the entire path to be executed by a dlopen (ex: ./lib/arcade_sdl2.so)
+            //
+            // In short: Make sure the Launch button is blocked before all of these are set.
+            virtual std::string getGameLibrary() = 0;
+            virtual void setGameLibrary(std::string) = 0;
+
+            virtual std::string getDisplayLibrary() = 0;
+            virtual void setDisplayLibrary(std::string) = 0;
+
+            virtual std::string getPlayerName() = 0;
+            virtual void setPlayerName(std::string) = 0;
     };
 }

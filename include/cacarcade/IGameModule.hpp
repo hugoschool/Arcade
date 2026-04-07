@@ -15,5 +15,8 @@ namespace cacarcade {
             virtual std::optional<std::unique_ptr<cacarcade::IEvent>> pollEvent() = 0;
 
             virtual cacarcade::TileContainer getTiles() const = 0;
+
+            // Set the player name for score handling
+            virtual void setPlayerName(std::string) = 0;
     };
 }
