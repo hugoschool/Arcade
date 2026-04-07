@@ -28,12 +28,6 @@ void arcade::ADisplayModule::setTileDimensions(std::pair<std::size_t, std::size_
     }
 }
 
-void arcade::ADisplayModule::open()
-{}
-
-void arcade::ADisplayModule::close()
-{}
-
 void arcade::ADisplayModule::clear()
 {}
 

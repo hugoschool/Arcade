@@ -24,15 +24,13 @@ arcade::NCursesDisplay::NCursesDisplay() : arcade::ADisplayModule(), _window(nul
     noecho();
     curs_set(0);
     keypad(stdscr, TRUE);
+    wclear(stdscr);
 }
 
 arcade::NCursesDisplay::~NCursesDisplay()
 {
-}
-
-void arcade::NCursesDisplay::open()
-{
-    wclear(stdscr);
+    clear();
+    endwin();
 }
 
 void arcade::NCursesDisplay::clear()
@@ -41,15 +39,6 @@ void arcade::NCursesDisplay::clear()
     wrefresh(_window);
     werase(_window);
     erase();
-}
-
-void arcade::NCursesDisplay::close()
-{
-    refresh();
-    wrefresh(_window);
-    delwin(_window);
-    erase();
-    endwin();
 }
 
 cacarcade::EventKey arcade::NCursesDisplay::getKey(int key)

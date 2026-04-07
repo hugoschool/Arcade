@@ -18,14 +18,6 @@
 arcade::SDL2Display::SDL2Display() : arcade::ADisplayModule(), _window(nullptr), _renderer(nullptr),
      _textureMap()
 {
-}
-
-arcade::SDL2Display::~SDL2Display()
-{
-}
-
-void arcade::SDL2Display::open()
-{
     // Wayland causes the window to be blurry, setting it to X11 will force
     // XWayland to be used as the video driver.
     // It somehow fixed itself for me, but I'm leaving this here in case it returns in the future.
@@ -59,10 +51,10 @@ void arcade::SDL2Display::open()
         throw arcade::Exception(std::string("Impossible to open font (TTF): ") + TTF_GetError());
 }
 
-void arcade::SDL2Display::close()
+arcade::SDL2Display::~SDL2Display()
 {
     if (_window == nullptr || _renderer == nullptr)
-        throw arcade::Exception("Window or renderer is not opened");
+        std::cerr << "Window or renderer is not opened" << std::endl;;
 
     for (auto &[_, texture] : _textureMap) {
         SDL_DestroyTexture(texture);

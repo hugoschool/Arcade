@@ -64,25 +64,10 @@ void arcade::Arcade::handleDisplayEvents(std::unique_ptr<cacarcade::IEvent> &eve
             break;
         case cacarcade::EventType::PrevDisplay:
         case cacarcade::EventType::NextDisplay: {
-            try {
-                _display->close();
-            } catch (const arcade::Exception &e) {
-                std::cerr << e.what() << std::endl;
-                return;
-            }
-
             if (event->getType() == cacarcade::EventType::PrevDisplay)
                 _display = _displayManager.getPreviousInstance();
             else if (event->getType() == cacarcade::EventType::NextDisplay)
                 _display = _displayManager.getNextInstance();
-
-            try {
-                _display->open();
-            } catch (const arcade::Exception &e) {
-                std::cerr << e.what() << std::endl;
-                return;
-            }
-
             break;
         }
         case cacarcade::EventType::PrevGame:
@@ -98,13 +83,6 @@ void arcade::Arcade::handleDisplayEvents(std::unique_ptr<cacarcade::IEvent> &eve
 
 void arcade::Arcade::loop()
 {
-    try {
-        _display->open();
-    } catch (const arcade::Exception &e) {
-        std::cerr << e.what() << std::endl;
-        return;
-    }
-
     std::optional<std::unique_ptr<cacarcade::IEvent>> event;
 
     while (_running) {
@@ -120,12 +98,5 @@ void arcade::Arcade::loop()
 
         _display->clear();
         _display->displayTiles(_game->getTiles());
-    }
-
-    try {
-        _display->close();
-    } catch (const arcade::Exception &e) {
-        std::cerr << e.what() << std::endl;
-        return;
     }
 }
