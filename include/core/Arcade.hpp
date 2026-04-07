@@ -21,6 +21,8 @@ namespace arcade {
             std::shared_ptr<cacarcade::IDisplayModule> _display;
             std::shared_ptr<cacarcade::IGameModule> _game;
 
+            std::string _playerName;
+
             bool _running;
 
             void changeDisplayEvents(std::unique_ptr<cacarcade::IEvent> &event);

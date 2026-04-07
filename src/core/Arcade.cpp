@@ -8,10 +8,14 @@
 arcade::Arcade::Arcade(const std::string graphicsLibrary) :
     _displayManager(std::string(cacarcade::displayEntrypoint), graphicsLibrary),
     _gameManager(std::string(cacarcade::gameEntrypoint)),
-    _running(true)
+    _playerName("NON"), _running(true)
 {
     _display = _displayManager.getPointer();
     _game = _gameManager.getPointer();
+
+    // Setting it to empty to indicate to the menu
+    // that there's no current player name that is set
+    _game->setPlayerName("");
 }
 
 arcade::Arcade::~Arcade()
@@ -70,13 +74,15 @@ void arcade::Arcade::handleDisplayEvents(std::unique_ptr<cacarcade::IEvent> &eve
             break;
         }
         case cacarcade::EventType::PrevGame:
-        case cacarcade::EventType::NextGame:
+        case cacarcade::EventType::NextGame: {
             _game.reset();
             if (event->getType() == cacarcade::EventType::PrevGame)
                 _game = _gameManager.getPreviousInstance();
             else if (event->getType() == cacarcade::EventType::NextGame)
                 _game = _gameManager.getNextInstance();
+            _game->setPlayerName(_playerName);
             break;
+        }
         default:
             break;
     }
