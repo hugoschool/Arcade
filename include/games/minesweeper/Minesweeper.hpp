@@ -87,6 +87,7 @@ namespace arcade {
 
             void saveScore();
 
+            void resetMenuBar();
             void resetUntilZeroNeighbors(const cacarcade::tileCoordinates position);
             void createBombs();
 

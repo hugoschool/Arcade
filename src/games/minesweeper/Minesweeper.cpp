@@ -121,6 +121,32 @@ void arcade::MinesweeperGame::createMenuBar()
     }
 }
 
+void arcade::MinesweeperGame::resetMenuBar()
+{
+    for (cacarcade::Tile &tile : _chronoMenuTiles) {
+        tile.textureName = "";
+        tile.backgroundColor = cacarcade::Color::Black;
+        tile.text = '\0';
+        tile.textColor = cacarcade::Color::White;
+    }
+
+    if (_resetMenuTile.has_value()) {
+        cacarcade::Tile &tile = _resetMenuTile->get();
+
+        tile.textureName = "";
+        tile.backgroundColor = cacarcade::Color::Black;
+        tile.text = 'R';
+        tile.textColor = cacarcade::Color::Yellow;
+    }
+
+    for (cacarcade::Tile &tile : _bombMenuTiles) {
+        tile.textureName = "";
+        tile.backgroundColor = cacarcade::Color::Black;
+        tile.text = '\0';
+        tile.textColor = cacarcade::Color::White;
+    }
+}
+
 void arcade::MinesweeperGame::reset()
 {
     AGameModule::reset();
@@ -144,6 +170,7 @@ void arcade::MinesweeperGame::reset()
         info.isFlag = false;
         info.neighborAmount = 0;
     }
+    resetMenuBar();
     createBombs();
 }
 
@@ -268,8 +295,13 @@ void arcade::MinesweeperGame::revealAllOnFail()
         revealTile({tile.x, tile.y});
     }
 
-    // TODO: proper
-    std::cout << "Bomb exploded" << std::endl;
+    if (_resetMenuTile.has_value()) {
+        cacarcade::Tile &tile = _resetMenuTile->get();
+
+        tile.backgroundColor = cacarcade::Color::Red;
+        tile.text = 'B';
+        tile.textColor = cacarcade::Color::White;
+    }
 }
 
 void arcade::MinesweeperGame::setTileContent(cacarcade::Tile &tile, TileInfo &info)
@@ -397,8 +429,14 @@ void arcade::MinesweeperGame::checkVictory()
 
     _gameState = GameState::Victory;
     saveScore();
-    // TODO: do a proper victory stuff
-    std::cout << "Victory! Reset game with R" << std::endl;
+
+    if (_resetMenuTile.has_value()) {
+        cacarcade::Tile &tile = _resetMenuTile->get();
+
+        tile.backgroundColor = cacarcade::Color::Yellow;
+        tile.text = 'V';
+        tile.textColor = cacarcade::Color::White;
+    }
 }
 
 void arcade::MinesweeperGame::isTimeOver()
@@ -412,8 +450,14 @@ void arcade::MinesweeperGame::isTimeOver()
     if (timeElapsed >= _maxTime) {
         _gameState = GameState::TimeExpired;
         saveScore();
-        // TODO: proper
-        std::cout << "Time expired" << std::endl;
+
+        if (_resetMenuTile.has_value()) {
+            cacarcade::Tile &tile = _resetMenuTile->get();
+
+            tile.backgroundColor = cacarcade::Color::Red;
+            tile.text = 'T';
+            tile.textColor = cacarcade::Color::White;
+        }
     }
 }
 
