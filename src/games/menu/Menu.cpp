@@ -118,10 +118,10 @@ void arcade::Menu::update(std::optional<std::unique_ptr<cacarcade::IEvent>> &eve
 {
     if (event.has_value()) {
         handleEvent(event.value());
-    } else {
-        event = std::make_unique<arcade::AEvent>(cacarcade::EventType::DisplayText);
     }
-    event->get()->setTextContent(addGamesContent());
-    event->get()->setTextContent(addDisplayContent());
-    event->get()->setTextContent(addTitleContent());
+    std::unique_ptr<cacarcade::IEvent> newEvent = std::make_unique<arcade::AEvent>(cacarcade::EventType::DisplayText);
+    newEvent->setTextContent(addGamesContent());
+    newEvent->setTextContent(addDisplayContent());
+    newEvent->setTextContent(addTitleContent());
+    _eventQueue.push(std::move(newEvent));
 }

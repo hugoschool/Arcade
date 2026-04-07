@@ -2,7 +2,7 @@
 #include "cacarcade/TileContainer.hpp"
 #include <optional>
 
-arcade::ADisplayModule::ADisplayModule() : _screenWidth(1800), _screenHeight(800), _fontSize(15),
+arcade::ADisplayModule::ADisplayModule() : _screenWidth(1800), _screenHeight(800), _fontSize(20),
     _tileSize(40), _currentDimensions()
 {
 }

@@ -84,6 +84,15 @@ void arcade::Arcade::handleDisplayEvents(std::unique_ptr<cacarcade::IEvent> &eve
             _game->setPlayerName(_playerName);
             break;
         }
+        case cacarcade::EventType::DisplayText: {
+            while (true) {
+                cacarcade::DisplayTextContent text = event->getTextContent();
+                if (text.text.empty())
+                    break;
+                _display->displayText(text);
+            }
+            break;
+        }
         default:
             break;
     }
@@ -103,16 +112,14 @@ void arcade::Arcade::loop()
             break;
 
         _game->update(event);
-
         _display->clear();
-        if (event.has_value()) {
-            while (true) {
-                cacarcade::DisplayTextContent text = event->get()->getTextContent();
-                if (text.text.empty())
-                    break;
-                _display->displayText(text);
-            }
+        while (true) {
+            event = _game->pollEvent();
+            if (!event.has_value())
+                break;
+            handleDisplayEvents(event.value());
         }
+
         _display->displayTiles(_game->getTiles());
     }
 }

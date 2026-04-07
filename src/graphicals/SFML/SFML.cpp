@@ -16,10 +16,8 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <cstddef>
 #include <exception>
-#include <iostream>
 #include <memory>
 #include <optional>
-#include <ostream>
 #include <utility>
 
 arcade::SFMLDisplay::SFMLDisplay() : arcade::ADisplayModule(),
@@ -103,8 +101,6 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SFMLDisplay::pollEvent
             return std::make_unique<arcade::KeyPressedEvent>(getKey(keyPressed->code));
         }
     }
-    // AEvent test(cacarcade::DisplayTextContent);
-    // test
     return std::nullopt;
 }
 

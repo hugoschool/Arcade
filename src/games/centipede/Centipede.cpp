@@ -18,6 +18,7 @@
 #include <ostream>
 #include <random>
 #include <stdexcept>
+#include <string>
 #include <utility>
 
 arcade::CentipedeGame::CentipedeGame() : AGameModule("centipede"),
@@ -392,9 +393,10 @@ cacarcade::DisplayTextContent arcade::CentipedeGame::addTextContent()
 {
     cacarcade::DisplayTextContent text;
     text.color = cacarcade::Color::White;
-    text.coordinates = {800, 0};
-    text.size = 15;
-    text.text = "Type Shit";
+    text.coordinates = {20, 5};
+    text.text = "Score: ";
+    text.text += std::to_string(_scoreHandler.getScore());
+    text.size = text.text.length();
     return text;
 }
 
@@ -402,11 +404,11 @@ void arcade::CentipedeGame::update(std::optional<std::unique_ptr<cacarcade::IEve
 {
     if (event.has_value()) {
         handleEvent(event.value());
-    } else {
-        std::unique_ptr<cacarcade::IEvent> newEvent = std::make_unique<arcade::AEvent>(cacarcade::EventType::DisplayText);
-        event = std::move(newEvent);
     }
-    event->get()->setTextContent(addTextContent());
+
+    std::unique_ptr<cacarcade::IEvent> newEvent = std::make_unique<arcade::AEvent>(cacarcade::EventType::DisplayText);
+    newEvent->setTextContent(addTextContent());
+    _eventQueue.push(std::move(newEvent));
 
     if (!_isPaused) {
         if (centipedeCount > 0) {
