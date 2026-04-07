@@ -57,8 +57,9 @@ void arcade::Menu::handleEvent(std::unique_ptr<cacarcade::IEvent> &event)
                 case cacarcade::EventKey::S:
                     _displayAmount++;
                     break;
-                case cacarcade::EventKey::Space:
+                case cacarcade::EventKey::Space: {
                     break;
+                }
                 default:
                     break;
             }
