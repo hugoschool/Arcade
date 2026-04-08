@@ -10,9 +10,7 @@
 #include "events/LaunchFromMenuEvent.hpp"
 #include "games/AGameModule.hpp"
 #include <filesystem>
-#include <iostream>
 #include <memory>
-#include <ostream>
 #include <string>
 #include <utility>
 
@@ -114,7 +112,7 @@ cacarcade::DisplayTextContent arcade::Menu::addGamesContent()
     text.text = _games.at(_gamesAmount % (_games.size()));
     text.size = _gamesLen;
     text.color = cacarcade::Color::Yellow;
-    text.coordinates = {5 , 150};
+    text.coordinates = {-2 , 5};
     return text;
 }
 
@@ -130,7 +128,7 @@ cacarcade::DisplayTextContent arcade::Menu::addDisplayContent()
     text.text = _displays.at(_displayAmount % (_displays.size()));
     text.size = _displayLen;
     text.color = cacarcade::Color::Blue;
-    text.coordinates = {5 , 300};
+    text.coordinates = {-2 , 10};
     return text;
 }
 
@@ -141,7 +139,7 @@ cacarcade::DisplayTextContent arcade::Menu::addTitleContent()
     text.text = "Arcade by Hugoat & Freakyban";
     text.size = text.text.length();
     text.color = cacarcade::Color::White;
-    text.coordinates = {650 , 10};
+    text.coordinates = {17 , -2};
     return text;
 }
 
@@ -152,7 +150,7 @@ cacarcade::DisplayTextContent arcade::Menu::addPlayersContent()
     text.text = "Player Name:" + _playerName;
     text.size = text.text.length();
     text.color = cacarcade::Color::White;
-    text.coordinates = {1450 , 150};
+    text.coordinates = {30 , 5};
     return text;
 }
 

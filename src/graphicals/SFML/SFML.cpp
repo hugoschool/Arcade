@@ -15,6 +15,7 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <cstddef>
+#include <cstdlib>
 #include <exception>
 #include <memory>
 #include <optional>
@@ -162,26 +163,30 @@ void arcade::SFMLDisplay::displayTileTexture(cacarcade::Tile &tile, sf::Rectangl
 
 void arcade::SFMLDisplay::updateOffset(std::pair<size_t, size_t> pos, size_t len)
 {
-    if (pos.first < 10) {
+    std::pair<long, long> newpos = pos;
+    if (newpos.first < 0) {
         _offsetX = (len * _fontSize) + 20;
     }
-    if (pos.second <= 10) {
+    if (newpos.second < 0) {
         _offsetY = _fontSize + 20;
     }
 }
 
 void arcade::SFMLDisplay::displayText(cacarcade::DisplayTextContent text)
 {
-    size_t len = _fontSize * (text.size);
-    sf::RectangleShape rec(sf::Vector2f(len, _fontSize + 10));
-    rec.setPosition(sf::Vector2f(text.coordinates.first, text.coordinates.second));
+    size_t len = _fontSize * (text.size) * 0.60;
+    sf::RectangleShape rec(sf::Vector2f(len, _fontSize + 5));
+    std::pair<long, long> newpos = text.coordinates;
+
+    newpos = {std::abs(newpos.first), std::abs(newpos.second)};
+    rec.setPosition(sf::Vector2f(newpos.first * _tileSize, newpos.second * _tileSize));
     rec.setOutlineThickness(_outlineThickness);
     rec.setOutlineColor(getColor(text.color));
     rec.setFillColor(sf::Color::Black);
     sf::Text str(_font, text.text);
 
     sf::Vector2f pos = rec.getPosition();
-    pos.x += rec.getSize().x / 4;
+    pos.x += rec.getSize().x / 20;
     pos.y -= rec.getSize().y / 20;
     str.setPosition(pos);
 

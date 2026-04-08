@@ -393,7 +393,7 @@ cacarcade::DisplayTextContent arcade::CentipedeGame::addTextContent()
 {
     cacarcade::DisplayTextContent text;
     text.color = cacarcade::Color::White;
-    text.coordinates = {20, 5};
+    text.coordinates = {-2, -2};
     text.text = "Score: ";
     text.text += std::to_string(_scoreHandler.getScore());
     text.size = text.text.length();

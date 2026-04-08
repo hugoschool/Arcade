@@ -1,5 +1,6 @@
 #include "graphicals/NCurses/NCurses.hpp"
 #include "cacarcade/Color.hpp"
+#include "cacarcade/DisplayTextContent.hpp"
 #include "cacarcade/EventKey.hpp"
 #include "cacarcade/EventMouseButton.hpp"
 #include "cacarcade/IEvent.hpp"
@@ -10,6 +11,7 @@
 #include <cctype>
 #include <cstddef>
 #include <cstdio>
+#include <cstdlib>
 #include <exception>
 #include <memory>
 #include <ncurses.h>
@@ -91,7 +93,8 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::NCursesDisplay::pollEv
         if (key == KEY_MOUSE) {
             return getMouse();
         }
-        key = wgetch(_window);
+        if (key == '&' || key == '1')
+            return std::make_unique<arcade::KeyPressedEvent>(cacarcade::EventKey::_1);
     }
     return std::nullopt;
 }
@@ -138,13 +141,30 @@ short arcade::NCursesDisplay::addPair(cacarcade::ColorCode fg, cacarcade::ColorC
     }
 }
 
+void arcade::NCursesDisplay::updateOffset(std::pair<long, long> pos, size_t len)
+{
+    if (pos.first < 0)
+        _offsetY = len + std::abs(pos.first) + 2;
+    if (pos.second < 0)
+        _offsetY = std::abs(pos.first) + 2;
+}
+
+void arcade::NCursesDisplay::displayText(cacarcade::DisplayTextContent text)
+{
+    std::pair<long, long> newpos = text.coordinates;
+
+    updateOffset(newpos, text.size);
+    newpos = {std::abs(newpos.first), std::abs(newpos.second)};
+    mvprintw(newpos.second, newpos.first * 2, "%s", text.text.c_str());
+}
+
 void arcade::NCursesDisplay::displayTiles(cacarcade::TileContainer container)
 {
     setWindowsSize(container.dimension);
     start_color();
     for (auto &[_, tile] : container.tiles) {
-        int x = tile.y;
-        int y = tile.x;
+        int x = tile.y + _offsetX;
+        int y = tile.x + _offsetY;
         short pair = addPair(tile.textColor, tile.backgroundColor);
         wattron(_window, COLOR_PAIR(pair));
         if (tile.text != '\0') {
@@ -154,7 +174,7 @@ void arcade::NCursesDisplay::displayTiles(cacarcade::TileContainer container)
         }
         wattroff(_window, COLOR_PAIR(pair));
     }
-    box(_window, 0, 0);
+    box(_window, _offsetX, _offsetY);
 
     // This is to set the framerate of the NCurses
     // 1000 / 59 ~= 17
