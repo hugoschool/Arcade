@@ -45,6 +45,7 @@ namespace arcade {
 
             size_t _offsetX;
             size_t _offsetY;
+            std::pair<size_t, size_t> _oldOffset;
             void updateOffset(std::pair<long, long>, size_t len);
     };
 }
