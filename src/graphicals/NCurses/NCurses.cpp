@@ -113,7 +113,6 @@ void arcade::NCursesDisplay::setWindowsSize(std::pair<size_t, size_t> size)
             wclear(stdscr);
         }
         _window = subwin(stdscr, size.second + 2, size.first + 2, 0 + _offsetY, 0 + _offsetX * 2);
-        // std::cerr << _offsetX << " " << _offsetY << std::endl;
         nodelay(_window, TRUE);
         mousemask(ALL_MOUSE_EVENTS, NULL);
         mouseinterval(0);
