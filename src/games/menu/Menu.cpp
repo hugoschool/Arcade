@@ -17,7 +17,8 @@
 #include <utility>
 
 arcade::Menu::Menu() : AGameModule("Menu"), _games(), _displays(),
-    _gamesAmount(), _displayAmount(), _gamesLen(0), _displayLen(0)
+    _gamesAmount(), _displayAmount(), _gamesLen(0), _displayLen(0),
+    _playerName("   "), _isInsert(false), _playerIndex(0)
 {
     _container.dimension = std::make_pair(0, 0);
     std::string path = "./lib";
@@ -41,31 +42,56 @@ void arcade::Menu::reset()
     AGameModule::reset();
 }
 
-
+void arcade::Menu::addLettersToPlayerName(std::unique_ptr<cacarcade::IEvent> &event)
+{
+    if (!_isInsert || _playerIndex > 2)
+        return;
+    if (event->getKey() >= cacarcade::EventKey::A && event->getKey() <= cacarcade::EventKey::Z) {
+        _playerName[_playerIndex] = static_cast<char>(event->getKey()) + 'A' - static_cast<char>(cacarcade::EventKey::A);
+        _playerIndex++;
+    }
+}
 
 void arcade::Menu::handleEvent(std::unique_ptr<cacarcade::IEvent> &event)
 {
     switch (event->getType()) {
         case cacarcade::EventType::KeyPressed: {
+            addLettersToPlayerName(event);
             switch (event->getKey()) {
+                case cacarcade::EventKey::_1:
+                    _isInsert = !_isInsert;
+                    break;
                 case cacarcade::EventKey::A:
-                    _gamesAmount--;
+                    if (!_isInsert)
+                        _gamesAmount--;
                     break;
                 case cacarcade::EventKey::Z:
-                    _gamesAmount++;
+                    if (!_isInsert)
+                        _gamesAmount++;
                     break;
                 case cacarcade::EventKey::Q:
-                    _displayAmount--;
+                    if (!_isInsert)
+                        _displayAmount--;
                     break;
                 case cacarcade::EventKey::S:
-                    _displayAmount++;
+                    if (!_isInsert)
+                        _displayAmount++;
                     break;
                 case cacarcade::EventKey::Space: {
+                    if (_isInsert)
+                        break;
                     std::unique_ptr<cacarcade::IEvent> newEvent = std::make_unique<arcade::LaunchFromMenuEvent>();
                     newEvent->setGameLibrary(_games.at(_gamesAmount % (_games.size())));
                     newEvent->setDisplayLibrary(_displays.at(_displayAmount % (_displays.size())));
-                    newEvent->setPlayerName("Tasty Crousty");
+                    newEvent->setPlayerName(_playerName);
                     _eventQueue.push(std::move(newEvent));
+                    break;
+                }
+                case cacarcade::EventKey::Backspace: {
+                    _playerName[_playerIndex] = ' ';
+                    if (_playerIndex == 0)
+                        break;
+                    _playerIndex--;
                     break;
                 }
                 default:
@@ -121,6 +147,13 @@ cacarcade::DisplayTextContent arcade::Menu::addTitleContent()
 
 cacarcade::DisplayTextContent arcade::Menu::addPlayersContent()
 {
+    cacarcade::DisplayTextContent text;
+
+    text.text = "Player Name:" + _playerName;
+    text.size = text.text.length();
+    text.color = cacarcade::Color::White;
+    text.coordinates = {1450 , 150};
+    return text;
 }
 
 void arcade::Menu::update(std::optional<std::unique_ptr<cacarcade::IEvent>> &event)
@@ -132,5 +165,6 @@ void arcade::Menu::update(std::optional<std::unique_ptr<cacarcade::IEvent>> &eve
     newEvent->setTextContent(addGamesContent());
     newEvent->setTextContent(addDisplayContent());
     newEvent->setTextContent(addTitleContent());
+    newEvent->setTextContent(addPlayersContent());
     _eventQueue.push(std::move(newEvent));
 }

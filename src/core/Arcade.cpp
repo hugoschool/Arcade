@@ -4,9 +4,7 @@
 #include "cacarcade/EventType.hpp"
 #include "cacarcade/IEvent.hpp"
 #include "cacarcade/Utils.hpp"
-#include <iostream>
 #include <optional>
-#include <ostream>
 
 arcade::Arcade::Arcade(const std::string graphicsLibrary) :
     _displayManager(std::string(cacarcade::displayEntrypoint), graphicsLibrary),

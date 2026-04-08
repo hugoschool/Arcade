@@ -2,16 +2,14 @@
 
 #include "cacarcade/EventType.hpp"
 #include "events/AEvent.hpp"
-#include <iostream>
-#include <ostream>
 #include <string>
+
 namespace arcade {
     class LaunchFromMenuEvent : public AEvent {
         public:
             LaunchFromMenuEvent() : AEvent(cacarcade::EventType::LaunchFromMenu),
                 _gameLibrary(""), _displayLibrary(""), _playerName("")
             {
-                std::cout << "TEST1" << std::endl;
             }
 
             ~LaunchFromMenuEvent()

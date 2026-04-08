@@ -28,11 +28,17 @@ namespace arcade {
             size_t _gamesLen;
             size_t _displayLen;
 
+            std::string _playerName;
             std::vector<std::string> _playerNames;
+
+            bool _isInsert;
+            size_t _playerIndex;
 
             cacarcade::DisplayTextContent addGamesContent();
             cacarcade::DisplayTextContent addDisplayContent();
             cacarcade::DisplayTextContent addTitleContent();
             cacarcade::DisplayTextContent addPlayersContent();
+
+            void addLettersToPlayerName(std::unique_ptr<cacarcade::IEvent> &event);
         };
 }

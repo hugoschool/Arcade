@@ -65,6 +65,8 @@ cacarcade::EventKey arcade::SFMLDisplay::getKey(const sf::Keyboard::Key key)
             return cacarcade::EventKey::Right;
         case sf::Keyboard::Key::Space:
             return cacarcade::EventKey::Space;
+        case sf::Keyboard::Key::Num1:
+            return cacarcade::EventKey::_1;
         default:
             return cacarcade::EventKey::None;
     }

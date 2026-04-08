@@ -2,10 +2,8 @@
 
 #include "core/DLLoader.hpp"
 #include <filesystem>
-#include <iostream>
 #include <memory>
 #include <optional>
-#include <ostream>
 #include <string>
 #include <vector>
 
@@ -72,7 +70,6 @@ namespace arcade {
 
                 _loader = DLLoader<T>(name);
 
-                std::cout << _entrypoint << std::endl;
                 std::shared_ptr<T> newPtr = _loader->getInstance(_entrypoint);
 
                 _ptr.swap(newPtr);
