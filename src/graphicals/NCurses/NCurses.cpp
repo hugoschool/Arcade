@@ -13,11 +13,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include <exception>
-#include <iostream>
 #include <memory>
 #include <ncurses.h>
 #include <optional>
-#include <ostream>
 #include <utility>
 
 arcade::NCursesDisplay::NCursesDisplay() : arcade::ADisplayModule(), _window(nullptr), _oldDimension(),
@@ -67,7 +65,6 @@ std::optional<std::unique_ptr<arcade::TileClickedEvent>> arcade::NCursesDisplay:
         if (position > max) {
             return std::nullopt;
         }
-        std::cerr << position.first - (_oldDimension.first + _offsetX) << " " << position.second - (_oldDimension.second + _offsetY) << std::endl;
 
         std::optional<cacarcade::EventMouseButton> mouse;
 

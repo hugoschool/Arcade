@@ -1,6 +1,8 @@
 #pragma once
 
+#include "common/Exception.hpp"
 #include "core/DLLoader.hpp"
+#include <algorithm>
 #include <filesystem>
 #include <memory>
 #include <optional>
@@ -68,13 +70,15 @@ namespace arcade {
 
             std::shared_ptr<T> selectNewInstance(std::string name)
             {
-                _ptr.reset();
+                auto iterator = std::find(_libraries.begin(), _libraries.end(), name);
 
-                _loader = DLLoader<T>(name);
+                if (iterator == _libraries.end())
+                    throw arcade::Exception("Couldn't find library " + name);
 
-                std::shared_ptr<T> newPtr = _loader->getInstance(_entrypoint);
+                while (_libraries[_index % _libraries.size()] != name)
+                    _index++;
 
-                _ptr.swap(newPtr);
+                modifyPointer();
                 return _ptr;
             }
 
