@@ -40,8 +40,6 @@ namespace arcade {
             void displayTileText(cacarcade::Tile &tile, sf::RectangleShape &tileRect);
             void displayTileTexture(cacarcade::Tile &tile, sf::RectangleShape &tileRect);
 
-            size_t _offsetX;
-            size_t _offsetY;
-            void updateOffset(std::pair<size_t, size_t>, size_t len);
+            void updateOffset(std::pair<long, long>, size_t len) override;
     };
 }

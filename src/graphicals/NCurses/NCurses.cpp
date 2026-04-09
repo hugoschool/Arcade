@@ -19,7 +19,7 @@
 #include <utility>
 
 arcade::NCursesDisplay::NCursesDisplay() : arcade::ADisplayModule(), _window(nullptr), _oldDimension(),
-    _colors(), _colorAmount(8), _pairs(), pairAmount(1), _offsetX(0), _offsetY(0), _oldOffset({0, 0})
+    _colors(), _colorAmount(8), _pairs(), pairAmount(1), _oldOffset({0, 0})
 {
     initscr();
     cbreak();

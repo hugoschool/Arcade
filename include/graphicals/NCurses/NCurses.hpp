@@ -27,7 +27,6 @@ namespace arcade {
             void displayText(cacarcade::DisplayTextContent text) override;
 
         private:
-
             WINDOW *_window;
 
             cacarcade::EventKey getKey(int key);
@@ -43,9 +42,7 @@ namespace arcade {
             size_t pairAmount;
             short addPair(cacarcade::ColorCode, cacarcade::ColorCode);
 
-            size_t _offsetX;
-            size_t _offsetY;
             std::pair<size_t, size_t> _oldOffset;
-            void updateOffset(std::pair<long, long>, size_t len);
+            void updateOffset(std::pair<long, long>, size_t len) override;
     };
 }

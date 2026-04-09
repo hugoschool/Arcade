@@ -3,7 +3,7 @@
 #include <optional>
 
 arcade::ADisplayModule::ADisplayModule() : _screenWidth(1800), _screenHeight(800), _fontSize(20),
-    _tileSize(40), _currentDimensions()
+    _tileSize(40), _currentDimensions(), _offsetX(0), _offsetY(0)
 {
 }
 
@@ -25,6 +25,9 @@ void arcade::ADisplayModule::setTileDimensions(std::pair<std::size_t, std::size_
                 _currentDimensions.coordinates.push_back({x * _tileSize, y * _tileSize});
             }
         }
+
+        _offsetX = 0;
+        _offsetY = 0;
     }
 }
 
@@ -70,4 +73,8 @@ std::pair<std::size_t, std::size_t> arcade::ADisplayModule::findClosestTile(int 
         closestCoordinates.first / _tileSize,
         closestCoordinates.second / _tileSize,
     };
+}
+
+void arcade::ADisplayModule::updateOffset(std::pair<long, long>, size_t)
+{
 }

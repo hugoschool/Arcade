@@ -22,7 +22,7 @@
 #include <utility>
 
 arcade::SFMLDisplay::SFMLDisplay() : arcade::ADisplayModule(),
-    _window(), _font(), _outlineThickness(1), _offsetX(0), _offsetY(0)
+    _window(), _font(), _outlineThickness(1)
 {
     try {
         sf::VideoMode videoMode(sf::Vector2u(_screenWidth, _screenHeight));
@@ -161,13 +161,12 @@ void arcade::SFMLDisplay::displayTileTexture(cacarcade::Tile &tile, sf::Rectangl
     _window.draw(tileRect);
 }
 
-void arcade::SFMLDisplay::updateOffset(std::pair<size_t, size_t> pos, size_t len)
+void arcade::SFMLDisplay::updateOffset(std::pair<long, long> pos, size_t len)
 {
-    std::pair<long, long> newpos = pos;
-    if (newpos.first < 0) {
+    if (pos.first < 0) {
         _offsetX = (len * _fontSize) + 20;
     }
-    if (newpos.second < 0) {
+    if (pos.second < 0) {
         _offsetY = _fontSize + 20;
     }
 }
