@@ -1,6 +1,5 @@
 #include <iostream>
 #include "core/Arcade.hpp"
-#include "common/Exception.hpp"
 
 int main(int argc, char **argv)
 {
@@ -12,7 +11,7 @@ int main(int argc, char **argv)
     try {
         arcade::Arcade core(argv[1]);
         core.loop();
-    } catch (const arcade::Exception &e) {
+    } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
         return 84;
     }
