@@ -3,13 +3,14 @@
 #include "cacarcade/DisplayTextContent.hpp"
 #include "cacarcade/EventKey.hpp"
 #include "cacarcade/EventType.hpp"
+#include "cacarcade/IDisplayModule.hpp"
 #include "cacarcade/IEvent.hpp"
 #include "cacarcade/IGameModule.hpp"
-#include "core/DLLoader.hpp"
+#include "cacarcade/Utils.hpp"
+#include "core/LibraryManager.hpp"
 #include "events/AEvent.hpp"
 #include "events/LaunchFromMenuEvent.hpp"
 #include "games/AGameModule.hpp"
-#include <filesystem>
 #include <memory>
 #include <string>
 #include <utility>
@@ -19,17 +20,20 @@ arcade::Menu::Menu() : AGameModule("Menu"), _games(), _displays(),
     _playerName("   "), _isInsert(false), _playerIndex(0)
 {
     _container.dimension = std::make_pair(0, 0);
-    std::string path = "./lib";
 
-    for (auto &entry : std::filesystem::directory_iterator(path)) {
-        DLLoader<cacarcade::IGameModule> lib(entry.path());
-        lib.openHandle();
-        if (lib.symbolExists("gameEntrypoint"))
-            _games.push_back(entry.path());
-        else
-            _displays.push_back(entry.path());
-        lib.closeHandle();
-    }
+    LibraryManager<cacarcade::IGameModule> gameManager(
+        (std::string(cacarcade::gameEntrypoint)),
+        "",
+        false
+    );
+    LibraryManager<cacarcade::IDisplayModule> displayManager(
+        (std::string(cacarcade::displayEntrypoint)),
+        "",
+        false
+    );
+
+    _games = gameManager.getLibraries();
+    _displays = displayManager.getLibraries();
 }
 
 arcade::Menu::~Menu()

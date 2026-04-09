@@ -13,7 +13,8 @@ namespace arcade {
         public:
             LibraryManager() = delete;
 
-            LibraryManager(const std::string entrypoint, const std::string initialLibrary = "") :
+            LibraryManager(const std::string entrypoint, const std::string initialLibrary = "",
+                bool setPointerOnInit = true) :
                 _entrypoint(entrypoint), _initialLibrary(initialLibrary),
                 _loader(std::nullopt), _ptr(nullptr),
                 _libraries(), _index(0)
@@ -37,7 +38,8 @@ namespace arcade {
                         throw arcade::Exception("Couldn't find " + initialLibraryFilename + " in the libraries");
                 }
 
-                modifyPointer();
+                if (setPointerOnInit)
+                    modifyPointer();
             }
 
             ~LibraryManager()
@@ -74,6 +76,11 @@ namespace arcade {
 
                 _ptr.swap(newPtr);
                 return _ptr;
+            }
+
+            std::vector<std::string> getLibraries() const
+            {
+                return _libraries;
             }
         private:
             const std::string _entrypoint;
