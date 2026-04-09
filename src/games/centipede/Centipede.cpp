@@ -6,7 +6,6 @@
 #include "cacarcade/IEvent.hpp"
 #include "cacarcade/Tile.hpp"
 #include "cacarcade/Utils.hpp"
-#include "events/AEvent.hpp"
 #include "games/AGameModule.hpp"
 #include "games/ScoreHandler.hpp"
 #include <chrono>
@@ -417,9 +416,6 @@ void arcade::CentipedeGame::update(std::optional<std::unique_ptr<cacarcade::IEve
         handleEvent(event.value());
     }
 
-    // std::unique_ptr<cacarcade::IEvent> newEvent = std::make_unique<arcade::AEvent>(cacarcade::EventType::DisplayText);
-    // newEvent->setTextContent(addTextContent());
-    // _eventQueue.push(std::move(newEvent));
     if (!_isPaused) {
         if (centipedeCount > 0) {
             placeCentipede();

@@ -80,18 +80,22 @@ void arcade::Menu::handleEvent(std::unique_ptr<cacarcade::IEvent> &event)
                 case cacarcade::EventKey::A:
                     if (!_isInsert)
                         _gamesAmount--;
+                    clearLine(7);
                     break;
                 case cacarcade::EventKey::Z:
                     if (!_isInsert)
                         _gamesAmount++;
+                    clearLine(7);
                     break;
                 case cacarcade::EventKey::Q:
                     if (!_isInsert)
                         _displayAmount--;
+                    clearLine(14);
                     break;
                 case cacarcade::EventKey::S:
                     if (!_isInsert)
                         _displayAmount++;
+                    clearLine(14);
                     break;
                 case cacarcade::EventKey::Space: {
                     if (_isInsert)
@@ -116,6 +120,15 @@ void arcade::Menu::handleEvent(std::unique_ptr<cacarcade::IEvent> &event)
         }
         default:
             break;
+    }
+}
+
+void arcade::Menu::clearLine(size_t line)
+{
+    for (size_t i = 0; i < _container.dimension.first; i++) {
+        cacarcade::Tile &tile = _container.tiles.at({i, line});
+        tile.text = '\0';
+        tile.textColor = cacarcade::Color::Black;
     }
 }
 
