@@ -6,11 +6,13 @@
 #include "cacarcade/IDisplayModule.hpp"
 #include "cacarcade/IEvent.hpp"
 #include "cacarcade/IGameModule.hpp"
+#include "cacarcade/Tile.hpp"
+#include "cacarcade/TileContainer.hpp"
 #include "cacarcade/Utils.hpp"
 #include "core/LibraryManager.hpp"
-#include "events/AEvent.hpp"
 #include "events/LaunchFromMenuEvent.hpp"
 #include "games/AGameModule.hpp"
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <utility>
@@ -19,8 +21,21 @@ arcade::Menu::Menu() : AGameModule("Menu"), _games(), _displays(),
     _gamesAmount(), _displayAmount(),
     _playerName("   "), _isInsert(false), _playerIndex(0)
 {
-    _container.dimension = std::make_pair(0, 0);
+    _container.dimension = std::make_pair(60, 30);
 
+    for (size_t y = 0;  y < _container.dimension.second; y++) {
+        for (size_t x = 0; x < _container.dimension.first; x++) {
+            cacarcade::Tile tile = {
+                .x = x,
+                .y = y,
+                .textureName = "",
+                .backgroundColor = cacarcade::Color::Black,
+                .text = '\0',
+                .textColor = cacarcade::Color::Black
+            };
+            _container.tiles.insert({{x, y}, tile});
+        }
+    }
     LibraryManager<cacarcade::IGameModule> gameManager(
         (std::string(cacarcade::gameEntrypoint)),
         "",
@@ -111,13 +126,18 @@ cacarcade::DisplayTextContent arcade::Menu::addGamesContent()
     std::size_t gameLength = 0;
 
     for (auto name : _games) {
-        if (name.length() > gameLength)
+            if (name.length() > gameLength)
             gameLength = name.length();
     }
     text.text = _games.at(_gamesAmount % (_games.size()));
     text.size = gameLength;
     text.color = cacarcade::Color::Yellow;
-    text.coordinates = {-2 , 5};
+    text.coordinates = {0 , 7};
+    for (size_t i = 0; i < text.text.length(); i++) {
+        cacarcade::Tile &tile = _container.tiles.at({text.coordinates.first + i, 7});
+        tile.text = text.text[i];
+        tile.textColor = text.color;
+    }
     return text;
 }
 
@@ -134,7 +154,12 @@ cacarcade::DisplayTextContent arcade::Menu::addDisplayContent()
     text.text = _displays.at(_displayAmount % (_displays.size()));
     text.size = displayLength;
     text.color = cacarcade::Color::Blue;
-    text.coordinates = {-2 , 10};
+    text.coordinates = {0, 14};
+    for (size_t i = 0; i < text.text.length(); i++) {
+        cacarcade::Tile &tile = _container.tiles.at({text.coordinates.first + i, 14});
+        tile.text = text.text[i];
+        tile.textColor = text.color;
+    }
     return text;
 }
 
@@ -145,7 +170,12 @@ cacarcade::DisplayTextContent arcade::Menu::addTitleContent()
     text.text = "Arcade by Hugoat & Freakyban";
     text.size = text.text.length();
     text.color = cacarcade::Color::White;
-    text.coordinates = {17 , -2};
+    text.coordinates = {_container.dimension.first / 2 - text.text.length() / 2, 0};
+    for (size_t i = 0; i < text.text.length(); i++) {
+        cacarcade::Tile &tile = _container.tiles.at({text.coordinates.first + i, 0});
+        tile.text = text.text[i];
+        tile.textColor = text.color;
+    }
     return text;
 }
 
@@ -156,7 +186,12 @@ cacarcade::DisplayTextContent arcade::Menu::addPlayersContent()
     text.text = "Player Name:" + _playerName;
     text.size = text.text.length();
     text.color = cacarcade::Color::White;
-    text.coordinates = {30 , 5};
+    text.coordinates = { _container.dimension.first - text.text.length() - 2, 7};
+    for (size_t i = 0; i < text.text.length(); i++) {
+        cacarcade::Tile &tile = _container.tiles.at({text.coordinates.first + i, 7});
+        tile.text = text.text[i];
+        tile.textColor = text.color;
+    }
     return text;
 }
 
@@ -170,5 +205,6 @@ void arcade::Menu::update(std::optional<std::unique_ptr<cacarcade::IEvent>> &eve
     newEvent->setTextContent(addDisplayContent());
     newEvent->setTextContent(addTitleContent());
     newEvent->setTextContent(addPlayersContent());
-    _eventQueue.push(std::move(newEvent));
+    // _eventQueue.push(std::move(newEvent));
+
 }

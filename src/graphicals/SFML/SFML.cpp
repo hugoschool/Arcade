@@ -29,7 +29,7 @@ arcade::SFMLDisplay::SFMLDisplay() : arcade::ADisplayModule(),
 
         _window = sf::RenderWindow(videoMode, "Arcade");
         _window.setFramerateLimit(60);
-        _font = sf::Font("/usr/share/fonts/gnu-free/FreeSans.otf");
+        _font = sf::Font("./PressStart2P-vaV7.ttf");
     } catch (std::exception &e) {
         throw arcade::Exception("Something went wrong with the creation of the window.");
     }
@@ -132,8 +132,8 @@ void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleSh
     sf::Color textColor = getColor(tile.textColor);
 
     tileRect.setFillColor(backgroundColor);
-    tileRect.setOutlineColor(textColor);
-    tileRect.setOutlineThickness(_outlineThickness);
+    // tileRect.setOutlineColor(textColor);
+    // tileRect.setOutlineThickness(_outlineThickness);
 
     _window.draw(tileRect);
 
@@ -146,7 +146,7 @@ void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleSh
         text.setPosition(pos);
 
         text.setFillColor(textColor);
-        text.setCharacterSize(_tileSize - (tileRect.getSize().x / 5));
+        text.setCharacterSize(_tileSize - (tileRect.getSize().x / 10));
 
         _window.draw(text);
     }
@@ -205,7 +205,7 @@ void arcade::SFMLDisplay::displayTiles(cacarcade::TileContainer container)
     for (auto &[_, tile] : container.tiles) {
         int x = tile.x * _tileSize + _offsetX;
         int y = tile.y * _tileSize + _offsetY;
-        sf::RectangleShape rec(sf::Vector2f(_tileSize - (_outlineThickness * 2), _tileSize - (_outlineThickness * 2)));
+        sf::RectangleShape rec(sf::Vector2f(_tileSize , _tileSize));
         rec.setPosition(sf::Vector2f(x, y));
 
         if (!tile.textureName.empty()) {

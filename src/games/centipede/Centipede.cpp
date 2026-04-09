@@ -25,7 +25,7 @@ arcade::CentipedeGame::CentipedeGame() : AGameModule("centipede"),
     _tileInfo(), _playerPos({10, 15}), _oldPlayerPos(_playerPos),
     _projectiles(), _updateTime(std::chrono::milliseconds(100)), _time(),
     _vecCentipedes(), _updateTimeCentipede(std::chrono::milliseconds(250)),
-    _timeCentipede(), centipedeCount(5), _width(21), _height(16), _isPaused(false)
+    _timeCentipede(), centipedeCount(5), _width(21), _height(17), _isPaused(false)
 {
     _container.dimension = std::make_pair(_width, _height);
 
@@ -67,7 +67,7 @@ void arcade::CentipedeGame::createCentipede()
 
     size_t centipedeAmount = distribution(rng);
     int x = 0;
-    int y = 0;
+    int y = 1;
 
     for (size_t i = 0; i < centipedeAmount; i++) {
         _vecCentipedes.push_back({1, 0, {x, y}});
@@ -82,7 +82,7 @@ void arcade::CentipedeGame::placeMushroom()
     std::mt19937 rng(device());
 
     std::uniform_int_distribution<std::mt19937::result_type> width(0, _container.dimension.first - 1);
-    std::uniform_int_distribution<std::mt19937::result_type> height(1, _container.dimension.second - 3);
+    std::uniform_int_distribution<std::mt19937::result_type> height(2, _container.dimension.second - 3);
     std::uniform_int_distribution<std::mt19937::result_type> Box(10, 30);
 
     std::size_t BoxAmount = Box(rng);
@@ -356,11 +356,11 @@ void arcade::CentipedeGame::handleEvent(std::unique_ptr<cacarcade::IEvent> &even
                         _playerPos.first += 1;
                     break;
                 case cacarcade::EventKey::Z:
-                    if (_playerPos.second > 13 && canPlayerMove(0, -1))
+                    if (_playerPos.second > 14 && canPlayerMove(0, -1))
                         _playerPos.second -= 1;
                     break;
                 case cacarcade::EventKey::S:
-                    if (_playerPos.second < 15 && canPlayerMove(0, -1))
+                    if (_playerPos.second < 16 && canPlayerMove(0, -1))
                         _playerPos.second += 1;
                     break;
                 case cacarcade::EventKey::Space:
@@ -400,16 +400,26 @@ cacarcade::DisplayTextContent arcade::CentipedeGame::addTextContent()
     return text;
 }
 
+void arcade::CentipedeGame::addScoreToMap()
+{
+    std::string score = "Score: " + std::to_string(_scoreHandler.getScore());
+
+    for (size_t i = 0; i < score.length(); i++) {
+        _container.tiles[{i, 0}].text = score[i];
+        _container.tiles[{i, 0}].textColor = cacarcade::Color::White;
+        _container.tiles[{i, 0}].backgroundColor = cacarcade::Color::Black;
+    }
+}
+
 void arcade::CentipedeGame::update(std::optional<std::unique_ptr<cacarcade::IEvent>> &event)
 {
     if (event.has_value()) {
         handleEvent(event.value());
     }
 
-    std::unique_ptr<cacarcade::IEvent> newEvent = std::make_unique<arcade::AEvent>(cacarcade::EventType::DisplayText);
-    newEvent->setTextContent(addTextContent());
-    _eventQueue.push(std::move(newEvent));
-
+    // std::unique_ptr<cacarcade::IEvent> newEvent = std::make_unique<arcade::AEvent>(cacarcade::EventType::DisplayText);
+    // newEvent->setTextContent(addTextContent());
+    // _eventQueue.push(std::move(newEvent));
     if (!_isPaused) {
         if (centipedeCount > 0) {
             placeCentipede();
@@ -418,4 +428,5 @@ void arcade::CentipedeGame::update(std::optional<std::unique_ptr<cacarcade::IEve
         }
         updateTiles();
     }
+    addScoreToMap();
 }
