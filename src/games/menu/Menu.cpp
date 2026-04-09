@@ -1,6 +1,5 @@
 #include "games/menu/Menu.hpp"
 #include "cacarcade/Color.hpp"
-#include "cacarcade/DisplayTextContent.hpp"
 #include "cacarcade/EventKey.hpp"
 #include "cacarcade/EventType.hpp"
 #include "cacarcade/IDisplayModule.hpp"
@@ -120,30 +119,27 @@ void arcade::Menu::handleEvent(std::unique_ptr<cacarcade::IEvent> &event)
     }
 }
 
-cacarcade::DisplayTextContent arcade::Menu::addGamesContent()
+void arcade::Menu::addGamesContent()
 {
-    cacarcade::DisplayTextContent text;
+    std::string text;
     std::size_t gameLength = 0;
 
     for (auto name : _games) {
             if (name.length() > gameLength)
             gameLength = name.length();
     }
-    text.text = _games.at(_gamesAmount % (_games.size()));
-    text.size = gameLength;
-    text.color = cacarcade::Color::Yellow;
-    text.coordinates = {0 , 7};
-    for (size_t i = 0; i < text.text.length(); i++) {
-        cacarcade::Tile &tile = _container.tiles.at({text.coordinates.first + i, 7});
-        tile.text = text.text[i];
-        tile.textColor = text.color;
+    text = _games.at(_gamesAmount % (_games.size()));
+    std::pair<size_t, size_t> coordinates = {0 , 7};
+    for (size_t i = 0; i < text.length(); i++) {
+        cacarcade::Tile &tile = _container.tiles.at({coordinates.first + i, 7});
+        tile.text = text[i];
+        tile.textColor = cacarcade::Color::Yellow;
     }
-    return text;
 }
 
-cacarcade::DisplayTextContent arcade::Menu::addDisplayContent()
+void arcade::Menu::addDisplayContent()
 {
-    cacarcade::DisplayTextContent text;
+    std::string text;
     std::size_t displayLength = 0;
 
     for (auto name : _displays) {
@@ -151,48 +147,38 @@ cacarcade::DisplayTextContent arcade::Menu::addDisplayContent()
             displayLength = name.length();
     }
 
-    text.text = _displays.at(_displayAmount % (_displays.size()));
-    text.size = displayLength;
-    text.color = cacarcade::Color::Blue;
-    text.coordinates = {0, 14};
-    for (size_t i = 0; i < text.text.length(); i++) {
-        cacarcade::Tile &tile = _container.tiles.at({text.coordinates.first + i, 14});
-        tile.text = text.text[i];
-        tile.textColor = text.color;
+    text = _displays.at(_displayAmount % (_displays.size()));
+    std::pair<size_t, size_t> coordinates = {0, 14};
+    for (size_t i = 0; i < text.length(); i++) {
+        cacarcade::Tile &tile = _container.tiles.at({coordinates.first + i, 14});
+        tile.text = text[i];
+        tile.textColor = cacarcade::Color::Blue;
     }
-    return text;
 }
 
-cacarcade::DisplayTextContent arcade::Menu::addTitleContent()
+void  arcade::Menu::addTitleContent()
 {
-    cacarcade::DisplayTextContent text;
+    std::string text = "Arcade by Hugoat & Freakyban";
 
-    text.text = "Arcade by Hugoat & Freakyban";
-    text.size = text.text.length();
-    text.color = cacarcade::Color::White;
-    text.coordinates = {_container.dimension.first / 2 - text.text.length() / 2, 0};
-    for (size_t i = 0; i < text.text.length(); i++) {
-        cacarcade::Tile &tile = _container.tiles.at({text.coordinates.first + i, 0});
-        tile.text = text.text[i];
-        tile.textColor = text.color;
+    std::pair<size_t, size_t> coordinates = {_container.dimension.first / 2 - text.length() / 2, 0};
+    for (size_t i = 0; i < text.length(); i++) {
+        cacarcade::Tile &tile = _container.tiles.at({coordinates.first + i, 0});
+        tile.text = text[i];
+        tile.textColor = cacarcade::Color::White;
     }
-    return text;
 }
 
-cacarcade::DisplayTextContent arcade::Menu::addPlayersContent()
+void arcade::Menu::addPlayersContent()
 {
-    cacarcade::DisplayTextContent text;
+    std::string text;
 
-    text.text = "Player Name:" + _playerName;
-    text.size = text.text.length();
-    text.color = cacarcade::Color::White;
-    text.coordinates = { _container.dimension.first - text.text.length() - 2, 7};
-    for (size_t i = 0; i < text.text.length(); i++) {
-        cacarcade::Tile &tile = _container.tiles.at({text.coordinates.first + i, 7});
-        tile.text = text.text[i];
-        tile.textColor = text.color;
+    text = "Player Name:" + _playerName;
+    std::pair<size_t, size_t> coordinates = { _container.dimension.first - text.length() - 2, 7};
+    for (size_t i = 0; i < text.length(); i++) {
+        cacarcade::Tile &tile = _container.tiles.at({coordinates.first + i, 7});
+        tile.text = text[i];
+        tile.textColor = cacarcade::Color::White;
     }
-    return text;
 }
 
 void arcade::Menu::update(std::optional<std::unique_ptr<cacarcade::IEvent>> &event)
@@ -201,10 +187,9 @@ void arcade::Menu::update(std::optional<std::unique_ptr<cacarcade::IEvent>> &eve
         handleEvent(event.value());
     }
     std::unique_ptr<cacarcade::IEvent> newEvent = std::make_unique<arcade::AEvent>(cacarcade::EventType::DisplayText);
-    newEvent->setTextContent(addGamesContent());
-    newEvent->setTextContent(addDisplayContent());
-    newEvent->setTextContent(addTitleContent());
-    newEvent->setTextContent(addPlayersContent());
-    // _eventQueue.push(std::move(newEvent));
+    addGamesContent();
+    addDisplayContent();
+    addTitleContent();
+    addPlayersContent();
 
 }

@@ -32,10 +32,10 @@ namespace arcade {
             bool _isInsert;
             size_t _playerIndex;
 
-            cacarcade::DisplayTextContent addGamesContent();
-            cacarcade::DisplayTextContent addDisplayContent();
-            cacarcade::DisplayTextContent addTitleContent();
-            cacarcade::DisplayTextContent addPlayersContent();
+            void addGamesContent();
+            void addDisplayContent();
+            void addTitleContent();
+            void addPlayersContent();
 
             void addLettersToPlayerName(std::unique_ptr<cacarcade::IEvent> &event);
         };
