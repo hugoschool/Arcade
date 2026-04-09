@@ -15,7 +15,7 @@
 #include <utility>
 
 arcade::Menu::Menu() : AGameModule("Menu"), _games(), _displays(),
-    _gamesAmount(), _displayAmount(), _gamesLen(0), _displayLen(0),
+    _gamesAmount(), _displayAmount(),
     _playerName("   "), _isInsert(false), _playerIndex(0)
 {
     _container.dimension = std::make_pair(0, 0);
@@ -104,13 +104,14 @@ void arcade::Menu::handleEvent(std::unique_ptr<cacarcade::IEvent> &event)
 cacarcade::DisplayTextContent arcade::Menu::addGamesContent()
 {
     cacarcade::DisplayTextContent text;
+    std::size_t gameLength = 0;
 
     for (auto name : _games) {
-        if (name.length() > _gamesLen)
-            _gamesLen = name.length();
+        if (name.length() > gameLength)
+            gameLength = name.length();
     }
     text.text = _games.at(_gamesAmount % (_games.size()));
-    text.size = _gamesLen;
+    text.size = gameLength;
     text.color = cacarcade::Color::Yellow;
     text.coordinates = {-2 , 5};
     return text;
@@ -119,14 +120,15 @@ cacarcade::DisplayTextContent arcade::Menu::addGamesContent()
 cacarcade::DisplayTextContent arcade::Menu::addDisplayContent()
 {
     cacarcade::DisplayTextContent text;
+    std::size_t displayLength = 0;
 
     for (auto name : _displays) {
-        if (name.length() > _displayLen)
-            _displayLen = name.length();
+        if (name.length() > displayLength)
+            displayLength = name.length();
     }
 
     text.text = _displays.at(_displayAmount % (_displays.size()));
-    text.size = _displayLen;
+    text.size = displayLength;
     text.color = cacarcade::Color::Blue;
     text.coordinates = {-2 , 10};
     return text;
