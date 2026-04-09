@@ -271,9 +271,9 @@ void arcade::MinesweeperGame::removeTimeFromScore()
         return;
 
     std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
-    const std::chrono::duration<double> timeElapsed = (currentTime - _gameClock) * 100;
+    const std::chrono::duration<double> timeElapsed = currentTime - _gameClock;
 
-    _scoreHandler.addScore(static_cast<int>(-timeElapsed.count()));
+    _scoreHandler.addScore(_maxTime.count() - timeElapsed.count());
 }
 
 void arcade::MinesweeperGame::revealAllOnFail()
