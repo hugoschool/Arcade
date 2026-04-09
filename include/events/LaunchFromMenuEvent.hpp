@@ -20,16 +20,17 @@ namespace arcade {
             {
                 return _gameLibrary;
             }
+
             void setGameLibrary(std::string name) override
             {
-                _gameLibrary = "";
-                _gameLibrary.append(name);
+                _gameLibrary = name;
             }
 
             std::string getDisplayLibrary() override
             {
                 return _displayLibrary;
             }
+
             void setDisplayLibrary(std::string name) override
             {
                 _displayLibrary = name;
@@ -39,6 +40,7 @@ namespace arcade {
             {
                 return _playerName;
             }
+
             void setPlayerName(std::string name) override
             {
                 _playerName = name;
