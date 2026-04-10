@@ -210,10 +210,11 @@ void arcade::SDL2Display::displayTileTexture(cacarcade::Tile &tile, SDL_Rect &ti
 void arcade::SDL2Display::displayTiles(cacarcade::TileContainer container)
 {
     setTileDimensions(container.dimension);
+    _offsetX = _screenWidth / 2 - (container.dimension.first * _tileSize) / 2;
 
     for (auto &[_, tile] : container.tiles) {
-        int x = tile.x * _tileSize;
-        int y = tile.y * _tileSize;
+        int x = tile.x * _tileSize + _offsetX;
+        int y = tile.y * _tileSize + _tileSize;
 
         SDL_Rect tileRect = {
             .x = x,
