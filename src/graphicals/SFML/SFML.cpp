@@ -133,8 +133,6 @@ void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleSh
     sf::Color textColor = getColor(tile.textColor);
 
     tileRect.setFillColor(backgroundColor);
-    // tileRect.setOutlineColor(textColor);
-    // tileRect.setOutlineThickness(_outlineThickness);
 
     _window.draw(tileRect);
 
@@ -142,8 +140,8 @@ void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleSh
         sf::Text text(_font, tile.text);
 
         sf::Vector2f pos = tileRect.getPosition();
-        pos.x += tileRect.getSize().x / 4;
-        pos.y -= tileRect.getSize().y / 20;
+        pos.x += tileRect.getSize().x / 5;
+        pos.y += tileRect.getSize().y / 10;
         text.setPosition(pos);
 
         text.setFillColor(textColor);
@@ -187,13 +185,13 @@ void arcade::SFMLDisplay::displayText(cacarcade::DisplayTextContent text)
 
     sf::Vector2f pos = rec.getPosition();
     pos.x += rec.getSize().x / 20;
-    pos.y -= rec.getSize().y / 20;
+    pos.y += rec.getSize().y / 4;
     str.setPosition(pos);
 
     str.setFillColor(getColor(text.color));
     str.setCharacterSize(_fontSize);
 
-    updateOffset(text.coordinates, text.size);
+    // updateOffset(text.coordinates, text.size);
     _window.draw(rec);
     _window.draw(str);
 }
@@ -201,8 +199,6 @@ void arcade::SFMLDisplay::displayText(cacarcade::DisplayTextContent text)
 void arcade::SFMLDisplay::displayTiles(cacarcade::TileContainer container)
 {
     setTileDimensions(container.dimension);
-    _offsetX = _screenWidth / 2 - (container.dimension.first * _tileSize) / 2;
-    _offsetY = _tileSize;
 
     for (auto &[_, tile] : container.tiles) {
         int x = tile.x * _tileSize + _offsetX;
