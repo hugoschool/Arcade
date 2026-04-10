@@ -144,7 +144,7 @@ void arcade::CentipedeGame::updateTiles()
             } else {
                 tile.textColor = cacarcade::Color::Red;
                 tile.text = '0' + static_cast<char>(info.second.mushroom) + 1;
-                tile.textureName = "./textures/centipede/" + std::to_string(tile.text) + ".png";
+                tile.textureName = "./textures/centipede/" + std::to_string(static_cast<int>(info.second.mushroom)) + ".png";
             }
         }
     }
