@@ -38,7 +38,7 @@ arcade::MinesweeperGame::MinesweeperGame() : AGameModule("minesweeper"),
                 .x = x,
                 .y = y,
                 .textureOrientation = cacarcade::Tile::Orientation::Up,
-                .textureName = "",
+                .textureName = "./textures/minesweeper/tile.png",
                 .backgroundColor = cacarcade::Color::Black,
                 .text = '\0',
                 .textColor = cacarcade::Color::White,
@@ -103,7 +103,7 @@ void arcade::MinesweeperGame::createMenuBar()
         .x = resetButtonCoordinates.first,
         .y = resetButtonCoordinates.second,
         .textureOrientation = cacarcade::Tile::Orientation::Up,
-        .textureName = "",
+        .textureName = "./textures/minesweeper/smiley.png",
         .backgroundColor = cacarcade::Color::Black,
         .text = 'R',
         .textColor = cacarcade::Color::Yellow,
@@ -136,7 +136,7 @@ void arcade::MinesweeperGame::resetMenuBar()
     if (_resetMenuTile.has_value()) {
         cacarcade::Tile &tile = _resetMenuTile->get();
 
-        tile.textureName = "";
+        tile.textureName = "./textures/minesweeper/smiley.png";
         tile.backgroundColor = cacarcade::Color::Black;
         tile.text = 'R';
         tile.textColor = cacarcade::Color::Yellow;
@@ -162,6 +162,7 @@ void arcade::MinesweeperGame::reset()
             if (info.state == TileState::Menu)
                 continue;
         } catch (const std::exception &) {};
+        tile.textureName = "./textures/minesweeper/tile.png";
         tile.backgroundColor = cacarcade::Color::Black;
         tile.text = '\0';
     }
@@ -300,6 +301,7 @@ void arcade::MinesweeperGame::revealAllOnFail()
     if (_resetMenuTile.has_value()) {
         cacarcade::Tile &tile = _resetMenuTile->get();
 
+        tile.textureName = "./textures/minesweeper/fail.png";
         tile.backgroundColor = cacarcade::Color::Red;
         tile.text = 'B';
         tile.textColor = cacarcade::Color::White;
@@ -309,6 +311,7 @@ void arcade::MinesweeperGame::revealAllOnFail()
 void arcade::MinesweeperGame::setTileContent(cacarcade::Tile &tile, TileInfo &info)
 {
     if (info.isFlag == true && info.isRevealed == false) {
+        tile.textureName = "./textures/minesweeper/flag.png";
         tile.text = 'F';
         tile.backgroundColor = cacarcade::Color::Green;
         return;
@@ -322,6 +325,7 @@ void arcade::MinesweeperGame::setTileContent(cacarcade::Tile &tile, TileInfo &in
 
     switch (info.state) {
         case TileState::Normal: {
+            tile.textureName = "./textures/minesweeper/" + std::to_string(info.neighborAmount) + ".png";
             if (info.neighborAmount != 0)
                 tile.text = info.neighborAmount + '0';
             else
@@ -330,6 +334,7 @@ void arcade::MinesweeperGame::setTileContent(cacarcade::Tile &tile, TileInfo &in
             break;
         }
         case TileState::Bomb: {
+            tile.textureName = "./textures/minesweeper/bomb.png";
             tile.text = 'B';
             tile.backgroundColor = cacarcade::Color::Red;
             break;
@@ -435,6 +440,7 @@ void arcade::MinesweeperGame::checkVictory()
     if (_resetMenuTile.has_value()) {
         cacarcade::Tile &tile = _resetMenuTile->get();
 
+        tile.textureName = "./textures/minesweeper/victory.png";
         tile.backgroundColor = cacarcade::Color::Yellow;
         tile.text = 'V';
         tile.textColor = cacarcade::Color::White;
