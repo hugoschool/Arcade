@@ -77,7 +77,7 @@ arcade::SDL2Display::~SDL2Display()
 
 void arcade::SDL2Display::clear()
 {
-    setRendererDrawColor(cacarcade::Color::White);
+    setRendererDrawColor(cacarcade::Color::Black);
     SDL_RenderClear(_renderer);
 }
 
@@ -191,8 +191,6 @@ void arcade::SDL2Display::displayTileText(cacarcade::Tile &tile, SDL_Rect &tileR
 {
     setRendererDrawColor(tile.backgroundColor);
     SDL_RenderFillRect(_renderer, &tileRect);
-    setRendererDrawColor(tile.textColor);
-    SDL_RenderDrawRect(_renderer, &tileRect);
 
     if (tile.text != '\0')
         displayTextOnTile(tile.text, tile.textColor, tileRect);
