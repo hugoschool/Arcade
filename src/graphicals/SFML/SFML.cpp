@@ -191,7 +191,6 @@ void arcade::SFMLDisplay::displayText(cacarcade::DisplayTextContent text)
     str.setFillColor(getColor(text.color));
     str.setCharacterSize(_fontSize);
 
-    // updateOffset(text.coordinates, text.size);
     _window.draw(rec);
     _window.draw(str);
 }

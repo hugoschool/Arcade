@@ -60,8 +60,8 @@ std::optional<std::unique_ptr<arcade::TileClickedEvent>> arcade::NCursesDisplay:
     MEVENT event;
 
     if (getmouse(&event) == OK) {
-        std::pair<size_t, size_t> position = {event.x - 1, event.y- 1};
-        std::pair<size_t, size_t> max = {_oldDimension.first + _offsetX * 2, _oldDimension.second + _offsetY};
+        std::pair<size_t, size_t> position = {event.x - _offsetX - 1, event.y- _offsetY - 1};
+        std::pair<size_t, size_t> max = {_oldDimension.first + _offsetX, _oldDimension.second + _offsetY};
         if (position > max) {
             return std::nullopt;
         }
