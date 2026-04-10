@@ -175,14 +175,13 @@ SDL_Texture *arcade::SDL2Display::createTexture(std::string &textureName)
         if (surface == nullptr) {
             std::cerr << "Impossible to load BMP: " << SDL_GetError() << std::endl;
             _textureMap.insert({textureName, nullptr});
+            return nullptr;
+        } else {
+            SDL_Texture *texture = SDL_CreateTextureFromSurface(_renderer, surface);
+            _textureMap.insert({textureName, texture});
+            SDL_FreeSurface(surface);
+            return texture;
         }
-
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(_renderer, surface);
-
-        _textureMap.insert({textureName, texture});
-
-        SDL_FreeSurface(surface);
-        return texture;
     }
 }
 

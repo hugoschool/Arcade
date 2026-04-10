@@ -17,6 +17,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include <exception>
+#include <iostream>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -108,17 +109,20 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SFMLDisplay::pollEvent
     return std::nullopt;
 }
 
-std::weak_ptr<sf::Texture> arcade::SFMLDisplay::createTexture(std::string &textureName)
+std::optional<std::weak_ptr<sf::Texture>> arcade::SFMLDisplay::createTexture(std::string &textureName)
 {
     try {
         return std::weak_ptr<sf::Texture>(_textureMap.at(textureName));
     } catch (const std::out_of_range &) {
-        std::shared_ptr<sf::Texture> texture = std::make_shared<sf::Texture>(textureName);
-
-        texture->setSmooth(true);
-        _textureMap.insert({textureName, texture});
-
-        return std::weak_ptr<sf::Texture>(texture);
+        try {
+            std::shared_ptr<sf::Texture> texture = std::make_shared<sf::Texture>(textureName);
+            texture->setSmooth(true);
+            _textureMap.insert({textureName, texture});
+            return std::weak_ptr<sf::Texture>(texture);
+        } catch (const std::exception &e) {
+            std::cerr << "Non existant texture " << textureName << std::endl;
+            return std::nullopt;
+        }
     }
 }
 
@@ -153,11 +157,16 @@ void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleSh
 
 void arcade::SFMLDisplay::displayTileTexture(cacarcade::Tile &tile, sf::RectangleShape &tileRect)
 {
-    std::weak_ptr<sf::Texture> ptr = createTexture(tile.textureName);
-    sf::Texture texture = *ptr.lock();
+    std::optional ptr = createTexture(tile.textureName);
 
-    tileRect.setTexture(&texture);
-    _window.draw(tileRect);
+    if (!ptr.has_value()) {
+        displayTileText(tile, tileRect);
+    } else {
+        sf::Texture texture = *ptr.value().lock();
+
+        tileRect.setTexture(&texture);
+        _window.draw(tileRect);
+    }
 }
 
 void arcade::SFMLDisplay::updateOffset(std::pair<long, long> pos, size_t len)
