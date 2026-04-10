@@ -1,5 +1,6 @@
 #include "graphicals/NCurses/NCurses.hpp"
 #include "cacarcade/Color.hpp"
+#include "cacarcade/DisplayTextContent.hpp"
 #include "cacarcade/EventKey.hpp"
 #include "cacarcade/EventMouseButton.hpp"
 #include "cacarcade/IEvent.hpp"
@@ -10,6 +11,7 @@
 #include <cctype>
 #include <cstddef>
 #include <cstdio>
+#include <cstdlib>
 #include <exception>
 #include <memory>
 #include <ncurses.h>
@@ -17,7 +19,7 @@
 #include <utility>
 
 arcade::NCursesDisplay::NCursesDisplay() : arcade::ADisplayModule(), _window(nullptr), _oldDimension(),
-    _colors(), _colorAmount(8), _pairs(), pairAmount(1)
+    _colors(), _colorAmount(8), _pairs(), pairAmount(1), _oldOffset({0, 0})
 {
     initscr();
     cbreak();
@@ -58,8 +60,9 @@ std::optional<std::unique_ptr<arcade::TileClickedEvent>> arcade::NCursesDisplay:
     MEVENT event;
 
     if (getmouse(&event) == OK) {
-        std::pair<size_t, size_t> position = {event.x - 1, event.y - 1};
-        if (position > _oldDimension) {
+        std::pair<size_t, size_t> position = {event.x - _offsetX - 1, event.y- _offsetY - 1};
+        std::pair<size_t, size_t> max = {_oldDimension.first + _offsetX, _oldDimension.second + _offsetY};
+        if (position > max) {
             return std::nullopt;
         }
 
@@ -91,21 +94,22 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::NCursesDisplay::pollEv
         if (key == KEY_MOUSE) {
             return getMouse();
         }
-        key = wgetch(_window);
+        if (key == '&' || key == '1')
+            return std::make_unique<arcade::KeyPressedEvent>(cacarcade::EventKey::_1);
     }
     return std::nullopt;
 }
 
 void arcade::NCursesDisplay::setWindowsSize(std::pair<size_t, size_t> size)
 {
-    if (_window == nullptr || size != _oldDimension) {
+    if (_window == nullptr || size != _oldDimension || _oldOffset.first != _offsetX || _offsetY != _oldOffset.second) {
         _oldDimension = size;
         if (_window != nullptr) {
             wclear(_window);
             delwin(_window);
             wclear(stdscr);
         }
-        _window = subwin(stdscr, size.second + 2, size.first + 2, 0, 0);
+        _window = subwin(stdscr, size.second + 2, size.first + 2, 0 + _offsetY, 0 + _offsetX);
         nodelay(_window, TRUE);
         mousemask(ALL_MOUSE_EVENTS, NULL);
         mouseinterval(0);
@@ -138,9 +142,28 @@ short arcade::NCursesDisplay::addPair(cacarcade::ColorCode fg, cacarcade::ColorC
     }
 }
 
+void arcade::NCursesDisplay::updateOffset(std::pair<long, long> pos, size_t len)
+{
+    if (pos.first < 0)
+        _offsetX = len + std::abs(pos.first) + 2;
+    if (pos.second < 0)
+        _offsetY = std::abs(pos.first) + 2;
+}
+
+void arcade::NCursesDisplay::displayText(cacarcade::DisplayTextContent text)
+{
+    std::pair<long, long> newpos = text.coordinates;
+
+    updateOffset(newpos, text.size);
+    newpos = {std::abs(newpos.first), std::abs(newpos.second)};
+    mvprintw(newpos.second, newpos.first * 2, "%s", text.text.c_str());
+}
+
 void arcade::NCursesDisplay::displayTiles(cacarcade::TileContainer container)
 {
+    _offsetX = COLS / 2 - container.dimension.first / 2;
     setWindowsSize(container.dimension);
+    _oldOffset = {_offsetX, _offsetY};
     start_color();
     for (auto &[_, tile] : container.tiles) {
         int x = tile.y;

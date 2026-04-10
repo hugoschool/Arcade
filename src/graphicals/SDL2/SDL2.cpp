@@ -44,8 +44,7 @@ arcade::SDL2Display::SDL2Display() : arcade::ADisplayModule(), _window(nullptr),
     if (_renderer == nullptr)
         throw arcade::Exception(std::string("Impossible to create renderer: ") + SDL_GetError());
 
-    // TODO: need to find a way
-    _font = TTF_OpenFont("/usr/share/fonts/gnu-free/FreeSans.otf", _fontSize);
+    _font = TTF_OpenFont("./textures/fonts/PressStart2P.ttf", _fontSize);
 
     if (_font == nullptr)
         throw arcade::Exception(std::string("Impossible to open font (TTF): ") + TTF_GetError());
@@ -77,7 +76,7 @@ arcade::SDL2Display::~SDL2Display()
 
 void arcade::SDL2Display::clear()
 {
-    setRendererDrawColor(cacarcade::Color::White);
+    setRendererDrawColor(cacarcade::Color::Black);
     SDL_RenderClear(_renderer);
 }
 
@@ -191,8 +190,6 @@ void arcade::SDL2Display::displayTileText(cacarcade::Tile &tile, SDL_Rect &tileR
 {
     setRendererDrawColor(tile.backgroundColor);
     SDL_RenderFillRect(_renderer, &tileRect);
-    setRendererDrawColor(tile.textColor);
-    SDL_RenderDrawRect(_renderer, &tileRect);
 
     if (tile.text != '\0')
         displayTextOnTile(tile.text, tile.textColor, tileRect);
@@ -210,10 +207,11 @@ void arcade::SDL2Display::displayTileTexture(cacarcade::Tile &tile, SDL_Rect &ti
 void arcade::SDL2Display::displayTiles(cacarcade::TileContainer container)
 {
     setTileDimensions(container.dimension);
+    _offsetX = _screenWidth / 2 - (container.dimension.first * _tileSize) / 2;
 
     for (auto &[_, tile] : container.tiles) {
-        int x = tile.x * _tileSize;
-        int y = tile.y * _tileSize;
+        int x = tile.x * _tileSize + _offsetX;
+        int y = tile.y * _tileSize + _tileSize;
 
         SDL_Rect tileRect = {
             .x = x,

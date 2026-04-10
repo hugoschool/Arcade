@@ -24,9 +24,9 @@ namespace arcade {
 
             std::optional<std::unique_ptr<cacarcade::IEvent>> pollEvent() override;
             void displayTiles(cacarcade::TileContainer tiles) override;
+            void displayText(cacarcade::DisplayTextContent text) override;
 
         private:
-
             WINDOW *_window;
 
             cacarcade::EventKey getKey(int key);
@@ -41,5 +41,8 @@ namespace arcade {
             std::map<std::pair<short, short>, size_t> _pairs;
             size_t pairAmount;
             short addPair(cacarcade::ColorCode, cacarcade::ColorCode);
+
+            std::pair<size_t, size_t> _oldOffset;
+            void updateOffset(std::pair<long, long>, size_t len) override;
     };
 }

@@ -1,7 +1,10 @@
 #pragma once
 
+#include "common/Exception.hpp"
 #include "core/DLLoader.hpp"
+#include <algorithm>
 #include <filesystem>
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -12,7 +15,8 @@ namespace arcade {
         public:
             LibraryManager() = delete;
 
-            LibraryManager(const std::string entrypoint, const std::string initialLibrary = "") :
+            LibraryManager(const std::string entrypoint, const std::string initialLibrary = "",
+                bool setPointerOnInit = true) :
                 _entrypoint(entrypoint), _initialLibrary(initialLibrary),
                 _loader(std::nullopt), _ptr(nullptr),
                 _libraries(), _index(0)
@@ -36,7 +40,8 @@ namespace arcade {
                         throw arcade::Exception("Couldn't find " + initialLibraryFilename + " in the libraries");
                 }
 
-                modifyPointer();
+                if (setPointerOnInit)
+                    modifyPointer();
             }
 
             ~LibraryManager()
@@ -63,6 +68,24 @@ namespace arcade {
                 return _ptr;
             }
 
+            std::shared_ptr<T> selectNewInstance(std::string name)
+            {
+                auto iterator = std::find(_libraries.begin(), _libraries.end(), name);
+
+                if (iterator == _libraries.end())
+                    throw arcade::Exception("Couldn't find library " + name);
+
+                while (_libraries[_index % _libraries.size()] != name)
+                    _index++;
+
+                modifyPointer();
+                return _ptr;
+            }
+
+            std::vector<std::string> getLibraries() const
+            {
+                return _libraries;
+            }
         private:
             const std::string _entrypoint;
             const std::string _initialLibrary;

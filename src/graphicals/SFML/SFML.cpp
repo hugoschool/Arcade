@@ -1,5 +1,6 @@
 #include "graphicals/SFML/SFML.hpp"
 #include "cacarcade/Color.hpp"
+#include "cacarcade/DisplayTextContent.hpp"
 #include "cacarcade/EventKey.hpp"
 #include "cacarcade/EventMouseButton.hpp"
 #include "cacarcade/Tile.hpp"
@@ -10,10 +11,15 @@
 #include "events/TileClickedEvent.hpp"
 #include "graphicals/ADisplayModule.hpp"
 #include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Keyboard.hpp>
+#include <cstddef>
+#include <cstdlib>
 #include <exception>
 #include <memory>
 #include <optional>
+#include <utility>
 
 arcade::SFMLDisplay::SFMLDisplay() : arcade::ADisplayModule(),
     _window(), _font(), _outlineThickness(1)
@@ -23,7 +29,8 @@ arcade::SFMLDisplay::SFMLDisplay() : arcade::ADisplayModule(),
 
         _window = sf::RenderWindow(videoMode, "Arcade");
         _window.setFramerateLimit(60);
-        _font = sf::Font("/usr/share/fonts/gnu-free/FreeSans.otf");
+        _font = sf::Font("./textures/fonts/PressStart2P.ttf");
+        _offsetX = _screenWidth / 2;
     } catch (std::exception &e) {
         throw arcade::Exception("Something went wrong with the creation of the window.");
     }
@@ -36,7 +43,7 @@ arcade::SFMLDisplay::~SFMLDisplay()
 
 void arcade::SFMLDisplay::clear()
 {
-    _window.clear(sf::Color::White);
+    _window.clear(sf::Color::Black);
 }
 
 cacarcade::EventKey arcade::SFMLDisplay::getKey(const sf::Keyboard::Key key)
@@ -60,6 +67,8 @@ cacarcade::EventKey arcade::SFMLDisplay::getKey(const sf::Keyboard::Key key)
             return cacarcade::EventKey::Right;
         case sf::Keyboard::Key::Space:
             return cacarcade::EventKey::Space;
+        case sf::Keyboard::Key::Num1:
+            return cacarcade::EventKey::_1;
         default:
             return cacarcade::EventKey::None;
     }
@@ -124,8 +133,6 @@ void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleSh
     sf::Color textColor = getColor(tile.textColor);
 
     tileRect.setFillColor(backgroundColor);
-    tileRect.setOutlineColor(textColor);
-    tileRect.setOutlineThickness(_outlineThickness);
 
     _window.draw(tileRect);
 
@@ -133,12 +140,12 @@ void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleSh
         sf::Text text(_font, tile.text);
 
         sf::Vector2f pos = tileRect.getPosition();
-        pos.x += tileRect.getSize().x / 4;
-        pos.y -= tileRect.getSize().y / 20;
+        pos.x += tileRect.getSize().x / 5;
+        pos.y += tileRect.getSize().y / 10;
         text.setPosition(pos);
 
         text.setFillColor(textColor);
-        text.setCharacterSize(_tileSize - (tileRect.getSize().x / 5));
+        text.setCharacterSize(_tileSize - (tileRect.getSize().x / 10));
 
         _window.draw(text);
     }
@@ -153,15 +160,49 @@ void arcade::SFMLDisplay::displayTileTexture(cacarcade::Tile &tile, sf::Rectangl
     _window.draw(tileRect);
 }
 
+void arcade::SFMLDisplay::updateOffset(std::pair<long, long> pos, size_t len)
+{
+    if (pos.first < 0) {
+        _offsetX = (len * _fontSize) + 20;
+    }
+    if (pos.second < 0) {
+        _offsetY = _fontSize + 20;
+    }
+}
+
+void arcade::SFMLDisplay::displayText(cacarcade::DisplayTextContent text)
+{
+    size_t len = _fontSize * (text.size) * 0.60;
+    sf::RectangleShape rec(sf::Vector2f(len, _fontSize + 5));
+    std::pair<long, long> newpos = text.coordinates;
+
+    newpos = {std::abs(newpos.first), std::abs(newpos.second)};
+    rec.setPosition(sf::Vector2f(newpos.first * _tileSize, newpos.second * _tileSize));
+    rec.setOutlineThickness(_outlineThickness);
+    rec.setOutlineColor(getColor(text.color));
+    rec.setFillColor(sf::Color::Black);
+    sf::Text str(_font, text.text);
+
+    sf::Vector2f pos = rec.getPosition();
+    pos.x += rec.getSize().x / 20;
+    pos.y += rec.getSize().y / 4;
+    str.setPosition(pos);
+
+    str.setFillColor(getColor(text.color));
+    str.setCharacterSize(_fontSize);
+
+    _window.draw(rec);
+    _window.draw(str);
+}
+
 void arcade::SFMLDisplay::displayTiles(cacarcade::TileContainer container)
 {
     setTileDimensions(container.dimension);
 
     for (auto &[_, tile] : container.tiles) {
-        int x = tile.x * _tileSize;
-        int y = tile.y * _tileSize;
-
-        sf::RectangleShape rec(sf::Vector2f(_tileSize - (_outlineThickness * 2), _tileSize - (_outlineThickness * 2)));
+        int x = tile.x * _tileSize + _offsetX;
+        int y = tile.y * _tileSize + _offsetY;
+        sf::RectangleShape rec(sf::Vector2f(_tileSize , _tileSize));
         rec.setPosition(sf::Vector2f(x, y));
 
         if (!tile.textureName.empty()) {

@@ -1,4 +1,5 @@
 #include "core/Arcade.hpp"
+#include "cacarcade/DisplayTextContent.hpp"
 #include "cacarcade/EventKey.hpp"
 #include "cacarcade/EventType.hpp"
 #include "cacarcade/IEvent.hpp"
@@ -7,7 +8,7 @@
 
 arcade::Arcade::Arcade(const std::string graphicsLibrary) :
     _displayManager(std::string(cacarcade::displayEntrypoint), graphicsLibrary),
-    _gameManager(std::string(cacarcade::gameEntrypoint)),
+    _gameManager(std::string(cacarcade::gameEntrypoint), "lib/arcade_menu.so"),
     _playerName("NON"), _running(true)
 {
     _display = _displayManager.getPointer();
@@ -83,6 +84,24 @@ void arcade::Arcade::handleDisplayEvents(std::unique_ptr<cacarcade::IEvent> &eve
             _game->setPlayerName(_playerName);
             break;
         }
+        case cacarcade::EventType::DisplayText: {
+            while (true) {
+                cacarcade::DisplayTextContent text = event->getTextContent();
+                if (text.text.empty())
+                    break;
+                _display->displayText(text);
+            }
+            break;
+        }
+        case cacarcade::EventType::LaunchFromMenu: {
+            _game.reset();
+            _display.reset();
+            _game = _gameManager.selectNewInstance(event->getGameLibrary());
+            _display = _displayManager.selectNewInstance(event->getDisplayLibrary());
+            _playerName = event->getPlayerName();
+            _game->setPlayerName(_playerName);
+            break;
+        }
         default:
             break;
     }
@@ -102,8 +121,14 @@ void arcade::Arcade::loop()
             break;
 
         _game->update(event);
-
         _display->clear();
+        while (true) {
+            event = _game->pollEvent();
+            if (!event.has_value())
+                break;
+            handleDisplayEvents(event.value());
+        }
+
         _display->displayTiles(_game->getTiles());
     }
 }

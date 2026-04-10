@@ -1,9 +1,10 @@
 #include "graphicals/ADisplayModule.hpp"
 #include "cacarcade/TileContainer.hpp"
+#include <cstddef>
 #include <optional>
 
 arcade::ADisplayModule::ADisplayModule() : _screenWidth(1800), _screenHeight(800), _fontSize(20),
-    _tileSize(50), _currentDimensions()
+    _tileSize(30), _currentDimensions(), _offsetX(0), _offsetY(0)
 {
 }
 
@@ -15,6 +16,9 @@ void arcade::ADisplayModule::setTileDimensions(std::pair<std::size_t, std::size_
     if (_currentDimensions.dimensions != pair) {
         _currentDimensions.dimensions = pair;
 
+        _offsetY = _tileSize;
+        _offsetX = _screenWidth / 2 - (_currentDimensions.dimensions.first * _tileSize) / 2;
+
         const std::size_t dimensionsSize = _currentDimensions.dimensions.first * _currentDimensions.dimensions.second;
 
         _currentDimensions.coordinates.clear();
@@ -22,7 +26,7 @@ void arcade::ADisplayModule::setTileDimensions(std::pair<std::size_t, std::size_
 
         for (std::size_t y = 0; y < _currentDimensions.dimensions.second; y++) {
             for (std::size_t x = 0; x < _currentDimensions.dimensions.first; x++) {
-                _currentDimensions.coordinates.push_back({x * _tileSize, y * _tileSize});
+                _currentDimensions.coordinates.push_back({x * _tileSize + _offsetX , y * _tileSize + _offsetY});
             }
         }
     }
@@ -55,19 +59,21 @@ std::pair<std::size_t, std::size_t> arcade::ADisplayModule::findClosestTile(int 
             firstPass = false;
             continue;
         }
-
-        const std::size_t xDistance = x - coordinates.first;
-        const std::size_t yDistance = y - coordinates.second;
-
-        if ((xDistance > 0 && xDistance < x - closestCoordinates.first) ||
-            (yDistance > 0 && yDistance < y - closestCoordinates.second)) {
+        const size_t xDistance = x - coordinates.first;
+        const size_t yDistance = y - coordinates.second;
+        if ((xDistance < _tileSize) &&
+            (yDistance < _tileSize)) {
             closestCoordinates = coordinates;
         }
     }
 
     // Divide by the rectangle size to find the actual X and Y of the tile
     return {
-        closestCoordinates.first / _tileSize,
-        closestCoordinates.second / _tileSize,
+        (closestCoordinates.first - _offsetX) / _tileSize,
+        (closestCoordinates.second - _offsetY) / _tileSize,
     };
+}
+
+void arcade::ADisplayModule::updateOffset(std::pair<long, long>, size_t)
+{
 }
