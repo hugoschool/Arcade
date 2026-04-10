@@ -169,6 +169,21 @@ void arcade::SFMLDisplay::displayTileTexture(cacarcade::Tile &tile, sf::Rectangl
 
         tileRect.setTexture(&texture);
         sf::Angle angle(sf::degrees(static_cast<int>(tile.textureOrientation) * 90));
+        sf::Vector2f pos = tileRect.getPosition();
+        switch (tile.textureOrientation) {
+            case cacarcade::Tile::Orientation::Left:
+                pos.y += _tileSize;
+                pos.x += _tileSize;
+                break;
+            case cacarcade::Tile::Orientation::Up:
+                pos.x += _tileSize;
+                break;
+            case cacarcade::Tile::Orientation::Down:
+                pos.x -= _tileSize;
+            default:
+                break;
+        }
+        tileRect.setPosition(pos);
         tileRect.rotate(angle);
         _window.draw(tileRect);
     }

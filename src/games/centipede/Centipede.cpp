@@ -33,7 +33,7 @@ arcade::CentipedeGame::CentipedeGame() : AGameModule("centipede"),
             cacarcade::Tile tile = {
                 .x = x,
                 .y = y,
-                .textureOrientation = cacarcade::Tile::Orientation::Up,
+                .textureOrientation = cacarcade::Tile::Orientation::Right,
                 .textureName = "",
                 .backgroundColor = cacarcade::Color::Black,
                 .text = '\0',
@@ -122,7 +122,7 @@ void arcade::CentipedeGame::setEntityContent(cacarcade::Tile &tile, std::pair<co
     switch (info.second.entity) {
         case EntityTiles::Player:
             tile.text = 'P';
-            tile.textureOrientation = cacarcade::Tile::Orientation::Up;
+            tile.textureOrientation = cacarcade::Tile::Orientation::Right;
             tile.textureName = "./textures/centipede/player.png";
             tile.textColor = cacarcade::Color::Blue;
             break;
@@ -134,23 +134,28 @@ void arcade::CentipedeGame::setEntityContent(cacarcade::Tile &tile, std::pair<co
             tile.text = 'C';
             tile.textColor = cacarcade::Color::White;
             int direction = getCentpedeDirection({tile.x, tile.y});
-            if (tile.x + direction > 0 && tile.x + direction < _width - 1) {
-                if (!_tileInfo.at({tile.x + direction, tile.y}).isEmpty) {
-                    if ( tile.y + 1 < _height - 1 && _tileInfo.at({tile.x, tile.y + 1}).entity == EntityTiles::Centipede) {
-                        tile.textureName = "./textures/centipede/body.png";
-                    } else {
-                        tile.textureName = "./textures/centipede/head.png";
-                    }
-                } else {
-                    tile.textureName = "./textures/centipede/head.png";
-                }
-            } else {
-                if (tile.y + 1 < _height - 1 && _tileInfo.at({tile.x, tile.y + 1}).entity == EntityTiles::Centipede) {
-                    tile.textureName = "./textures/centipede/body.png";
-                } else {
-                    tile.textureName = "./textures/centipede/head.png";
-                }
-            }
+            if (direction > 0)
+                tile.textureOrientation = cacarcade::Tile::Orientation::Left;
+            else
+                tile.textureOrientation = cacarcade::Tile::Orientation::Right;
+            tile.textureName = "./textures/centipede/head.png";
+            // if (tile.x + direction > 0 && tile.x + direction < _width - 1) {
+            //     if (!_tileInfo.at({tile.x + direction, tile.y}).isEmpty) {
+            //         if ( tile.y + 1 < _height - 1 && _tileInfo.at({tile.x, tile.y + 1}).entity == EntityTiles::Centipede) {
+            //             tile.textureName = "./textures/centipede/body.png";
+            //         } else {
+            //             tile.textureName = "./textures/centipede/head.png";
+            //         }
+            //     } else {
+            //         tile.textureName = "./textures/centipede/head.png";
+            //     }
+            // } else {
+            //     if (tile.y + 1 < _height - 1 && _tileInfo.at({tile.x, tile.y + 1}).entity == EntityTiles::Centipede) {
+            //         tile.textureName = "./textures/centipede/body.png";
+            //     } else {
+            //         tile.textureName = "./textures/centipede/head.png";
+            //     }
+            // }
             break;
         }
         case EntityTiles::None:
@@ -174,7 +179,7 @@ void arcade::CentipedeGame::updateTiles()
                 setEntityContent(tile, info);
             } else {
                 tile.textColor = cacarcade::Color::Red;
-                tile.textureOrientation = cacarcade::Tile::Orientation::Up;
+                tile.textureOrientation = cacarcade::Tile::Orientation::Right;
                 tile.text = '0' + static_cast<char>(info.second.mushroom) + 1;
                 tile.textureName = "./textures/centipede/" + std::to_string(static_cast<int>(info.second.mushroom) + 1) + ".png";
             }
@@ -347,7 +352,7 @@ void arcade::CentipedeGame::reset()
             cacarcade::Tile tile = {
                 .x = x,
                 .y = y,
-                .textureOrientation = cacarcade::Tile::Orientation::Up,
+                .textureOrientation = cacarcade::Tile::Orientation::Right,
                 .textureName = "",
                 .backgroundColor = cacarcade::Color::Black,
                 .text = '\0',
