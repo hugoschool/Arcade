@@ -109,7 +109,7 @@ void arcade::NCursesDisplay::setWindowsSize(std::pair<size_t, size_t> size)
             delwin(_window);
             wclear(stdscr);
         }
-        _window = subwin(stdscr, size.second + 2, size.first + 2, 0 + _offsetY, 0 + _offsetX * 2);
+        _window = subwin(stdscr, size.second + 2, size.first + 2, 0 + _offsetY, 0 + _offsetX);
         nodelay(_window, TRUE);
         mousemask(ALL_MOUSE_EVENTS, NULL);
         mouseinterval(0);
@@ -161,6 +161,7 @@ void arcade::NCursesDisplay::displayText(cacarcade::DisplayTextContent text)
 
 void arcade::NCursesDisplay::displayTiles(cacarcade::TileContainer container)
 {
+    _offsetX = COLS / 2 - container.dimension.first / 2;
     setWindowsSize(container.dimension);
     _oldOffset = {_offsetX, _offsetY};
     start_color();
