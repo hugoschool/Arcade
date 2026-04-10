@@ -86,6 +86,10 @@ cacarcade::EventKey arcade::SDL2Display::getKey(const SDL_Keycode keycode)
         return static_cast<cacarcade::EventKey>(static_cast<int>(cacarcade::EventKey::A) + keycode - SDLK_a);
     }
 
+    if (keycode >= SDLK_1 && keycode <= SDLK_9) {
+        return static_cast<cacarcade::EventKey>(static_cast<int>(cacarcade::EventKey::_1) + keycode - SDLK_1);
+    }
+
     switch (keycode) {
         case SDLK_BACKSPACE:
             return cacarcade::EventKey::Backspace;
@@ -99,6 +103,8 @@ cacarcade::EventKey arcade::SDL2Display::getKey(const SDL_Keycode keycode)
             return cacarcade::EventKey::Right;
         case SDLK_SPACE:
             return cacarcade::EventKey::Space;
+        case SDLK_0:
+            return cacarcade::EventKey::_0;
         default:
             return cacarcade::EventKey::None;
     }

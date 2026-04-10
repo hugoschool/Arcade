@@ -54,6 +54,12 @@ cacarcade::EventKey arcade::SFMLDisplay::getKey(const sf::Keyboard::Key key)
         );
     }
 
+    if (key >= sf::Keyboard::Key::Num1 && key <= sf::Keyboard::Key::Num9) {
+        return static_cast<cacarcade::EventKey>(
+            static_cast<int>(cacarcade::EventKey::_1) + static_cast<int>(key) - static_cast<int>(sf::Keyboard::Key::Num1)
+        );
+    }
+
     switch (key) {
         case sf::Keyboard::Key::Backspace:
             return cacarcade::EventKey::Backspace;
@@ -67,8 +73,8 @@ cacarcade::EventKey arcade::SFMLDisplay::getKey(const sf::Keyboard::Key key)
             return cacarcade::EventKey::Right;
         case sf::Keyboard::Key::Space:
             return cacarcade::EventKey::Space;
-        case sf::Keyboard::Key::Num1:
-            return cacarcade::EventKey::_1;
+        case sf::Keyboard::Key::Num0:
+            return cacarcade::EventKey::_0;
         default:
             return cacarcade::EventKey::None;
     }
