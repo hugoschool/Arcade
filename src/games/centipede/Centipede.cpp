@@ -28,6 +28,7 @@ arcade::CentipedeGame::CentipedeGame() : AGameModule("centipede"),
             cacarcade::Tile tile = {
                 .x = x,
                 .y = y,
+                .textureOrientation = cacarcade::Tile::Orientation::Up,
                 .textureName = "",
                 .backgroundColor = cacarcade::Color::Black,
                 .text = '\0',
@@ -306,6 +307,7 @@ void arcade::CentipedeGame::reset()
             cacarcade::Tile tile = {
                 .x = x,
                 .y = y,
+                .textureOrientation = cacarcade::Tile::Orientation::Up,
                 .textureName = "",
                 .backgroundColor = cacarcade::Color::Black,
                 .text = '\0',

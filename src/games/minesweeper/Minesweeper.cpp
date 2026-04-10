@@ -37,6 +37,7 @@ arcade::MinesweeperGame::MinesweeperGame() : AGameModule("minesweeper"),
             cacarcade::Tile tile = {
                 .x = x,
                 .y = y,
+                .textureOrientation = cacarcade::Tile::Orientation::Up,
                 .textureName = "",
                 .backgroundColor = cacarcade::Color::Black,
                 .text = '\0',
@@ -70,6 +71,7 @@ void arcade::MinesweeperGame::createMenuBar()
         cacarcade::Tile tile = {
             .x = x,
             .y = y,
+            .textureOrientation = cacarcade::Tile::Orientation::Up,
             .textureName = "",
             .backgroundColor = cacarcade::Color::Black,
             .text = '\0',
@@ -100,6 +102,7 @@ void arcade::MinesweeperGame::createMenuBar()
     cacarcade::Tile resetTile = {
         .x = resetButtonCoordinates.first,
         .y = resetButtonCoordinates.second,
+        .textureOrientation = cacarcade::Tile::Orientation::Up,
         .textureName = "",
         .backgroundColor = cacarcade::Color::Black,
         .text = 'R',
