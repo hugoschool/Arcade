@@ -27,6 +27,7 @@ arcade::Menu::Menu() : AGameModule("Menu"), _games(), _displays(),
             cacarcade::Tile tile = {
                 .x = x,
                 .y = y,
+                .textureOrientation = cacarcade::Tile::Orientation::Up,
                 .textureName = "",
                 .backgroundColor = cacarcade::Color::Black,
                 .text = '\0',
