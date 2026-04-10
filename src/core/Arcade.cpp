@@ -94,6 +94,8 @@ void arcade::Arcade::handleDisplayEvents(std::unique_ptr<cacarcade::IEvent> &eve
             break;
         }
         case cacarcade::EventType::LaunchFromMenu: {
+            _game.reset();
+            _display.reset();
             _game = _gameManager.selectNewInstance(event->getGameLibrary());
             _display = _displayManager.selectNewInstance(event->getDisplayLibrary());
             _playerName = event->getPlayerName();
