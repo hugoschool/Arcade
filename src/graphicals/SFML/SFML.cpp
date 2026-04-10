@@ -12,6 +12,7 @@
 #include "graphicals/ADisplayModule.hpp"
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/System/Angle.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <cstddef>
@@ -70,6 +71,8 @@ cacarcade::EventKey arcade::SFMLDisplay::getKey(const sf::Keyboard::Key key)
             return cacarcade::EventKey::Space;
         case sf::Keyboard::Key::Num1:
             return cacarcade::EventKey::_1;
+        case sf::Keyboard::Key::Enter:
+            return cacarcade::EventKey::Enter;
         default:
             return cacarcade::EventKey::None;
     }
@@ -165,6 +168,8 @@ void arcade::SFMLDisplay::displayTileTexture(cacarcade::Tile &tile, sf::Rectangl
         sf::Texture texture = *ptr.value().lock();
 
         tileRect.setTexture(&texture);
+        sf::Angle angle(sf::degrees(static_cast<int>(tile.textureOrientation) * 90));
+        tileRect.rotate(angle);
         _window.draw(tileRect);
     }
 }

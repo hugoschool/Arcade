@@ -106,11 +106,23 @@ void arcade::CentipedeGame::placeMushroom()
     }
 }
 
+int arcade::CentipedeGame::getCentpedeDirection(std::pair<size_t, size_t> pos)
+{
+    for (auto i = _vecCentipedes.begin(); i != _vecCentipedes.end(); i++) {
+        Centipede centipede = *i;
+        if (centipede.position == pos) {
+            return centipede.direction;
+        }
+    }
+    return 0;
+}
+
 void arcade::CentipedeGame::setEntityContent(cacarcade::Tile &tile, std::pair<const cacarcade::tileCoordinates, TileInfo> info)
 {
     switch (info.second.entity) {
         case EntityTiles::Player:
             tile.text = 'P';
+            tile.textureOrientation = cacarcade::Tile::Orientation::Up;
             tile.textureName = "./textures/centipede/player.png";
             tile.textColor = cacarcade::Color::Blue;
             break;
@@ -118,10 +130,29 @@ void arcade::CentipedeGame::setEntityContent(cacarcade::Tile &tile, std::pair<co
             tile.text = '|';
             tile.textColor = cacarcade::Color::Yellow;
             break;
-        case EntityTiles::Centipede:
+        case EntityTiles::Centipede: {
             tile.text = 'C';
             tile.textColor = cacarcade::Color::White;
+            int direction = getCentpedeDirection({tile.x, tile.y});
+            if (tile.x + direction > 0 && tile.x + direction < _width - 1) {
+                if (!_tileInfo.at({tile.x + direction, tile.y}).isEmpty) {
+                    if ( tile.y + 1 < _height - 1 && _tileInfo.at({tile.x, tile.y + 1}).entity == EntityTiles::Centipede) {
+                        tile.textureName = "./textures/centipede/body.png";
+                    } else {
+                        tile.textureName = "./textures/centipede/head.png";
+                    }
+                } else {
+                    tile.textureName = "./textures/centipede/head.png";
+                }
+            } else {
+                if (tile.y + 1 < _height - 1 && _tileInfo.at({tile.x, tile.y + 1}).entity == EntityTiles::Centipede) {
+                    tile.textureName = "./textures/centipede/body.png";
+                } else {
+                    tile.textureName = "./textures/centipede/head.png";
+                }
+            }
             break;
+        }
         case EntityTiles::None:
             tile.text = '\0';
             tile.textColor = cacarcade::Color::Green;
@@ -143,8 +174,9 @@ void arcade::CentipedeGame::updateTiles()
                 setEntityContent(tile, info);
             } else {
                 tile.textColor = cacarcade::Color::Red;
+                tile.textureOrientation = cacarcade::Tile::Orientation::Up;
                 tile.text = '0' + static_cast<char>(info.second.mushroom) + 1;
-                tile.textureName = "./textures/centipede/" + std::to_string(static_cast<int>(info.second.mushroom)) + ".png";
+                tile.textureName = "./textures/centipede/" + std::to_string(static_cast<int>(info.second.mushroom) + 1) + ".png";
             }
         }
     }

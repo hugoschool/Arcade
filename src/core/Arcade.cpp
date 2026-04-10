@@ -84,15 +84,6 @@ void arcade::Arcade::handleDisplayEvents(std::unique_ptr<cacarcade::IEvent> &eve
             _game->setPlayerName(_playerName);
             break;
         }
-        case cacarcade::EventType::DisplayText: {
-            while (true) {
-                cacarcade::DisplayTextContent text = event->getTextContent();
-                if (text.text.empty())
-                    break;
-                _display->displayText(text);
-            }
-            break;
-        }
         case cacarcade::EventType::LaunchFromMenu: {
             _game.reset();
             _display.reset();

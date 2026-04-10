@@ -85,5 +85,6 @@ namespace arcade {
             void createCentipede();
             void placeCentipede();
             void updateCentipede();
+            int getCentpedeDirection(std::pair<size_t, size_t>);
     };
 }
