@@ -111,6 +111,7 @@ void arcade::CentipedeGame::setEntityContent(cacarcade::Tile &tile, std::pair<co
     switch (info.second.entity) {
         case EntityTiles::Player:
             tile.text = 'P';
+            tile.textureName = "./textures/centipede/player.png";
             tile.textColor = cacarcade::Color::Blue;
             break;
         case EntityTiles::Projectile:
@@ -135,6 +136,7 @@ void arcade::CentipedeGame::updateTiles()
         if (info.second.isEmpty) {
             tile.textColor = cacarcade::Color::Green;
             tile.text = '\0';
+            tile.textureName = "";
             continue;
         } else {
             if (info.second.entity != EntityTiles::None) {
@@ -142,6 +144,7 @@ void arcade::CentipedeGame::updateTiles()
             } else {
                 tile.textColor = cacarcade::Color::Red;
                 tile.text = '0' + static_cast<char>(info.second.mushroom) + 1;
+                tile.textureName = "./textures/centipede/" + std::to_string(tile.text) + ".png";
             }
         }
     }

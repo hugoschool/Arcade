@@ -33,7 +33,6 @@ namespace arcade {
             {
                 VeryLow,
                 Low,
-                Medium,
                 High,
                 VeryHigh,
                 Destroyed
