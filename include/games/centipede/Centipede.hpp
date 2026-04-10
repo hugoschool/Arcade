@@ -81,6 +81,7 @@ namespace arcade {
             bool canPlayerMove(int x, int y);
             void checkPlayerCollision();
             cacarcade::DisplayTextContent addTextContent();
+            void addScoreToMap();
 
             void createCentipede();
             void placeCentipede();
