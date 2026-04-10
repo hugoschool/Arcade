@@ -30,6 +30,7 @@ arcade::SFMLDisplay::SFMLDisplay() : arcade::ADisplayModule(),
         _window = sf::RenderWindow(videoMode, "Arcade");
         _window.setFramerateLimit(60);
         _font = sf::Font("./PressStart2P-vaV7.ttf");
+        _offsetX = _screenWidth / 2;
     } catch (std::exception &e) {
         throw arcade::Exception("Something went wrong with the creation of the window.");
     }
@@ -200,6 +201,8 @@ void arcade::SFMLDisplay::displayText(cacarcade::DisplayTextContent text)
 void arcade::SFMLDisplay::displayTiles(cacarcade::TileContainer container)
 {
     setTileDimensions(container.dimension);
+    _offsetX = _screenWidth / 2 - (container.dimension.first * _tileSize) / 2;
+    _offsetY = _tileSize;
 
     for (auto &[_, tile] : container.tiles) {
         int x = tile.x * _tileSize + _offsetX;
