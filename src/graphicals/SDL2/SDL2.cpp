@@ -44,8 +44,7 @@ arcade::SDL2Display::SDL2Display() : arcade::ADisplayModule(), _window(nullptr),
     if (_renderer == nullptr)
         throw arcade::Exception(std::string("Impossible to create renderer: ") + SDL_GetError());
 
-    // TODO: need to find a way
-    _font = TTF_OpenFont("/usr/share/fonts/gnu-free/FreeSans.otf", _fontSize);
+    _font = TTF_OpenFont("./textures/fonts/PressStart2P.ttf", _fontSize);
 
     if (_font == nullptr)
         throw arcade::Exception(std::string("Impossible to open font (TTF): ") + TTF_GetError());

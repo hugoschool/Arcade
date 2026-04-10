@@ -29,7 +29,7 @@ arcade::SFMLDisplay::SFMLDisplay() : arcade::ADisplayModule(),
 
         _window = sf::RenderWindow(videoMode, "Arcade");
         _window.setFramerateLimit(60);
-        _font = sf::Font("./PressStart2P-vaV7.ttf");
+        _font = sf::Font("./textures/fonts/PressStart2P.ttf");
         _offsetX = _screenWidth / 2;
     } catch (std::exception &e) {
         throw arcade::Exception("Something went wrong with the creation of the window.");
