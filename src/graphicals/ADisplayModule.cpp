@@ -1,12 +1,10 @@
 #include "graphicals/ADisplayModule.hpp"
 #include "cacarcade/TileContainer.hpp"
 #include <cstddef>
-#include <iostream>
 #include <optional>
-#include <ostream>
 
 arcade::ADisplayModule::ADisplayModule() : _screenWidth(1800), _screenHeight(800), _fontSize(20),
-    _tileSize(20), _currentDimensions(), _offsetX(0), _offsetY(0)
+    _tileSize(30), _currentDimensions(), _offsetX(0), _offsetY(0)
 {
 }
 
