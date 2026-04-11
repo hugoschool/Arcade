@@ -33,7 +33,7 @@ arcade::CentipedeGame::CentipedeGame() : AGameModule("centipede"),
             cacarcade::Tile tile = {
                 .x = x,
                 .y = y,
-                .textureOrientation = cacarcade::Tile::Orientation::Up,
+                .textureOrientation = cacarcade::Tile::Orientation::Right,
                 .textureName = "",
                 .backgroundColor = cacarcade::Color::Black,
                 .text = '\0',
@@ -71,6 +71,8 @@ void arcade::CentipedeGame::createCentipede()
 
     for (size_t i = 0; i < centipedeAmount; i++) {
         _vecCentipedes.push_back({1, 0, {x, y}});
+        if (i == centipedeAmount - 1)
+            _vecCentipedes.at(i).bodypart = 1;
         x++;
     }
     _timeCentipede = std::chrono::steady_clock::now();
@@ -106,21 +108,40 @@ void arcade::CentipedeGame::placeMushroom()
     }
 }
 
+std::pair<int, int> arcade::CentipedeGame::getCentpedeInfo(std::pair<size_t, size_t> pos)
+{
+    for (auto i = _vecCentipedes.begin(); i != _vecCentipedes.end(); i++) {
+        Centipede centipede = *i;
+        if (centipede.position == pos) {
+            return {centipede.direction, centipede.bodypart};
+        }
+    }
+    return {0, 0};
+}
+
 void arcade::CentipedeGame::setEntityContent(cacarcade::Tile &tile, std::pair<const cacarcade::tileCoordinates, TileInfo> info)
 {
     switch (info.second.entity) {
         case EntityTiles::Player:
             tile.text = 'P';
+            tile.textureOrientation = cacarcade::Tile::Orientation::Right;
+            tile.textureName = "./textures/centipede/player.png";
             tile.textColor = cacarcade::Color::Blue;
             break;
         case EntityTiles::Projectile:
             tile.text = '|';
             tile.textColor = cacarcade::Color::Yellow;
             break;
-        case EntityTiles::Centipede:
+        case EntityTiles::Centipede: {
             tile.text = 'C';
             tile.textColor = cacarcade::Color::White;
+            std::pair<int, int> infoCenti = getCentpedeInfo({tile.x, tile.y});
+            if (infoCenti.second)
+                tile.textureName = "./textures/centipede/head.png";
+            else
+                tile.textureName = "./textures/centipede/body.png";
             break;
+        }
         case EntityTiles::None:
             tile.text = '\0';
             tile.textColor = cacarcade::Color::Green;
@@ -135,13 +156,16 @@ void arcade::CentipedeGame::updateTiles()
         if (info.second.isEmpty) {
             tile.textColor = cacarcade::Color::Green;
             tile.text = '\0';
+            tile.textureName = "";
             continue;
         } else {
             if (info.second.entity != EntityTiles::None) {
                 setEntityContent(tile, info);
             } else {
                 tile.textColor = cacarcade::Color::Red;
+                tile.textureOrientation = cacarcade::Tile::Orientation::Right;
                 tile.text = '0' + static_cast<char>(info.second.mushroom) + 1;
+                tile.textureName = "./textures/centipede/" + std::to_string(static_cast<int>(info.second.mushroom) + 1) + ".png";
             }
         }
     }
@@ -165,6 +189,12 @@ void arcade::CentipedeGame::projectileCollisons(std::pair<size_t, size_t> &posit
         for (auto i = _vecCentipedes.begin(); i != _vecCentipedes.end(); i++) {
             Centipede &centipede = *i;
             if (centipede.position == position) {
+                if (i != _vecCentipedes.begin()) {
+                    i--;
+                    Centipede &temp = *i;
+                    temp.bodypart = 1;
+                    i++;
+                }
                 _vecCentipedes.erase(i);
                 _scoreHandler.addScore(5);
                 break;
@@ -192,13 +222,19 @@ void arcade::CentipedeGame::updateCentipede()
                 centipede.direction *= -1;
                 if (centipede.position.second < _height - 1)
                         centipede.position.second += 1;
+                    _container.tiles.at(centipede.position).textureOrientation = cacarcade::Tile::Orientation::Down;
             } else {
                 centipede.position.first += centipede.direction;
+                if (centipede.direction > 0)
+                    _container.tiles.at(centipede.position).textureOrientation = cacarcade::Tile::Orientation::Left;
+                else
+                    _container.tiles.at(centipede.position).textureOrientation = cacarcade::Tile::Orientation::Right;
             }
         } else {
             if (centipede.position.second < _height - 1) {
                 centipede.direction *= -1;
                 centipede.position.second += 1;
+                _container.tiles.at(centipede.position).textureOrientation = cacarcade::Tile::Orientation::Down;
             } else {
                 for (auto i = _vecCentipedes.begin(); i != _vecCentipedes.end(); i++) {
                     Centipede centi = *i;
@@ -312,7 +348,7 @@ void arcade::CentipedeGame::reset()
             cacarcade::Tile tile = {
                 .x = x,
                 .y = y,
-                .textureOrientation = cacarcade::Tile::Orientation::Up,
+                .textureOrientation = cacarcade::Tile::Orientation::Right,
                 .textureName = "",
                 .backgroundColor = cacarcade::Color::Black,
                 .text = '\0',

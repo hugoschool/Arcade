@@ -12,11 +12,13 @@
 #include "graphicals/ADisplayModule.hpp"
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/System/Angle.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <cstddef>
 #include <cstdlib>
 #include <exception>
+#include <iostream>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -69,6 +71,18 @@ cacarcade::EventKey arcade::SFMLDisplay::getKey(const sf::Keyboard::Key key)
             return cacarcade::EventKey::Space;
         case sf::Keyboard::Key::Num1:
             return cacarcade::EventKey::_1;
+        case sf::Keyboard::Key::Num2:
+            return cacarcade::EventKey::_2;
+        case sf::Keyboard::Key::Num3:
+            return cacarcade::EventKey::_3;
+        case sf::Keyboard::Key::Num5:
+            return cacarcade::EventKey::_5;
+        case sf::Keyboard::Key::Num8:
+            return cacarcade::EventKey::_8;
+        case sf::Keyboard::Key::Num9:
+            return cacarcade::EventKey::_9;
+        case sf::Keyboard::Key::Enter:
+            return cacarcade::EventKey::Enter;
         default:
             return cacarcade::EventKey::None;
     }
@@ -108,17 +122,20 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::SFMLDisplay::pollEvent
     return std::nullopt;
 }
 
-std::weak_ptr<sf::Texture> arcade::SFMLDisplay::createTexture(std::string &textureName)
+std::optional<std::weak_ptr<sf::Texture>> arcade::SFMLDisplay::createTexture(std::string &textureName)
 {
     try {
         return std::weak_ptr<sf::Texture>(_textureMap.at(textureName));
     } catch (const std::out_of_range &) {
-        std::shared_ptr<sf::Texture> texture = std::make_shared<sf::Texture>(textureName);
-
-        texture->setSmooth(true);
-        _textureMap.insert({textureName, texture});
-
-        return std::weak_ptr<sf::Texture>(texture);
+        try {
+            std::shared_ptr<sf::Texture> texture = std::make_shared<sf::Texture>(textureName);
+            texture->setSmooth(true);
+            _textureMap.insert({textureName, texture});
+            return std::weak_ptr<sf::Texture>(texture);
+        } catch (const std::exception &e) {
+            std::cerr << "Non existant texture " << textureName << std::endl;
+            return std::nullopt;
+        }
     }
 }
 
@@ -153,11 +170,33 @@ void arcade::SFMLDisplay::displayTileText(cacarcade::Tile &tile, sf::RectangleSh
 
 void arcade::SFMLDisplay::displayTileTexture(cacarcade::Tile &tile, sf::RectangleShape &tileRect)
 {
-    std::weak_ptr<sf::Texture> ptr = createTexture(tile.textureName);
-    sf::Texture texture = *ptr.lock();
+    std::optional ptr = createTexture(tile.textureName);
 
-    tileRect.setTexture(&texture);
-    _window.draw(tileRect);
+    if (!ptr.has_value()) {
+        displayTileText(tile, tileRect);
+    } else {
+        sf::Texture texture = *ptr.value().lock();
+
+        tileRect.setTexture(&texture);
+        sf::Angle angle(sf::degrees(static_cast<int>(tile.textureOrientation) * 90));
+        sf::Vector2f pos = tileRect.getPosition();
+        switch (tile.textureOrientation) {
+            case cacarcade::Tile::Orientation::Left:
+                pos.y += _tileSize;
+                pos.x += _tileSize;
+                break;
+            case cacarcade::Tile::Orientation::Up:
+                pos.x += _tileSize;
+                break;
+            case cacarcade::Tile::Orientation::Down:
+                pos.y += _tileSize;
+            default:
+                break;
+        }
+        tileRect.setPosition(pos);
+        tileRect.rotate(angle);
+        _window.draw(tileRect);
+    }
 }
 
 void arcade::SFMLDisplay::updateOffset(std::pair<long, long> pos, size_t len)

@@ -35,7 +35,7 @@ namespace arcade {
             sf::Color getColor(cacarcade::ColorCode color);
 
             std::map<std::string, std::shared_ptr<sf::Texture>> _textureMap;
-            std::weak_ptr<sf::Texture> createTexture(std::string &textureName);
+            std::optional<std::weak_ptr<sf::Texture>> createTexture(std::string &textureName);
 
             void displayTileText(cacarcade::Tile &tile, sf::RectangleShape &tileRect);
             void displayTileTexture(cacarcade::Tile &tile, sf::RectangleShape &tileRect);

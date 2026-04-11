@@ -8,7 +8,10 @@
 #include "events/QuitEvent.hpp"
 #include "events/TileClickedEvent.hpp"
 #include <SDL2/SDL_keycode.h>
+#include <SDL2/SDL_rect.h>
+#include <SDL2/SDL_render.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
 #include "graphicals/ADisplayModule.hpp"
 #include <cstddef>
 #include <memory>
@@ -99,6 +102,18 @@ cacarcade::EventKey arcade::SDL2Display::getKey(const SDL_Keycode keycode)
             return cacarcade::EventKey::Right;
         case SDLK_SPACE:
             return cacarcade::EventKey::Space;
+        case SDLK_1:
+            return cacarcade::EventKey::_1;
+        case SDLK_2:
+            return cacarcade::EventKey::_2;
+        case SDLK_3:
+            return cacarcade::EventKey::_3;
+        case SDLK_5:
+            return cacarcade::EventKey::_5;
+        case SDLK_8:
+            return cacarcade::EventKey::_8;
+        case SDLK_9:
+            return cacarcade::EventKey::_9;
         default:
             return cacarcade::EventKey::None;
     }
@@ -170,19 +185,18 @@ SDL_Texture *arcade::SDL2Display::createTexture(std::string &textureName)
     try {
         return _textureMap.at(textureName);
     } catch (const std::out_of_range &) {
-        SDL_Surface *surface = SDL_LoadBMP(textureName.c_str());
+        SDL_Surface *surface = IMG_Load(textureName.c_str());
 
         if (surface == nullptr) {
             std::cerr << "Impossible to load BMP: " << SDL_GetError() << std::endl;
             _textureMap.insert({textureName, nullptr});
+            return nullptr;
+        } else {
+            SDL_Texture *texture = SDL_CreateTextureFromSurface(_renderer, surface);
+            _textureMap.insert({textureName, texture});
+            SDL_FreeSurface(surface);
+            return texture;
         }
-
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(_renderer, surface);
-
-        _textureMap.insert({textureName, texture});
-
-        SDL_FreeSurface(surface);
-        return texture;
     }
 }
 
@@ -201,7 +215,10 @@ void arcade::SDL2Display::displayTileTexture(cacarcade::Tile &tile, SDL_Rect &ti
 
     if (texture == nullptr)
         displayTileText(tile, tileRect);
-    SDL_RenderCopy(_renderer, texture, NULL, &tileRect);
+
+    double angle = static_cast<int>(tile.textureOrientation) * 90;
+    SDL_Point center = {static_cast<int>(tile.x), static_cast<int>(tile.y)};
+    SDL_RenderCopyEx(_renderer, texture, nullptr, &tileRect, angle, &center, SDL_FLIP_VERTICAL);
 }
 
 void arcade::SDL2Display::displayTiles(cacarcade::TileContainer container)

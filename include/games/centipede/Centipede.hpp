@@ -33,7 +33,6 @@ namespace arcade {
             {
                 VeryLow,
                 Low,
-                Medium,
                 High,
                 VeryHigh,
                 Destroyed
@@ -86,5 +85,6 @@ namespace arcade {
             void createCentipede();
             void placeCentipede();
             void updateCentipede();
+            std::pair<int, int> getCentpedeInfo(std::pair<size_t, size_t>);
     };
 }
