@@ -179,7 +179,7 @@ void arcade::SFMLDisplay::displayTileTexture(cacarcade::Tile &tile, sf::Rectangl
                 pos.x += _tileSize;
                 break;
             case cacarcade::Tile::Orientation::Down:
-                pos.x -= _tileSize;
+                pos.y += _tileSize;
             default:
                 break;
         }

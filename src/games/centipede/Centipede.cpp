@@ -135,12 +135,8 @@ void arcade::CentipedeGame::setEntityContent(cacarcade::Tile &tile, std::pair<co
         case EntityTiles::Centipede: {
             tile.text = 'C';
             tile.textColor = cacarcade::Color::White;
-            std::pair<int, int> info = getCentpedeInfo({tile.x, tile.y});
-            if (info.first > 0)
-                tile.textureOrientation = cacarcade::Tile::Orientation::Left;
-            else
-                tile.textureOrientation = cacarcade::Tile::Orientation::Right;
-            if (info.second)
+            std::pair<int, int> infoCenti = getCentpedeInfo({tile.x, tile.y});
+            if (infoCenti.second)
                 tile.textureName = "./textures/centipede/head.png";
             else
                 tile.textureName = "./textures/centipede/body.png";
@@ -226,13 +222,19 @@ void arcade::CentipedeGame::updateCentipede()
                 centipede.direction *= -1;
                 if (centipede.position.second < _height - 1)
                         centipede.position.second += 1;
+                    _container.tiles.at(centipede.position).textureOrientation = cacarcade::Tile::Orientation::Down;
             } else {
                 centipede.position.first += centipede.direction;
+                if (centipede.direction > 0)
+                    _container.tiles.at(centipede.position).textureOrientation = cacarcade::Tile::Orientation::Left;
+                else
+                    _container.tiles.at(centipede.position).textureOrientation = cacarcade::Tile::Orientation::Right;
             }
         } else {
             if (centipede.position.second < _height - 1) {
                 centipede.direction *= -1;
                 centipede.position.second += 1;
+                _container.tiles.at(centipede.position).textureOrientation = cacarcade::Tile::Orientation::Down;
             } else {
                 for (auto i = _vecCentipedes.begin(); i != _vecCentipedes.end(); i++) {
                     Centipede centi = *i;
