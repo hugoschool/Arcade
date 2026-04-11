@@ -71,6 +71,8 @@ void arcade::CentipedeGame::createCentipede()
 
     for (size_t i = 0; i < centipedeAmount; i++) {
         _vecCentipedes.push_back({1, 0, {x, y}});
+        if (i == centipedeAmount - 1)
+            _vecCentipedes.at(i).bodypart = 1;
         x++;
     }
     _timeCentipede = std::chrono::steady_clock::now();
@@ -106,15 +108,15 @@ void arcade::CentipedeGame::placeMushroom()
     }
 }
 
-int arcade::CentipedeGame::getCentpedeDirection(std::pair<size_t, size_t> pos)
+std::pair<int, int> arcade::CentipedeGame::getCentpedeInfo(std::pair<size_t, size_t> pos)
 {
     for (auto i = _vecCentipedes.begin(); i != _vecCentipedes.end(); i++) {
         Centipede centipede = *i;
         if (centipede.position == pos) {
-            return centipede.direction;
+            return {centipede.direction, centipede.bodypart};
         }
     }
-    return 0;
+    return {0, 0};
 }
 
 void arcade::CentipedeGame::setEntityContent(cacarcade::Tile &tile, std::pair<const cacarcade::tileCoordinates, TileInfo> info)
@@ -133,29 +135,15 @@ void arcade::CentipedeGame::setEntityContent(cacarcade::Tile &tile, std::pair<co
         case EntityTiles::Centipede: {
             tile.text = 'C';
             tile.textColor = cacarcade::Color::White;
-            int direction = getCentpedeDirection({tile.x, tile.y});
-            if (direction > 0)
+            std::pair<int, int> info = getCentpedeInfo({tile.x, tile.y});
+            if (info.first > 0)
                 tile.textureOrientation = cacarcade::Tile::Orientation::Left;
             else
                 tile.textureOrientation = cacarcade::Tile::Orientation::Right;
-            tile.textureName = "./textures/centipede/head.png";
-            // if (tile.x + direction > 0 && tile.x + direction < _width - 1) {
-            //     if (!_tileInfo.at({tile.x + direction, tile.y}).isEmpty) {
-            //         if ( tile.y + 1 < _height - 1 && _tileInfo.at({tile.x, tile.y + 1}).entity == EntityTiles::Centipede) {
-            //             tile.textureName = "./textures/centipede/body.png";
-            //         } else {
-            //             tile.textureName = "./textures/centipede/head.png";
-            //         }
-            //     } else {
-            //         tile.textureName = "./textures/centipede/head.png";
-            //     }
-            // } else {
-            //     if (tile.y + 1 < _height - 1 && _tileInfo.at({tile.x, tile.y + 1}).entity == EntityTiles::Centipede) {
-            //         tile.textureName = "./textures/centipede/body.png";
-            //     } else {
-            //         tile.textureName = "./textures/centipede/head.png";
-            //     }
-            // }
+            if (info.second)
+                tile.textureName = "./textures/centipede/head.png";
+            else
+                tile.textureName = "./textures/centipede/body.png";
             break;
         }
         case EntityTiles::None:
@@ -205,6 +193,12 @@ void arcade::CentipedeGame::projectileCollisons(std::pair<size_t, size_t> &posit
         for (auto i = _vecCentipedes.begin(); i != _vecCentipedes.end(); i++) {
             Centipede &centipede = *i;
             if (centipede.position == position) {
+                if (i != _vecCentipedes.begin()) {
+                    i--;
+                    Centipede &temp = *i;
+                    temp.bodypart = 1;
+                    i++;
+                }
                 _vecCentipedes.erase(i);
                 _scoreHandler.addScore(5);
                 break;
