@@ -8,7 +8,10 @@
 #include "events/QuitEvent.hpp"
 #include "events/TileClickedEvent.hpp"
 #include <SDL2/SDL_keycode.h>
+#include <SDL2/SDL_rect.h>
+#include <SDL2/SDL_render.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
 #include "graphicals/ADisplayModule.hpp"
 #include <cstddef>
 #include <memory>
@@ -170,7 +173,7 @@ SDL_Texture *arcade::SDL2Display::createTexture(std::string &textureName)
     try {
         return _textureMap.at(textureName);
     } catch (const std::out_of_range &) {
-        SDL_Surface *surface = SDL_LoadBMP(textureName.c_str());
+        SDL_Surface *surface = IMG_Load(textureName.c_str());
 
         if (surface == nullptr) {
             std::cerr << "Impossible to load BMP: " << SDL_GetError() << std::endl;
@@ -200,7 +203,11 @@ void arcade::SDL2Display::displayTileTexture(cacarcade::Tile &tile, SDL_Rect &ti
 
     if (texture == nullptr)
         displayTileText(tile, tileRect);
-    SDL_RenderCopy(_renderer, texture, NULL, &tileRect);
+
+    double angle = static_cast<int>(tile.textureOrientation) * 90;
+    SDL_Point center = {static_cast<int>(tile.x), static_cast<int>(tile.y)};
+    SDL_RenderCopyEx(_renderer, texture, nullptr, &tileRect, angle, &center, SDL_FLIP_VERTICAL);
+    // SDL_RenderCopy(_renderer, texture, NULL, &tileRect);
 }
 
 void arcade::SDL2Display::displayTiles(cacarcade::TileContainer container)

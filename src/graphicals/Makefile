@@ -25,7 +25,7 @@ include $(BASE_DIR)/common.mk
 
 all:	$(SDL2_BIN) $(SFML_BIN) $(NCURSES_BIN)
 
-$(SDL2_BIN):	LDLIBS	+=	-lSDL2 -lSDL2_ttf
+$(SDL2_BIN):	LDLIBS	+=	-lSDL2 -lSDL2_ttf -lSDL2_image
 $(SDL2_BIN):	$(SDL2_OBJ)
 
 $(SFML_BIN):	LDLIBS	+=	-lsfml-system -lsfml-graphics -lsfml-window
