@@ -102,6 +102,18 @@ cacarcade::EventKey arcade::SDL2Display::getKey(const SDL_Keycode keycode)
             return cacarcade::EventKey::Right;
         case SDLK_SPACE:
             return cacarcade::EventKey::Space;
+        case SDLK_1:
+            return cacarcade::EventKey::_1;
+        case SDLK_2:
+            return cacarcade::EventKey::_2;
+        case SDLK_3:
+            return cacarcade::EventKey::_3;
+        case SDLK_5:
+            return cacarcade::EventKey::_5;
+        case SDLK_8:
+            return cacarcade::EventKey::_8;
+        case SDLK_9:
+            return cacarcade::EventKey::_9;
         default:
             return cacarcade::EventKey::None;
     }
@@ -207,7 +219,6 @@ void arcade::SDL2Display::displayTileTexture(cacarcade::Tile &tile, SDL_Rect &ti
     double angle = static_cast<int>(tile.textureOrientation) * 90;
     SDL_Point center = {static_cast<int>(tile.x), static_cast<int>(tile.y)};
     SDL_RenderCopyEx(_renderer, texture, nullptr, &tileRect, angle, &center, SDL_FLIP_VERTICAL);
-    // SDL_RenderCopy(_renderer, texture, NULL, &tileRect);
 }
 
 void arcade::SDL2Display::displayTiles(cacarcade::TileContainer container)
