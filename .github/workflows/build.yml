@@ -6,7 +6,7 @@ on:
 env:
   CORE_BINARY: arcade
   GAME_BINARIES: lib/arcade_minesweeper.so lib/arcade_centipede.so
-  GRAPHICAL_BINARIES: lib/arcade_sdl2.so lib/arcade_sfml.so lib/arcade_ncurses.so
+  GRAPHICAL_BINARIES: lib/arcade_sdl2.so lib/arcade_sfml.so lib/arcade_ncurses.so lib/arcade_raylib.so
 
 jobs:
   build_core:
@@ -62,6 +62,18 @@ jobs:
           tar -xvf SFML.tar.gz -C SFML --strip-components=1
           cp -r ./SFML/lib /usr
           cp -r ./SFML/include /usr
+      
+      - name: Install raylib 5.5 and raylib-cpp
+        run: |
+          cd /tmp
+          wget https://github.com/raysan5/raylib/releases/download/5.5/raylib-5.5_linux_amd64.tar.gz
+          tar -xvf raylib-5.5_linux_amd64.tar.gz
+          cp -r ./raylib-5.5_linux_amd64/lib /usr
+          cp -r ./raylib-5.5_linux_amd64/include /usr
+
+          wget https://github.com/RobLoach/raylib-cpp/archive/refs/tags/v5.5.1.tar.gz -O raylib-cpp-5.5.1.tar.gz
+          tar -xvf raylib-cpp-5.5.1.tar.gz
+          cp -r ./raylib-cpp-5.5.1/include /usr
 
       - uses: actions/checkout@v6
 
