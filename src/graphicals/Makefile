@@ -12,6 +12,10 @@ NCURSES_SRC	:=	$(COMMON_SRC) \
 				NCurses/entrypoint.cpp \
 				NCurses/NCurses.cpp
 
+RAYLIB_SRC	:=	$(COMMON_SRC) \
+				Raylib/entrypoint.cpp \
+				Raylib/Raylib.cpp
+
 SDL2_OBJ	:=	$(SDL2_SRC:.cpp=.o)
 SDL2_BIN	:=	$(LIB_PATH)/arcade_sdl2.so
 
@@ -21,9 +25,12 @@ SFML_BIN	:=	$(LIB_PATH)/arcade_sfml.so
 NCURSES_OBJ	:=	$(NCURSES_SRC:.cpp=.o)
 NCURSES_BIN	:=	$(LIB_PATH)/arcade_ncurses.so
 
+RAYLIB_OBJ	:=	$(RAYLIB_SRC:.cpp=.o)
+RAYLIB_BIN	:=	$(LIB_PATH)/arcade_raylib.so
+
 include $(BASE_DIR)/common.mk
 
-all:	$(SDL2_BIN) $(SFML_BIN) $(NCURSES_BIN)
+all:	$(SDL2_BIN) $(SFML_BIN) $(NCURSES_BIN) $(RAYLIB_BIN)
 
 $(SDL2_BIN):	LDLIBS	+=	-lSDL2 -lSDL2_ttf -lSDL2_image
 $(SDL2_BIN):	$(SDL2_OBJ)
@@ -34,15 +41,20 @@ $(SFML_BIN):	$(SFML_OBJ)
 $(NCURSES_BIN):	LDLIBS	+= 	-lncurses
 $(NCURSES_BIN):	$(NCURSES_OBJ)
 
+$(RAYLIB_BIN):	LDLIBS	+= 	-lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+$(RAYLIB_BIN):	$(RAYLIB_OBJ)
+
 clean:
 	$(RM) $(SDL2_OBJ)
 	$(RM) $(SFML_OBJ)
 	$(RM) $(NCURSES_OBJ)
+	$(RM) $(RAYLIB_OBJ)
 
 fclean:	clean
 	$(RM) $(SDL2_BIN)
 	$(RM) $(SFML_BIN)
 	$(RM) $(NCURSES_BIN)
+	$(RM) $(RAYLIB_BIN)
 
 re:	fclean all
 
