@@ -312,6 +312,7 @@ void arcade::MinesweeperGame::setTileContent(cacarcade::Tile &tile, TileInfo &in
 {
     tile.textureOrientation = cacarcade::Tile::Orientation::Right;
     if (info.isFlag == true && info.isRevealed == false) {
+        tile.textureName = "./textures/minesweeper/flag.png";
         tile.text = 'F';
         tile.backgroundColor = cacarcade::Color::Green;
         return;
