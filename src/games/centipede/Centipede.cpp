@@ -222,7 +222,7 @@ void arcade::CentipedeGame::updateCentipede()
                 centipede.direction *= -1;
                 if (centipede.position.second < _height - 1)
                         centipede.position.second += 1;
-                    _container.tiles.at(centipede.position).textureOrientation = cacarcade::Tile::Orientation::Down;
+                    _container.tiles.at(centipede.position).textureOrientation = cacarcade::Tile::Orientation::Up;
             } else {
                 centipede.position.first += centipede.direction;
                 if (centipede.direction > 0)
@@ -234,7 +234,7 @@ void arcade::CentipedeGame::updateCentipede()
             if (centipede.position.second < _height - 1) {
                 centipede.direction *= -1;
                 centipede.position.second += 1;
-                _container.tiles.at(centipede.position).textureOrientation = cacarcade::Tile::Orientation::Down;
+                _container.tiles.at(centipede.position).textureOrientation = cacarcade::Tile::Orientation::Up;
             } else {
                 for (auto i = _vecCentipedes.begin(); i != _vecCentipedes.end(); i++) {
                     Centipede centi = *i;

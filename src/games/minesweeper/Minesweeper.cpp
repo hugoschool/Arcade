@@ -71,7 +71,7 @@ void arcade::MinesweeperGame::createMenuBar()
         cacarcade::Tile tile = {
             .x = x,
             .y = y,
-            .textureOrientation = cacarcade::Tile::Orientation::Up,
+            .textureOrientation = cacarcade::Tile::Orientation::Right,
             .textureName = "",
             .backgroundColor = cacarcade::Color::Black,
             .text = '\0',
@@ -102,7 +102,7 @@ void arcade::MinesweeperGame::createMenuBar()
     cacarcade::Tile resetTile = {
         .x = resetButtonCoordinates.first,
         .y = resetButtonCoordinates.second,
-        .textureOrientation = cacarcade::Tile::Orientation::Up,
+        .textureOrientation = cacarcade::Tile::Orientation::Right,
         .textureName = "./textures/minesweeper/smiley.png",
         .backgroundColor = cacarcade::Color::Black,
         .text = 'R',
@@ -310,6 +310,7 @@ void arcade::MinesweeperGame::revealAllOnFail()
 
 void arcade::MinesweeperGame::setTileContent(cacarcade::Tile &tile, TileInfo &info)
 {
+    tile.textureOrientation = cacarcade::Tile::Orientation::Right;
     if (info.isFlag == true && info.isRevealed == false) {
         tile.textureName = "./textures/minesweeper/flag.png";
         tile.text = 'F';

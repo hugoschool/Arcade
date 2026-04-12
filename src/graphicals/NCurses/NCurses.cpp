@@ -89,7 +89,6 @@ std::optional<std::unique_ptr<arcade::TileClickedEvent>> arcade::NCursesDisplay:
 std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::NCursesDisplay::pollEvent()
 {
     int key = wgetch(_window);
-    std::cerr << key << std::endl;
     while (key != ERR) {
         if (std::isalnum(key) || key == ' ') {
             return std::make_unique<arcade::KeyPressedEvent>(getKey(key));
