@@ -13,9 +13,11 @@
 #include <cstdio>
 #include <cstdlib>
 #include <exception>
+#include <iostream>
 #include <memory>
 #include <ncurses.h>
 #include <optional>
+#include <ostream>
 #include <utility>
 
 arcade::NCursesDisplay::NCursesDisplay() : arcade::ADisplayModule(), _window(nullptr), _oldDimension(),
@@ -87,6 +89,7 @@ std::optional<std::unique_ptr<arcade::TileClickedEvent>> arcade::NCursesDisplay:
 std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::NCursesDisplay::pollEvent()
 {
     int key = wgetch(_window);
+    std::cerr << key << std::endl;
     while (key != ERR) {
         if (std::isalnum(key) || key == ' ') {
             return std::make_unique<arcade::KeyPressedEvent>(getKey(key));
@@ -96,6 +99,18 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::NCursesDisplay::pollEv
         }
         if (key == '&' || key == '1')
             return std::make_unique<arcade::KeyPressedEvent>(cacarcade::EventKey::_1);
+        if (key == '"' || key == '3')
+            return std::make_unique<arcade::KeyPressedEvent>(cacarcade::EventKey::_3);
+        if (key == '\'' || key == '4')
+            return std::make_unique<arcade::KeyPressedEvent>(cacarcade::EventKey::_4);
+        if (key == '(' || key == '5')
+            return std::make_unique<arcade::KeyPressedEvent>(cacarcade::EventKey::_5);
+        if (key == '-' || key == '6')
+            return std::make_unique<arcade::KeyPressedEvent>(cacarcade::EventKey::_6);
+        if (key == '_' || key == '8')
+            return std::make_unique<arcade::KeyPressedEvent>(cacarcade::EventKey::_8);
+        if (key == KEY_ENTER)
+            return std::make_unique<arcade::KeyPressedEvent>(cacarcade::EventKey::Enter);
     }
     return std::nullopt;
 }
