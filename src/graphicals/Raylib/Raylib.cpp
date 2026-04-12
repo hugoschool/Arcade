@@ -12,10 +12,14 @@
 #include "events/TileClickedEvent.hpp"
 #include "graphicals/ADisplayModule.hpp"
 #include <Color.hpp>
+#include <Image.hpp>
 #include <Keyboard.hpp>
 #include <Mouse.hpp>
 #include <Rectangle.hpp>
+#include <SDL2/SDL_gamecontroller.h>
+#include <SDL2/SDL_image.h>
 #include <Text.hpp>
+#include <Texture.hpp>
 #include <Vector2.hpp>
 #include <Window.hpp>
 #include <exception>
@@ -23,9 +27,10 @@
 #include <optional>
 #include <raylib.h>
 #include <string>
+#include <utility>
 
 arcade::RaylibDisplay::RaylibDisplay() : arcade::ADisplayModule(),
-    _window(), _font()
+    _window(), _font(), _textureMap()
 {
     try {
         _window.Init(_screenWidth, _screenHeight, "Arcade");
@@ -104,14 +109,50 @@ void arcade::RaylibDisplay::displayTileText(cacarcade::Tile &tile, raylib::Recta
     }
 }
 
-void arcade::RaylibDisplay::displayTileTexture(cacarcade::Tile &, raylib::Rectangle&)
+void arcade::RaylibDisplay::displayTileTexture(cacarcade::Tile &tile, raylib::Rectangle &rec)
 {
-    
+    rec.Draw(getColor(tile.backgroundColor));
+    Vector2 pos = rec.GetPosition();
+    switch (tile.textureOrientation) {
+        case cacarcade::Tile::Orientation::Left:
+            pos.x += _tileSize;
+            pos.y += _tileSize;
+            break;
+        case cacarcade::Tile::Orientation::Up:
+            pos.y += _tileSize;
+            break;
+        case cacarcade::Tile::Orientation::Down:
+            pos.x += _tileSize;
+            break;
+        default:
+            break;
+    }
+    _textureMap.at(tile.textureName).Draw(pos, 360 - 90 * static_cast<int>(tile.textureOrientation));
+}
+
+void arcade::RaylibDisplay::loadtexture(cacarcade::TileContainer container)
+{
+    for (auto &[_, tile] : container.tiles) {
+        if (!tile.textureName.empty()) {
+            try {
+                _textureMap.at(tile.textureName);
+            } catch (std::exception &e) {
+                raylib::Image image;
+                image.Load(tile.textureName);
+                image.Resize(_tileSize, _tileSize);
+                raylib::Texture2D texture;
+                texture.Load(image);
+                _textureMap.insert({tile.textureName, std::move(texture)});
+                image.Unload();
+            }
+        }
+    }
 }
 
 void arcade::RaylibDisplay::displayTiles(cacarcade::TileContainer container)
 {
     setTileDimensions(container.dimension);
+    loadtexture(container);
     _window.BeginDrawing();
     _window.ClearBackground(BLACK);
 
@@ -122,11 +163,11 @@ void arcade::RaylibDisplay::displayTiles(cacarcade::TileContainer container)
         rec.SetSize({static_cast<float>(_tileSize), static_cast<float>(_tileSize)});
         rec.SetPosition(raylib::Vector2(x, y));
 
-        // if (!tile.textureName.empty()) {
-        //     displayTileTexture(tile, rec);
-        // } else {
+        if (!tile.textureName.empty()) {
+            displayTileTexture(tile, rec);
+        } else {
             displayTileText(tile, rec);
-        // }
+        }
     }
     _window.EndDrawing();
 }

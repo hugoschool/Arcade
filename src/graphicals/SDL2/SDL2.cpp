@@ -207,9 +207,10 @@ void arcade::SDL2Display::displayTileTexture(cacarcade::Tile &tile, SDL_Rect &ti
     if (texture == nullptr)
         displayTileText(tile, tileRect);
 
-    double angle = static_cast<int>(tile.textureOrientation) * 90;
-    SDL_Point center = {static_cast<int>(tile.x), static_cast<int>(tile.y)};
-    SDL_RenderCopyEx(_renderer, texture, nullptr, &tileRect, angle, &center, SDL_FLIP_VERTICAL);
+    double angle = 360 - static_cast<int>(tile.textureOrientation) * 90;
+    if (angle == 360)
+        angle = 0;
+    SDL_RenderCopyEx(_renderer, texture, nullptr, &tileRect, angle, NULL, SDL_FLIP_NONE);
 }
 
 void arcade::SDL2Display::displayTiles(cacarcade::TileContainer container)

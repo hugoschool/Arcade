@@ -2,11 +2,16 @@
 #include <Color.hpp>
 #include <Font.hpp>
 #include <Rectangle.hpp>
+#include <Texture.hpp>
 #include <Window.hpp>
+#include <map>
+#include <memory>
 #include <raylib-cpp.hpp>
+#include <string>
 
 #include "cacarcade/Color.hpp"
 #include "cacarcade/IEvent.hpp"
+#include "cacarcade/TileContainer.hpp"
 #include "graphicals/ADisplayModule.hpp"
 namespace arcade {
     class RaylibDisplay : public arcade::ADisplayModule {
@@ -27,5 +32,7 @@ namespace arcade {
             void displayTileText(cacarcade::Tile &tile, raylib::Rectangle &rec);
 
             raylib::Color getColor(cacarcade::ColorCode);
+            std::map<std::string, raylib::Texture2D> _textureMap;
+            void loadtexture(cacarcade::TileContainer);
     };
 }
