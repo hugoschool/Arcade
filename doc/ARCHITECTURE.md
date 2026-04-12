@@ -136,6 +136,13 @@ namespace arcade {
         +void displayText(cacarcade::DisplayTextContent) override;
     }
 
+    class RaylibDisplay {
+        +void clear() override;
+        +std::optional<std::unique_ptr<cacarcade::IEvent>> pollEvent() override;
+        +void displayTiles(cacarcade::TileContainer tiles) override;
+        +void displayText(cacarcade::DisplayTextContent) override;
+    }
+
     class MinesweeperGame {
         +cacarcade::TileContainer getTiles() const override;
         +std::optional<std::unique_ptr<cacarcade::IEvent>> pollEvent() override;
@@ -192,6 +199,7 @@ ScoreHandler *-- AGameModule
 SDL2Display <|-- ADisplayModule
 SFMLDisplay <|-- ADisplayModule
 NCursesDisplay <|-- ADisplayModule
+RaylibDisplay <|-- ADisplayModule
 
 MinesweeperGame <|-- AGameModule
 CentipedeGame <|-- AGameModule

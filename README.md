@@ -13,9 +13,10 @@ Dependencies to build the game libraries:
 - None
 
 Dependencies to build the graphical libraries:
-- SDL2 (SDL2_ttf needed)
+- SDL2 (SDL2_ttf, SDL2_image needed)
 - NCurses
 - SFML v3 (see `.github/workflows/build.yml` on how to download SFML v3)
+- raylib v5.5 and raylib-cpp (same as above, see `.github/workflows/build.yml`)
 
 ```sh
 make -j`nproc` # To build everything
