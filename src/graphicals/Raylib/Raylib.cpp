@@ -14,15 +14,12 @@
 #include <Color.hpp>
 #include <Image.hpp>
 #include <Keyboard.hpp>
-#include <Mouse.hpp>
-#include <Rectangle.hpp>
-#include <SDL2/SDL_gamecontroller.h>
-#include <SDL2/SDL_image.h>
 #include <Text.hpp>
 #include <Texture.hpp>
 #include <Vector2.hpp>
 #include <Window.hpp>
 #include <exception>
+#include <iostream>
 #include <memory>
 #include <optional>
 #include <raylib.h>
@@ -87,12 +84,7 @@ std::optional<std::unique_ptr<cacarcade::IEvent>> arcade::RaylibDisplay::pollEve
 
 raylib::Color arcade::RaylibDisplay::getColor(cacarcade::ColorCode color)
 {
-    raylib::Color coco;
-    coco.SetA(color.a);
-    coco.SetR(color.r);
-    coco.SetG(color.g);
-    coco.SetB(color.b);
-    return coco;
+    return raylib::Color(color.r, color.g, color.b, color.a);
 }
 
 void arcade::RaylibDisplay::displayTileText(cacarcade::Tile &tile, raylib::Rectangle &rec)
@@ -130,7 +122,7 @@ void arcade::RaylibDisplay::displayTileTexture(cacarcade::Tile &tile, raylib::Re
     _textureMap.at(tile.textureName).Draw(pos, 360 - 90 * static_cast<int>(tile.textureOrientation));
 }
 
-void arcade::RaylibDisplay::loadtexture(cacarcade::TileContainer container)
+void arcade::RaylibDisplay::loadTexture(cacarcade::TileContainer container)
 {
     for (auto &[_, tile] : container.tiles) {
         if (!tile.textureName.empty()) {
@@ -138,12 +130,16 @@ void arcade::RaylibDisplay::loadtexture(cacarcade::TileContainer container)
                 _textureMap.at(tile.textureName);
             } catch (std::exception &e) {
                 raylib::Image image;
-                image.Load(tile.textureName);
-                image.Resize(_tileSize, _tileSize);
-                raylib::Texture2D texture;
-                texture.Load(image);
-                _textureMap.insert({tile.textureName, std::move(texture)});
-                image.Unload();
+                try {
+                    image.Load(tile.textureName);
+                    image.Resize(_tileSize, _tileSize);
+                    raylib::Texture2D texture;
+                    texture.Load(image);
+                    _textureMap.insert({tile.textureName, std::move(texture)});
+                    image.Unload();
+                } catch (std::exception &e) {
+                    std::cerr << "Non existant texture " << tile.textureName << std::endl;
+                }
             }
         }
     }
@@ -152,7 +148,7 @@ void arcade::RaylibDisplay::loadtexture(cacarcade::TileContainer container)
 void arcade::RaylibDisplay::displayTiles(cacarcade::TileContainer container)
 {
     setTileDimensions(container.dimension);
-    loadtexture(container);
+    loadTexture(container);
     _window.BeginDrawing();
     _window.ClearBackground(BLACK);
 

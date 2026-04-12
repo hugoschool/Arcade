@@ -33,6 +33,6 @@ namespace arcade {
 
             raylib::Color getColor(cacarcade::ColorCode);
             std::map<std::string, raylib::Texture2D> _textureMap;
-            void loadtexture(cacarcade::TileContainer);
+            void loadTexture(cacarcade::TileContainer);
     };
 }
