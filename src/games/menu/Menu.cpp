@@ -72,6 +72,12 @@ void arcade::Menu::addLettersToPlayerName(std::unique_ptr<cacarcade::IEvent> &ev
     }
 }
 
+void arcade::Menu::clear()
+{
+    clearLine(7);
+    clearLine(14);
+}
+
 void arcade::Menu::handleEvent(std::unique_ptr<cacarcade::IEvent> &event)
 {
     switch (event->getType()) {
@@ -84,22 +90,22 @@ void arcade::Menu::handleEvent(std::unique_ptr<cacarcade::IEvent> &event)
                 case cacarcade::EventKey::A:
                     if (!_isInsert)
                         _gamesAmount--;
-                    clearLine(7);
+                    clear();
                     break;
                 case cacarcade::EventKey::Z:
                     if (!_isInsert)
                         _gamesAmount++;
-                    clearLine(7);
+                    clear();
                     break;
                 case cacarcade::EventKey::Q:
                     if (!_isInsert)
                         _displayAmount--;
-                    clearLine(14);
+                    clear();
                     break;
                 case cacarcade::EventKey::S:
                     if (!_isInsert)
                         _displayAmount++;
-                    clearLine(14);
+                    clear();
                     break;
                 case cacarcade::EventKey::Space: {
                     if (_isInsert)
