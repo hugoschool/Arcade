@@ -18,7 +18,7 @@ namespace arcade {
             void resetScore();
 
             // Pair of player names and scores
-            std::vector<std::pair<const std::string, const std::int64_t>> loadScores();
+            std::vector<std::pair<std::string, std::int64_t>> loadScores();
 
             void saveScore(const std::string playerName);
 
