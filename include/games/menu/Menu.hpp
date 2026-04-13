@@ -36,6 +36,7 @@ namespace arcade {
             void addDisplayContent();
             void addTitleContent();
             void addPlayersContent();
+            void addScoreContent();
             void clearLine(size_t line);
 
             void addLettersToPlayerName(std::unique_ptr<cacarcade::IEvent> &event);
