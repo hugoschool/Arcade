@@ -11,7 +11,10 @@
 #include "core/LibraryManager.hpp"
 #include "events/LaunchFromMenuEvent.hpp"
 #include "games/AGameModule.hpp"
+#include "games/ScoreHandler.hpp"
+#include <algorithm>
 #include <cstddef>
+#include <filesystem>
 #include <memory>
 #include <string>
 #include <utility>
@@ -69,6 +72,12 @@ void arcade::Menu::addLettersToPlayerName(std::unique_ptr<cacarcade::IEvent> &ev
     }
 }
 
+void arcade::Menu::clear()
+{
+    clearLine(7);
+    clearLine(14);
+}
+
 void arcade::Menu::handleEvent(std::unique_ptr<cacarcade::IEvent> &event)
 {
     switch (event->getType()) {
@@ -81,22 +90,22 @@ void arcade::Menu::handleEvent(std::unique_ptr<cacarcade::IEvent> &event)
                 case cacarcade::EventKey::A:
                     if (!_isInsert)
                         _gamesAmount--;
-                    clearLine(7);
+                    clear();
                     break;
                 case cacarcade::EventKey::Z:
                     if (!_isInsert)
                         _gamesAmount++;
-                    clearLine(7);
+                    clear();
                     break;
                 case cacarcade::EventKey::Q:
                     if (!_isInsert)
                         _displayAmount--;
-                    clearLine(14);
+                    clear();
                     break;
                 case cacarcade::EventKey::S:
                     if (!_isInsert)
                         _displayAmount++;
-                    clearLine(14);
+                    clear();
                     break;
                 case cacarcade::EventKey::Space: {
                     if (_isInsert)
@@ -195,15 +204,47 @@ void arcade::Menu::addPlayersContent()
     }
 }
 
+void arcade::Menu::addScoreContent()
+{
+    std::string gameLib = _games.at(_gamesAmount % (_games.size()));
+    std::string filename = std::filesystem::path(gameLib).filename().replace_extension();
+    std::string token = filename.substr(filename.find("_") + 1);
+
+    ScoreHandler handler(token);
+
+    std::vector scores = handler.loadScores();
+
+    // Can't use sort for some reason
+    std::stable_sort(scores.begin(), scores.end(),
+        [](const std::pair<std::string, std::int64_t> &a,
+            const std::pair<std::string, std::int64_t> &b)
+        {
+            return a.second > b.second;
+        }
+    );
+
+    if (scores.empty())
+        return;
+
+    std::pair<const std::string, const std::int64_t> highestScore = scores.at(0);
+    std::string text = highestScore.first + " = " + std::to_string(highestScore.second);
+
+    std::pair<size_t, size_t> coordinates = { _container.dimension.first - text.length() - 2, 14};
+    for (size_t i = 0; i < text.length(); i++) {
+        cacarcade::Tile &tile = _container.tiles.at({coordinates.first + i, 14});
+        tile.text = text[i];
+        tile.textColor = cacarcade::Color::White;
+    }
+}
+
 void arcade::Menu::update(std::optional<std::unique_ptr<cacarcade::IEvent>> &event)
 {
     if (event.has_value()) {
         handleEvent(event.value());
     }
-    std::unique_ptr<cacarcade::IEvent> newEvent = std::make_unique<arcade::AEvent>(cacarcade::EventType::DisplayText);
     addGamesContent();
     addDisplayContent();
     addTitleContent();
     addPlayersContent();
-
+    addScoreContent();
 }

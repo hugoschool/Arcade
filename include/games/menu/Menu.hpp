@@ -1,5 +1,4 @@
 #pragma once
-#include "cacarcade/DisplayTextContent.hpp"
 #include "cacarcade/IEvent.hpp"
 #include "games/AGameModule.hpp"
 #include <cstddef>
@@ -36,6 +35,8 @@ namespace arcade {
             void addDisplayContent();
             void addTitleContent();
             void addPlayersContent();
+            void addScoreContent();
+            void clear();
             void clearLine(size_t line);
 
             void addLettersToPlayerName(std::unique_ptr<cacarcade::IEvent> &event);
